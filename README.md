@@ -1,26 +1,28 @@
-<!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
 <a name="readme-top"></a>
 
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/github_username/repo_name">
-    <img src="images/logo.jpg" alt="Logo" width="128" height="128">
+  <a href="https://github.com/TCU-Instructional-AI/classifAI">
+    <img src="frontend/static/images/logo.jpg" alt="Logo" width="128" height="128">
   </a>
 
 <h2 align="center">ClassifAI</h2>
 
   <p align="center">
-    project_description
+    ClassifAI enhances educational content by transcribing video and audio into text for user modification and categorizes questions, offering engagement insights and user-friendly access.<br>
     <br />
-    <a href="https://github.com/github_username/repo_name"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/TCU-Instructional-AI/classifAI"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/github_username/repo_name">View Demo</a>
+    <a href="https://github.com/TCU-Instructional-AI/classifAI">Visit Portal</a>
     ·
-    <a href="https://github.com/github_username/repo_name/issues">Report Bug</a>
+    <a href="https://github.com/TCU-Instructional-AI/classifAI/issues">Report Bug</a>
     ·
-    <a href="https://github.com/github_username/repo_name/issues">Request Feature</a>
+    <a href="https://github.com/TCU-Instructional-AI/classifAI/issues">Request Feature</a>
+    ·
+    <a href="https://github.com/TCU-Instructional-AI/classifAI/issues">Project Information</a>
+    
   </p>
 </div>
 
@@ -59,7 +61,7 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
-Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `github_username`, `repo_name`, `twitter_handle`, `linkedin_username`, `email_client`, `email`, `project_title`, `project_description`
+Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `TCU-Instructional-AI`, `classifAI`, `twitter_handle`, `linkedin_username`, `email_client`, `email`, `project_title`, `project_description`
 
 
 
@@ -91,7 +93,7 @@ This is an example of how to list things you need to use the software and how to
 1. Get a free API Key at [https://example.com](https://example.com)
 2. Clone the repo
    ```sh
-   git clone https://github.com/github_username/repo_name.git
+   git clone https://github.com/TCU-Instructional-AI/classifAI.git
    ```
 3. Install NPM packages
    ```sh
@@ -122,7 +124,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 - [ ] Feature 3
     - [ ] Nested Feature
 
-See the [open issues](https://github.com/github_username/repo_name/issues) for a full list of proposed features (and known issues).
+See the [open issues](https://github.com/TCU-Instructional-AI/classifAI/issues) for a full list of proposed features (and known issues).
 
 
 
@@ -155,9 +157,9 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - email@email_client.com
+[Learn About the Team](http://riogrande.cs.tcu.edu/2324InstructionalEffectiveness)
 
-Project Link: [https://github.com/github_username/repo_name](https://github.com/github_username/repo_name)
+Project Link: [https://github.com/TCU-Instructional-AI/classifAI](https://github.com/TCU-Instructional-AI/classifAI)
 
 
 
@@ -174,16 +176,16 @@ Project Link: [https://github.com/github_username/repo_name](https://github.com/
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/github_username/repo_name.svg?style=for-the-badge
-[contributors-url]: https://github.com/github_username/repo_name/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/github_username/repo_name.svg?style=for-the-badge
-[forks-url]: https://github.com/github_username/repo_name/network/members
-[stars-shield]: https://img.shields.io/github/stars/github_username/repo_name.svg?style=for-the-badge
-[stars-url]: https://github.com/github_username/repo_name/stargazers
-[issues-shield]: https://img.shields.io/github/issues/github_username/repo_name.svg?style=for-the-badge
-[issues-url]: https://github.com/github_username/repo_name/issues
-[license-shield]: https://img.shields.io/github/license/github_username/repo_name.svg?style=for-the-badge
-[license-url]: https://github.com/github_username/repo_name/blob/master/LICENSE.txt
+[contributors-shield]: https://img.shields.io/github/contributors/TCU-Instructional-AI/classifAI.svg?style=for-the-badge
+[contributors-url]: https://github.com/TCU-Instructional-AI/classifAI/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/TCU-Instructional-AI/classifAI.svg?style=for-the-badge
+[forks-url]: https://github.com/TCU-Instructional-AI/classifAI/network/members
+[stars-shield]: https://img.shields.io/github/stars/TCU-Instructional-AI/classifAI.svg?style=for-the-badge
+[stars-url]: https://github.com/TCU-Instructional-AI/classifAI/stargazers
+[issues-shield]: https://img.shields.io/github/issues/TCU-Instructional-AI/classifAI.svg?style=for-the-badge
+[issues-url]: https://github.com/TCU-Instructional-AI/classifAI/issues
+[license-shield]: https://img.shields.io/github/license/TCU-Instructional-AI/classifAI.svg?style=for-the-badge
+[license-url]: https://github.com/TCU-Instructional-AI/classifAI/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/linkedin_username
 [product-screenshot]: images/screenshot.png
