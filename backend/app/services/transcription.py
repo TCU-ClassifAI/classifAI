@@ -1,2 +1,2 @@
 def transcription():
-    pass
+    return "This is the transcription service"
