@@ -1,5 +1,5 @@
 from flask import Flask
-from app.services.transcription import transcription
+from services.transcription import transcription
 
 app = Flask(__name__)
 
