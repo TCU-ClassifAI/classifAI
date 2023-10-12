@@ -16,7 +16,5 @@ def service1():
     return f"Service 1: {result}"
 
 
-# Hello world
-
 if __name__ == "__main__":
     app.run(debug=True)
