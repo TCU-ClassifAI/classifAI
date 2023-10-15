@@ -22,10 +22,11 @@ function App() {
           <Route element={<Layout />}>
             <Route path="/home" element={<Main />} />
             <Route path="/account" element={<Account />} />
-          </Route>
-          <Route path="/" element={<Login />}></Route>
+            <Route path="/" element={<Login />}></Route>
           <Route path="/signup" element={<SignUp />}></Route>
           <Route path="/confirmSignUp" element={<ConfirmRegister />}></Route>
+          </Route>
+          
       </Routes>
     </BrowserRouter>
   );
