@@ -38,7 +38,7 @@ const LogIn = () => {
     return (
         <div className='container'>
             <form id='login-form'>
-            <h2 id='title'>C2AI</h2>
+            <h2 id='title'>ClassifAI</h2>
             <div className="form-group">
                 <label>Email address</label>
                 <div className='input-login'>
