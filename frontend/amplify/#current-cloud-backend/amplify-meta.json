@@ -1,0 +1,76 @@
+{
+  "providers": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-amplify8dcd72a7ab164-staging-163336-authRole",
+      "UnauthRoleArn": "arn:aws:iam::643053837683:role/amplify-amplify8dcd72a7ab164-staging-163336-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::643053837683:role/amplify-amplify8dcd72a7ab164-staging-163336-authRole",
+      "Region": "us-east-2",
+      "DeploymentBucketName": "amplify-amplify8dcd72a7ab164-staging-163336-deployment",
+      "UnauthRoleName": "amplify-amplify8dcd72a7ab164-staging-163336-unauthRole",
+      "StackName": "amplify-amplify8dcd72a7ab164-staging-163336",
+      "StackId": "arn:aws:cloudformation:us-east-2:643053837683:stack/amplify-amplify8dcd72a7ab164-staging-163336/71892ec0-d7bd-11ed-91e9-0ab7a205ddb2",
+      "AmplifyAppId": "d3j2tsrfizwt2g"
+    }
+  },
+  "auth": {
+    "C2AI": {
+      "customAuth": false,
+      "dependsOn": [],
+      "frontendAuthConfig": {
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyMinLength": 8,
+          "passwordPolicyCharacters": [
+            "REQUIRES_LOWERCASE",
+            "REQUIRES_NUMBERS",
+            "REQUIRES_SYMBOLS",
+            "REQUIRES_UPPERCASE"
+          ]
+        },
+        "signupAttributes": [
+          "EMAIL",
+          "NAME"
+        ],
+        "socialProviders": [],
+        "usernameAttributes": [
+          "EMAIL"
+        ],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito",
+      "output": {
+        "UserPoolId": "us-east-2_H86nNqMR2",
+        "AppClientIDWeb": "2j173e8ph4aoqv27lbegkce1ke",
+        "AppClientID": "7c6n6e9h46d2of1kloibq3uus0",
+        "IdentityPoolId": "us-east-2:dea4414d-0a9b-474d-a358-5aed8c95c38c",
+        "UserPoolArn": "arn:aws:cognito-idp:us-east-2:643053837683:userpool/us-east-2_H86nNqMR2",
+        "IdentityPoolName": "testAuthIdentityPool__staging",
+        "UserPoolName": "C2AI"
+      },
+      "lastPushTimeStamp": "2023-04-16T21:29:11.067Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-amplify8dcd72a7ab164-staging-163336-deployment/amplify-cfn-templates/auth/C2AI-cloudformation-template.json",
+        "logicalId": "authC2AI"
+      }
+    }
+  },
+  "storage": {
+    "c2ai97dbbd21": {
+      "service": "S3",
+      "serviceType": "imported",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "output": {
+        "BucketName": "c2ai-storage-e5d3ddbc163336-staging",
+        "Region": "us-east-2"
+      },
+      "lastPushTimeStamp": "2023-04-16T21:29:11.910Z"
+    }
+  }
+}
