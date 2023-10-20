@@ -1,30 +1,50 @@
-// taken from legacy codebase
-
 const express = require("express");
 const multer = require('multer'); // For handling file uploads
 const cors = require("cors");
 const axios = require("axios");
 const mongoose = require('mongoose'); // For connecting to MongoDB
+const fs = require('fs');
+const path = require('path');
+// Look into PQueue; improve the performance by processing multiple files concurrently (specified by the concurrency option)
 
-
-// Configure multer to store uploaded files in a folder named 'uploads'
-// Look into file streaming: Streaming is more memory-efficient, especially for large files, because it doesn't require holding the entire file in memory.
-const upload = multer({ 
-    dest: 'uploads/',
-    limits: { fileSize: 500 * 1024 * 1024 }, // 500 MB limit
-    }); 
 const PORT = 5000;
 const app = express();
 app.use(cors());
 
 
 
+
+///////////// multer setup
+
+// req: request object that contains info about incoming request
+// file: infomration about uploaded file
+// cb: callback function that we need to call to tell multer where and how to store the file.
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads')  // first argument is null because we don’t have any error to report, second is our uploads folder
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))  // filename = filename + date + file extension
+  }
+});
+
+var upload = multer({
+  storage: storage,
+  limits: {fileSize: 500 * 1024 * 1024} 
+});
+
+/////////////
+
+
+
+
 ///////////// MongoDB setup
 
 // Connect to MongoDB using mongoose, not setup with an actual DB rn
-mongoose.connect('mongodb://localhost:#####/transcription', { 
+mongoose.connect('mongodb://localhost:#####/transcription', { // switch to env variable later
     useNewUrlParser: true, 
     useUnifiedTopology: true 
+    // add Connection Pooling for MongoDB? look into later
 });
 
 const mongo = mongoose.connection;
@@ -35,10 +55,11 @@ mongo.once('open', function() {
 
 // Define a schema and a model for storing audio files in MongoDB
 const audioSchema = new mongoose.Schema({
-  filename: String,
-  path: String,
-  transcription: String,
-  status: String
+    //implement user_id when we figure out authentication
+    filename: String,
+    path: String,
+    transcription: String,  //transcription itself is written into db, we could change this to a path leading to a sepearte file if needed
+    status: String
 });
 const Audio = mongoose.model('Audio', audioSchema);
 
@@ -62,21 +83,35 @@ app.listen(PORT, () => {
 //  Uploads the files an /upload folder, returns location to send to Workstation
 app.post("/transcribe", upload.single('file'), async function (req, res) {
   if (req.file) {
+        let audioFile;
         try {
-            // I we get a file, we want to create a new audio document in MongoDB with the file info
+            // If we get a file, we want to create a new audio document in MongoDB with the file info
             const audioFile = new Audio({
                 filename: req.file.originalname,
                 path: req.file.path,
                 transcription: '',
                 status: 'pending'
             });
-            await audioFile.save;
+            await audioFile.save();
 
-            // Send audioFile path to workstation for transcription
+            // Sending audioFile path to workstation for transcription approach:
+            // const workstationResponse = await axios.post(
+            //     "http://workstation-machine/transcribe",
+            //     { path: audioFile.path }
+            // );
+
+
+            // Streaming the audioFile itself to the workstation for transcription approach:
+            // Create a read stream for the file
+            const fileStream = fs.createReadStream(audioFile.path); 
+            // Send audioFile to workstation for transcription
             const workstationResponse = await axios.post(
-                "http://workstation-machine/transcribe",
-                { path: audioFile.path }
+              "http://workstation-machine/transcribe",
+              fileStream,
+              { headers: { 'Content-Type': 'application/octet-stream' } }
             );
+            // The file is read and sent in chunks; more memory-efficient than reading the entire file into memory at once
+
 
             // Update the audioFile document with transcription and status from the workstation
             audioFile.transcription = workstationResponse.data.transcription;
@@ -88,8 +123,10 @@ app.post("/transcribe", upload.single('file'), async function (req, res) {
         catch(error){
             console.error(error);
             // Update status and save to indicate an error
-            audioFile.status = "error";
-            await audioFile.save();
+            if (audioFile) {
+              audioFile.status = "error";
+              await audioFile.save();
+            }
             res.json({ success: false, message: "An error occurred" });
         }
     } 
