@@ -56,9 +56,10 @@ mongo.once('open', function() {
 // Define a schema and a model for storing audio files in MongoDB
 const audioSchema = new mongoose.Schema({
     //implement user_id when we figure out authentication
+    // File ID: MongoDB automatically generates a unique id assigns it to the _id field
     filename: String,
     path: String,
-    transcription: String,  //transcription itself is written into db, we could change this to a path leading to a sepearte file if needed
+    transcription: String,  //transcription itself is written into db
     status: String
 });
 const Audio = mongoose.model('Audio', audioSchema);
@@ -77,65 +78,120 @@ app.listen(PORT, () => {
 });
 
 
+////////////// Upload endpoint: Stores file in the web server, uploads info to MongoDB
 
-///////////// Transcription endpoint
+app.post("/upload", upload.single('file'), async (req, res) => {
+    if (!req.file) {
+      res.status(400).json({ success: false, message: "No file uploaded" });
+    }
 
-//  Uploads the files an /upload folder, returns location to send to Workstation
-app.post("/transcribe", upload.single('file'), async function (req, res) {
-  if (req.file) {
-        let audioFile;
-        try {
-            // If we get a file, we want to create a new audio document in MongoDB with the file info
-            const audioFile = new Audio({
-                filename: req.file.originalname,
-                path: req.file.path,
-                transcription: '',
-                status: 'pending'
-            });
-            await audioFile.save();
+    try {
+      // Create a new audio document in MongoDB with the file info
+      const audioFile = new Audio({
+        filename: req.file.originalname,
+        path: req.file.path,
+        transcription: '',
+        status: 'pending'
+      });
 
-            // Sending audioFile path to workstation for transcription approach:
-            // const workstationResponse = await axios.post(
-            //     "http://workstation-machine/transcribe",
-            //     { path: audioFile.path }
-            // );
+      // Save the audio document in MongoDB
+      await audioFile.save();
 
-
-            // Streaming the audioFile itself to the workstation for transcription approach:
-            // Create a read stream for the file
-            const fileStream = fs.createReadStream(audioFile.path); 
-            // Send audioFile to workstation for transcription
-            const workstationResponse = await axios.post(
-              "http://workstation-machine/transcribe",
-              fileStream,
-              { headers: { 'Content-Type': 'application/octet-stream' } }
-            );
-            // The file is read and sent in chunks; more memory-efficient than reading the entire file into memory at once
-
-
-            // Update the audioFile document with transcription and status from the workstation
-            audioFile.transcription = workstationResponse.data.transcription;
-            audioFile.status = workstationResponse.data.status;
-            await audioFile.save();
-            res.json({ success: true, id: audioFile._id });
-        }
-
-        catch(error){
-            console.error(error);
-            // Update status and save to indicate an error
-            if (audioFile) {
-              audioFile.status = "error";
-              await audioFile.save();
-            }
-            res.json({ success: false, message: "An error occurred" });
-        }
+      // Send a response with the id of the saved audio file
+      res.json({ success: true, id: audioFile._id });
     } 
-  else {
-    res.status(400).json({ success: false, message: "No file uploaded" });
+    catch(error) {
+      console.error(error);
+
+      // Send a response indicating an error occurred
+      res.status(500).json({ success: false, message: "An error occurred" });
+    } 
+});
+
+//////////////
+
+
+
+////////////// Get transcript/analysis endpoint:  grab the transcript from the given audio file, assumes that other workstation system queried Mongo to get path and will transcribe 
+
+app.get('transcript/:id', async (req, res) => {
+  try{
+    // Find audio document in MongoDB given ID
+    const audioFile = await Audio.findById(req.params.id);
+
+    if (!audioFile) {
+      // Send no audio file found error
+      return res.status(404).json({ success: false, message: 'Audio file not found.'});
+    }
+
+    if (audioFile.status === 'pending'){
+      // Send response indicating pending status
+      return res.json({success: false, message:'Transcription still pending.'});
+    }
+
+    if (audioFile.status === 'error') {
+      // Send a response indicating an error occurred during transcription
+      return res.json({ success: false, message: "An error occurred during transcription" });
+    }
+
+    // Send a response with the transcription of the audio file
+    res.json({ success: true, transcription: audioFile.transcription });
+
+  }
+  catch(error) {
+    res.status(500).json({ success: false, message: "An error occurred" });
   }
 });
 
-/////////////
+//////////////
+
+
+
+
+////////////// Update Transcription with changes
+
+app.put('transcript/:id', async(req, res) => {
+  try {
+    // Find audio document in MongoDB given ID
+    const audioFile = await Audio.findById(req.params.id);
+
+    if (!audioFile) {
+      // Send a response indicating that the audio file was not found
+      return res.status(404).json({ success: false, message: 'Audio file not found.' });
+    }
+
+    if (audioFile.status !== 'complete') {
+      // Restrict updates to completed transcriptions only
+      return res.status(400).json({ success: false, message: 'Transcription can only be updated for completed files.' });
+    }
+
+    // Get the new transcription text from the request body
+    const newTranscription = req.body.transcription;
+
+    // Update the transcription in the audio document
+    audioFile.transcription = newTranscription;
+
+    // Save the updated audio document in MongoDB
+    await audioFile.save();
+
+    // Send a response indicating a successful update
+    res.json({ success: true, message: 'Transcription updated successfully' });
+  }
+
+  catch(error) {
+    console.error(error);
+
+    // Send a response indicating an error occurred
+    res.status(500).json({ success: false, message: 'An error occurred' });
+  }
+
+});
+
+//////////////
+
+
+
+
 
 
 
