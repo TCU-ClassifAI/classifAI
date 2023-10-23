@@ -78,7 +78,7 @@ app.listen(PORT, () => {
 });
 
 
-////////////// Upload endpoint: Stores file in the web server, uploads info to MongoDB
+////////////// Upload endpoint: Stores file in the web server, uploads info to MongoDB, sends path to Workstation
 
 app.post("/upload", upload.single('file'), async (req, res) => {
     if (!req.file) {
@@ -97,8 +97,25 @@ app.post("/upload", upload.single('file'), async (req, res) => {
       // Save the audio document in MongoDB
       await audioFile.save();
 
-      // Send a response with the id of the saved audio file
-      res.json({ success: true, id: audioFile._id });
+      const flaskBackendUrl = 'http://WORKSTATION:XXXX/transcribe';
+      const response = await axios.post(flaskBackendUrl, {
+        params:{
+          // may need to supply audioFile id if Workstation is going to add transcript directly to DB
+          path: audioFile.path, //if we need to supply the file instead, we can modify this
+        },
+      });
+
+      // in the future, if workstation just wants to respond with transcript, web server will add the transcript to database here
+
+      if (response.statusCode === 200) {
+        // Send a response with the id of the saved audio file
+        res.json({ success: true, id: audioFile._id, message: 'File uploaded and transcription initiated'});
+      }
+      else {
+        res.json({ success: false, message: 'Failed to initiate transcription from Flask backend' });
+      }
+
+
     } 
     catch(error) {
       console.error(error);
@@ -112,9 +129,9 @@ app.post("/upload", upload.single('file'), async (req, res) => {
 
 
 
-////////////// Get transcript/analysis endpoint:  grab the transcript from the given audio file, assumes that other workstation system queried Mongo to get path and will transcribe 
+////////////// Get transcript/analysis endpoint:  grab the transcript from the given audio file, assumes that it has been transcribed
 
-app.get('transcript/:id', async (req, res) => {
+app.get('/transcript/:id', async (req, res) => {
   try{
     // Find audio document in MongoDB given ID
     const audioFile = await Audio.findById(req.params.id);
@@ -148,9 +165,9 @@ app.get('transcript/:id', async (req, res) => {
 
 
 
-////////////// Update Transcription with changes
+////////////// Update Transcription with changes, this will probably need more work
 
-app.put('transcript/:id', async(req, res) => {
+app.put('/transcript/:id', async(req, res) => {
   try {
     // Find audio document in MongoDB given ID
     const audioFile = await Audio.findById(req.params.id);
