@@ -55,22 +55,22 @@ const Layout = () => {
                         {/* It is ingonering if the user logged in or not for now */}
                         {isAuthenticated ? (
                             <>
-                                {/* menu when user is not signed in */}
-                                <li className="nav-item">
-                                <Link to="/signIn" className="nav-link text-light"> Company </Link>
-                                </li>
-                                <li className="nav-item">
-                                <Link to="/signIn" className="nav-link text-light"> Pricing </Link>
-                                </li>
-                            </>
-                        ) : (
-                            <>
                                 {/* menu when user is signed in */}
                                 <li className="nav-item">
                                     <Link to="home/account" className="nav-link text-light"> Account</Link>
                                 </li>
                                 <li className="nav-item">
                                     <a className="nav-link text-light" onClick={(e) => signOut(e)} id='sign-out'>Sign Out</a>
+                                </li>
+                            </>
+                        ) : (
+                            <>
+                                {/* menu when user is not signed in */}
+                                <li className="nav-item">
+                                <Link to="/signIn" className="nav-link text-light"> Company </Link>
+                                </li>
+                                <li className="nav-item">
+                                <Link to="/signIn" className="nav-link text-light"> Pricing </Link>
                                 </li>
                             </>
 
