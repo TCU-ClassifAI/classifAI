@@ -50,6 +50,16 @@ export default function Submission() {
 
   const [transcriptSpeakers, setTranscriptSpeakers] = useState([]);
 
+  const [allSelected, setAllSelected] = useState(false);
+  const [startTimeBox, setStartTimeBox] = useState(false);
+  const [endTimeBox, setEndTimeBox] = useState(false);
+  const [speakerBox, setSpeakerBox] = useState(false);
+  const [isQuestionBox, setIsQuestionBox] = useState(false);
+  const [questionTypeBox, setQuestionTypeBox] = useState(false);
+  const [questionsBox, setQuestionsBox] = useState(false);
+  const [sentencesBox, setSentencesBox] = useState(false);
+  
+
 
   let navigate = useNavigate();
 
@@ -79,6 +89,28 @@ export default function Submission() {
       getTimeChartProps();
     }
   }, [questions]);
+
+  const handleSelectAll = () => {
+    setAllSelected(!allSelected);
+    setStartTimeBox(true);
+    setEndTimeBox(true);
+    setSpeakerBox(true)
+    setIsQuestionBox(true);
+    setQuestionTypeBox(true);
+    setQuestionsBox(true);
+    setSentencesBox(true);
+  };
+
+  const handleDeselectAll = () => {
+    setAllSelected(false);
+    setStartTimeBox(false);
+    setEndTimeBox(false);
+    setSpeakerBox(false);
+    setIsQuestionBox(false);
+    setQuestionTypeBox(false);
+    setQuestionsBox(false);
+    setSentencesBox(false);
+  };
 
   function findSpeakers() {
     const speakersSet = new Set(speakers);
@@ -110,17 +142,82 @@ export default function Submission() {
       return;
     }
 
-    // Create a CSV content with three columns: Timestamp, Speaker, and Sentences
-    const csvContent = `Start Time, End Time, Speaker, isQuestion, Label, Sentence\n${lines.map((line, index) => {
-      const startTime = convertMsToTime(sentences[index].start) || ''; // Convert to timestamp
-      const endTime = convertMsToTime(sentences[index].end) || ''; // Convert to timestamp
-      const speaker = sentences[index].speaker;
-      const sentence = line.trim().replace(/"/g, '""'); // Replace double quotes with double double quotes
-      const isQuestion = sentences[index].isQuestion;
-      const label = sentences[index].label;
+    const csvColumns = [];
+
+    if (startTimeBox) {
+      csvColumns.push('Start Time');
+    }
   
-      return `"${startTime}", "${endTime}", "${speaker}", "${isQuestion}", "${label}", "${sentence}",`;
-    }).join('\n')}`;
+    if (endTimeBox) {
+      csvColumns.push('End Time');
+    }
+  
+    if (speakerBox) {
+      csvColumns.push('Speaker');
+    }
+  
+    if (isQuestionBox) {
+      csvColumns.push('isQuestion');
+    }
+  
+    if (questionTypeBox) {
+      csvColumns.push('Type');
+    }
+  
+    if (questionsBox) {
+      csvColumns.push('Questions');
+    }
+    else if(sentencesBox)
+    {
+      csvColumns.push('Text');
+    }
+
+
+    const headerRow = csvColumns.join(', ');
+
+
+
+    // Create a CSV content with three columns: Timestamp, Speaker, and Sentences
+    const csvContent = `${headerRow}\n${lines.map((line, index) => {
+      const data = [];
+      let push = false;
+      if (questionsBox) {
+        if (sentences[index].isQuestion)
+        {
+          push = true;
+        }
+      }else {
+        push = true;
+      }
+
+      if (startTimeBox && push) {
+        data.push(`"${convertMsToTime(sentences[index].start)}"`);
+      }
+
+      if (endTimeBox && push) {
+        data.push(`"${convertMsToTime(sentences[index].end)}"`);
+      }
+
+      if (speakerBox && push) {
+        data.push(`"${sentences[index].speaker}"`);
+      }
+
+      if (isQuestionBox && push) {
+        data.push(`"${sentences[index].isQuestion}"`);
+      }
+
+      if (questionTypeBox && push) {
+        data.push(`"${sentences[index].label}"`);
+      }
+
+      if (sentencesBox && push) {
+        data.push(`"${line.trim().replace(/"/g, '""')}"`);
+      }
+
+      return data.join(', ');
+    })
+    .filter((row) => row.length > 0) // Filter out empty rows
+    .join('\n')}`;
 
     // Create a Blob with the CSV content
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
@@ -1358,16 +1455,29 @@ export default function Submission() {
           {badReportName ? (
             <div className="alert alert-danger">Please name your report before saving!</div>
           ) : null}
+         
+          <div className="checkBox">
+            <strong>Select what to include in CSV:</strong>
+            <label className="checkBox">Select All<input type="checkbox" className="checkBox" checked={allSelected} onChange={allSelected ? handleDeselectAll : handleSelectAll}></input></label>
+            <label className="checkBox">Start Times<input type="checkbox" className="checkBox" checked={startTimeBox} onChange={() => setStartTimeBox(!startTimeBox)}></input></label>
+            <label className="checkBox">End Times<input type="checkbox" className="checkBox" checked={endTimeBox} onChange={() => setEndTimeBox(!endTimeBox)}></input></label>
+            <label className="checkBox">Speakers<input type="checkbox" className="checkBox" checked={speakerBox} onChange={() => setSpeakerBox(!speakerBox)}></input></label>
+            <label className="checkBox">isQuestion Label<input type="checkbox" className="checkBox" checked={isQuestionBox} onChange={() => setIsQuestionBox(!isQuestionBox)}></input></label>
+            <label className="checkBox">Question Type<input type="checkbox" className="checkBox" checked={questionTypeBox} onChange={() => setQuestionTypeBox(!questionTypeBox)}></input></label>
+            <label className="checkBox">Only Questions<input type="checkbox" className="checkBox" checked={questionsBox} onChange={() => setQuestionsBox(!questionsBox)}></input></label>
+            <label className="checkBox">Text<input type="checkbox" className="checkBox" checked={sentencesBox} onChange={() => setSentencesBox(!sentencesBox)}></input></label>
+          </div>
+          
           <div>
             {successfullUpload ? (
               <h6>File Save Success!!!</h6>
             ) : null}
-            <label>Questions<input type="checkbox"></input></label>
+            
             <button class="btn btn-primary" onClick={() => generatePDF(transcript, sentences, questions)} type="primary" id="bottom-button">
               Download PDF
             </button>
             <button onClick={() => saveToCSV(transcript, sentences)} className='btn btn-primary' id="bottom-button2">
-              Export to CSV
+              Download CSV
             </button>
             <button className="btn btn-primary" onClick={(e) => reloadPage(e)} id="bottom-button2">Upload New Recording</button>
           </div>
