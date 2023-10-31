@@ -19,7 +19,7 @@ const ConfirmRegister = () => {
     try {
       await Auth.confirmSignUp(user.username, user.authenticationCode);
       console.log('success confirm sign up');
-      navigate('/home')
+      navigate('/home/submission')
     } catch (error) {
       console.log('error', error);
     }

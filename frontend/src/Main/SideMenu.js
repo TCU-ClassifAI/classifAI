@@ -8,7 +8,7 @@ const SideMenu = () => {
         <div className="side-menu">
         <ul>
             <li>
-                <NavLink to="." className={({ isActive }) => isActive ? "active-link" : ""}>
+                <NavLink to="./submission" className={({ isActive }) => isActive ? "active-link" : ""}>
                     Submission
                 </NavLink>
             </li>

@@ -1,12 +1,12 @@
 import React from "react"
 import {Outlet, Link} from "react-router-dom";
 import signOut from "../SignOut/signOut";
-import "./Layout.css"
+import "./Navbar_Landing.css"
 import C2Image from '../images/logo.jpg'
 import { Auth } from "aws-amplify";
 import { useNavigate } from "react-router-dom";
 
-const Layout = () => {
+const Navbar_Landing = () => {
     let navigate = useNavigate();
     const [isAuthenticated, setIsAuthenticated] = React.useState(false);
 
@@ -48,33 +48,19 @@ const Layout = () => {
 
                 <div className="collapse navbar-collapse justify-content-end" id="navbarCollapse">
                     <ul className="navbar-nav">
-                        <li className="nav-item">
-                            <Link to="/home" className="nav-link text-light"> Home</Link>
-                        </li>
-
                         {/* It is ingonering if the user logged in or not for now */}
-                        {isAuthenticated ? (
-                            <>
-                                {/* menu when user is signed in */}
-                                <li className="nav-item">
-                                    <Link to="home/account" className="nav-link text-light"> Account</Link>
-                                </li>
-                                <li className="nav-item">
-                                    <a className="nav-link text-light" onClick={(e) => signOut(e)} id='sign-out'>Sign Out</a>
-                                </li>
-                            </>
-                        ) : (
-                            <>
-                                {/* menu when user is not signed in */}
-                                <li className="nav-item">
-                                <Link to="/signIn" className="nav-link text-light"> Company </Link>
-                                </li>
-                                <li className="nav-item">
-                                <Link to="/signIn" className="nav-link text-light"> Pricing </Link>
-                                </li>
-                            </>
-
-                        )}
+                        <>
+                            {/* menu when user is not signed in */}
+                            <li className="nav-item">
+                                <Link to="/" className="nav-link text-light"> Home</Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link to="/company" className="nav-link text-light"> Company </Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link to="/pricing" className="nav-link text-light"> Pricing </Link>
+                            </li>
+                        </>
                     </ul>
                 </div>
             </nav>
@@ -83,4 +69,4 @@ const Layout = () => {
     );
 }
 
-export default Layout;
+export default Navbar_Landing;

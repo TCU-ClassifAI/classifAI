@@ -12,7 +12,7 @@ export const Main = () => {
             <SideMenu />
             <div className="main-content">
                 <Routes>
-                    <Route index element={<Submission />} /> 
+                    <Route path="submission" element={<Submission />} /> 
                     <Route path="files" element={<AllFiles />} /> 
                     <Route path="account" element={<Account />} />
                     {/* other nested routes if needed */}
