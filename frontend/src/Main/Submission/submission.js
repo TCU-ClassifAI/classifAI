@@ -111,12 +111,15 @@ export default function Submission() {
     }
 
     // Create a CSV content with three columns: Timestamp, Speaker, and Sentences
-    const csvContent = `Timestamp, Speaker, Sentences\n${lines.map((line, index) => {
-      const time = convertMsToTime(sentences[index].start) || ''; // Convert to timestamp
+    const csvContent = `Start Time, End Time, Speaker, isQuestion, Label, Sentence\n${lines.map((line, index) => {
+      const startTime = convertMsToTime(sentences[index].start) || ''; // Convert to timestamp
+      const endTime = convertMsToTime(sentences[index].end) || ''; // Convert to timestamp
       const speaker = sentences[index].speaker;
       const sentence = line.trim().replace(/"/g, '""'); // Replace double quotes with double double quotes
+      const isQuestion = sentences[index].isQuestion;
+      const label = sentences[index].label;
   
-      return `"${time}", "${speaker}", "${sentence}"`;
+      return `"${startTime}", "${endTime}", "${speaker}", "${isQuestion}", "${label}", "${sentence}",`;
     }).join('\n')}`;
 
     // Create a Blob with the CSV content
@@ -1359,6 +1362,7 @@ export default function Submission() {
             {successfullUpload ? (
               <h6>File Save Success!!!</h6>
             ) : null}
+            <label>Questions<input type="checkbox"></input></label>
             <button class="btn btn-primary" onClick={() => generatePDF(transcript, sentences, questions)} type="primary" id="bottom-button">
               Download PDF
             </button>
