@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { saveAs } from 'file-saver';
 import { knowledgeArray } from "../../expertArrays/knowledge";
 import { understandArray } from "../../expertArrays/understand";
 import { applyArray } from "../../expertArrays/apply";
@@ -98,6 +99,44 @@ export default function Submission() {
     event.persist();
     setReportName(event.target.value);
   }
+
+  function saveToCSV(transcript, sentences) {
+    // Split the transcript into an array of sentences (keeping the punctuation marks)
+    const sentenceRegex = /([^.!?]+[.!?])/g;
+    const lines = transcript.match(sentenceRegex);
+
+    if (!lines) {
+      console.error("No sentences found in the transcript.");
+      return;
+    }
+
+    // Create a CSV content with three columns: Timestamp, Speaker, and Sentences
+    const csvContent = `Timestamp, Speaker, Sentences\n${lines.map((line, index) => {
+      const time = convertMsToTime(sentences[index].start) || ''; // Convert to timestamp
+      const speaker = sentences[index].speaker;
+      const sentence = line.trim().replace(/"/g, '""'); // Replace double quotes with double double quotes
+  
+      return `"${time}", "${speaker}", "${sentence}"`;
+    }).join('\n')}`;
+
+    // Create a Blob with the CSV content
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+
+    // Create a data URI for the CSV content
+    const url = window.URL.createObjectURL(blob);
+
+    // Create a temporary anchor element for downloading
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${reportName}.csv`; // Specify the filename here
+
+    // Trigger a click event to download the CSV
+    a.click();
+
+    // Clean up
+    window.URL.revokeObjectURL(url);
+  }
+
 
   async function saveUserObject() {
     AWS.config.update({
@@ -1323,8 +1362,8 @@ export default function Submission() {
             <button class="btn btn-primary" onClick={() => generatePDF(transcript, sentences, questions)} type="primary" id="bottom-button">
               Download PDF
             </button>
-            <button onClick={() => saveUserObject()} className='btn btn-primary' id="bottom-button2">
-              SAVE REPORT
+            <button onClick={() => saveToCSV(transcript, sentences)} className='btn btn-primary' id="bottom-button2">
+              Export to CSV
             </button>
             <button className="btn btn-primary" onClick={(e) => reloadPage(e)} id="bottom-button2">Upload New Recording</button>
           </div>
