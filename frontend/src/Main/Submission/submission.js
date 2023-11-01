@@ -1450,7 +1450,7 @@ export default function Submission() {
             </div>
           </div>
           {!userReportToLoad ? (
-            <input placeholder="Name this report" onChange={handleInputChange} id="name-report"></input>
+            <input placeholder="Name this report" onBlur={handleInputChange} id="name-report"></input>
           ) : null}
           {badReportName ? (
             <div className="alert alert-danger">Please name your report before saving!</div>
@@ -1464,8 +1464,9 @@ export default function Submission() {
             <label className="checkBox">Speakers<input type="checkbox" className="checkBox" checked={speakerBox} onChange={() => setSpeakerBox(!speakerBox)}></input></label>
             <label className="checkBox">isQuestion Label<input type="checkbox" className="checkBox" checked={isQuestionBox} onChange={() => setIsQuestionBox(!isQuestionBox)}></input></label>
             <label className="checkBox">Question Type<input type="checkbox" className="checkBox" checked={questionTypeBox} onChange={() => setQuestionTypeBox(!questionTypeBox)}></input></label>
-            <label className="checkBox">Only Questions<input type="checkbox" className="checkBox" checked={questionsBox} onChange={() => setQuestionsBox(!questionsBox)}></input></label>
             <label className="checkBox">Text<input type="checkbox" className="checkBox" checked={sentencesBox} onChange={() => setSentencesBox(!sentencesBox)}></input></label>
+            <label className="checkBox">Only Questions<input type="checkbox" className="checkBox" checked={questionsBox} onChange={() => setQuestionsBox(!questionsBox)}></input></label>
+
           </div>
           
           <div>
