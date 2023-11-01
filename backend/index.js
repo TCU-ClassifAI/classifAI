@@ -78,7 +78,7 @@ app.listen(PORT, () => {
 });
 
 
-////////////// Upload endpoint: Stores file in the web server, uploads info to MongoDB, sends path to Workstation
+////////////// Upload endpoint: Stores file in the web server, uploads info to MongoDB, sends to Workstation
 
 app.post("/upload", upload.single('file'), async (req, res) => {
     if (!req.file) {
@@ -96,20 +96,36 @@ app.post("/upload", upload.single('file'), async (req, res) => {
 
       // Save the audio document in MongoDB
       await audioFile.save();
+      res.json({ success: true, id: audioFile._id, message: 'File uploaded and Database entry created successfully' });
 
-      const flaskBackendUrl = 'http://WORKSTATION:XXXX/transcribe';
+
+      const flaskBackendUrl = 'http://WORKSTATION:XXXX/start_transcription';
+      
+
+      //// sending the entire audio file and audioId: Workstation intends on transcribing then updating DB (needs the audioID), loading in memory not very efficient, good starting point. Switch to streaming idea later
+      // Read the file into memory
+      const fileBuffer = fs.readFileSync(req.file.path);
+
+      // Send the file to the Flask backend
       const response = await axios.post(flaskBackendUrl, {
-        params:{
-          // may need to supply audioFile id if Workstation is going to add transcript directly to DB
-          path: audioFile.path, //if we need to supply the file instead, we can modify this
+        file: fileBuffer,
+        audioId: audioFile._id
+      }, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
         },
       });
+          // flask would look something like:
+          // def start_transcription():
+              // audio_file = request.files.get('file')
+              // audio_id = request.form.get('audioId')
+              // to get audio file and audio id
 
-      // in the future, if workstation just wants to respond with transcript, web server will add the transcript to database here
+
 
       if (response.statusCode === 200) {
         // Send a response with the id of the saved audio file
-        res.json({ success: true, id: audioFile._id, message: 'File uploaded and transcription initiated'});
+        res.json({ success: true, id: audioFile._id, message: 'File transfered and transcription initiated'});
       }
       else {
         res.json({ success: false, message: 'Failed to initiate transcription from Flask backend' });
