@@ -1,122 +1,36 @@
-#customFile{
-  box-shadow: 0 1px 3px 0 rgba(0,0,0,.1), 0 1px 2px 0 rgba(0,0,0,.06);
-  margin-left: auto;
-  margin-right: auto;
-  max-width: 500px;
-}
 
 
-#audio-player{
-  margin-top: 10px;
-}
 
-#video-player{
-  max-width: 500px;
-  max-height: 500px;
-}
-
-.sentence {
+/* SideMenu.css */
+.main-layout {
   display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 5px 20px;
-  line-height: 40px;
+  min-height: 100vh;
 }
 
-.sentence-transcript {
-  display: flex;
-  justify-content: flex-start;
-  text-align: left;
-  width: 80%;
-}
-.transcript-time {
-  width: 80px;
-  text-align: left;
+.side-menu {
+  width: 200px;
+  background-color: #f0f0f0;
+  padding: 20px 30px; /* Adjust right padding as needed */
+  box-shadow: 0 1px 3px rgba(0,0,0,.1);
 }
 
-.transcript-speaker {
-  width: 100px;
-  white-space: nowrap;
-  margin: 0 15px;
+.side-menu ul {
+  list-style: none;
+  padding: 0;
 }
 
-.transcript-text {
-  width: 800px;
-}
-
-.edit-text {
-  width: 800px;
-  border: 0;
-  outline: 1px solid black;
-}
-
-.add-question-button {
-  display: none;
-  font-size: 16px;
-  width: 160px;
-  height: 40px;
-  border: 0;
-  border-radius: 5px;
-}
-
-.sentence:hover .add-question-button {
+.side-menu li a {
   display: block;
+  padding: 10px;
+  color: black;
+  text-decoration: none;
 }
 
-#table{
-  overflow-y:scroll;
-  height: 500px;
-  display:block;
+.side-menu li a:hover {
+  background-color: #ddd;
 }
 
-#table{
-  overflow-y:scroll;
-  height: 400px;
-  display:block;
-}
-
-.question-options {
-  justify-content: center;
-  gap: 20px;
-}
-
-#question-table-question {
-  max-width: 350px;
-}
-
-
-.spinner {
-  padding: 2rem;
-  margin: 2rem;
-  color: blueviolet;
-}
-
-#name-report{
-  margin-top: 10px;
-}
-
-.uncategorized-question {
-  color: red;
-}
-
-#bottom-button{
-  margin-bottom: 75px;
-}
-
-#bottom-button2{
-  margin-bottom: 75px;
-  margin-left: 10px;
-}
-
-#timeChartContainer{
-  box-shadow: 0 1px 3px 0 rgba(0,0,0,.1), 0 1px 2px 0 rgba(0,0,0,.06);
-  margin-bottom: 30px;
-}
-
-
-#timeLineContainer{
-  box-shadow: 0 1px 3px 0 rgba(0,0,0,.1), 0 1px 2px 0 rgba(0,0,0,.06);
-}
-#barPieChartContainer{
-  box-shadow: 0 1px 3px 0 rgba(0,0,0,.1), 0 1px 2px 0 rgba(0,0,0,.06);
+.main-layout .main-content {
+  flex-grow: 1;
+  padding: 20px;
 }

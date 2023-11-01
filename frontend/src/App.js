@@ -3,7 +3,7 @@ import React from "react";
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import Account from "./Account/accountPage";
 
-import Layout from "./Layout/navbar";
+import Navbar from "./Navbar/Navbar_Landing";
 import { Main } from "./Main/mainUserPage";
 import Login from "./Login/login";
 import SignUp from "./SignUp/signUp";
@@ -13,23 +13,30 @@ import { withAuthenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
 import awsconfig from './aws-exports'
 import { Amplify } from "aws-amplify";
+import Navbar_Landing from "./Navbar/Navbar_Landing";
+import Navbar_Home from "./Navbar/Navbar_Home";
+
 Amplify.configure(awsconfig);
+
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-          <Route element={<Layout />}>
-            <Route path="/home" element={<Main />} />
-            <Route path="/account" element={<Account />} />
-            <Route path="/" element={<Login />}></Route>
-          <Route path="/signup" element={<SignUp />}></Route>
-          <Route path="/confirmSignUp" element={<ConfirmRegister />}></Route>
-          </Route>
-          
+        <Route element={<Navbar_Landing />}>
+          <Route path="/" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/confirmSignUp" element={<ConfirmRegister />} />
+        </Route>
+
+        <Route path="/home/" element={<Navbar_Home />}>
+          <Route path="*" element={<Main />} />
+        </Route>
+        {/* <Route path="/home/Files" element={<Files />} /> */}
+        {/* ... other routes that might include SideMenu */}
+
       </Routes>
     </BrowserRouter>
   );
 }
-
 export default App;
