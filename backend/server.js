@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require("express");
 const multer = require('multer'); // For handling file uploads
 const cors = require("cors");
@@ -21,7 +22,7 @@ app.use(cors());
 // cb: callback function that we need to call to tell multer where and how to store the file.
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads')  // first argument is null because we don’t have any error to report, second is our uploads folder
+    cb(null, '/uploads')  // first argument is null because we don’t have any error to report, second is our uploads folder  located in /uploads
   },
   filename: function (req, file, cb) {
     cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))  // filename = filename + date + file extension
@@ -30,7 +31,7 @@ var storage = multer.diskStorage({
 
 var upload = multer({
   storage: storage,
-  limits: {fileSize: 500 * 1024 * 1024} 
+  limits: {fileSize: 5 * 1024 * 1024 * 1024} // Arbitrary max limit of 5gb at the moment
 });
 
 /////////////
@@ -41,11 +42,9 @@ var upload = multer({
 ///////////// MongoDB setup
 
 // Connect to MongoDB using mongoose, not setup with an actual DB rn
-mongoose.connect('mongodb://localhost:#####/transcription', { // switch to env variable later
-    useNewUrlParser: true, 
-    useUnifiedTopology: true 
-    // add Connection Pooling for MongoDB? look into later
-});
+mongoose.connect(process.env.MONGODB_URL)  // connect to MongoDB on localhost
+  .catch(error => console.error("Error connecting to MongoDB:", error));
+
 
 const mongo = mongoose.connection;
 mongo.on('error', console.error.bind(console, 'connection error:'));

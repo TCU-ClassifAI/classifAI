@@ -1,5 +1,5 @@
 pycache
 __pycache__/
 node_modules
-
+.env
 backend/old.index.js
