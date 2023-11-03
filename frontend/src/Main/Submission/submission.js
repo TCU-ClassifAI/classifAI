@@ -132,17 +132,12 @@ export default function Submission() {
     setReportName(event.target.value);
   }
 
-  function saveToCSV(transcript, sentences) {
-    // Split the transcript into an array of sentences (keeping the punctuation marks)
-    const sentenceRegex = /([^.!?]+[.!?])/g;
-    const lines = transcript.match(sentenceRegex);
-
-    if (!lines) {
-      console.error("No sentences found in the transcript.");
-      return;
-    }
-
+  // Helper Function for saveToCSV()
+  function buildCSVHeader() {
+    
     const csvColumns = [];
+    // Build the Header of the CSV based on checkboxes
+    // Example Start Time, End Time, Type, Text
 
     if (startTimeBox) {
       csvColumns.push('Start Time');
@@ -173,46 +168,56 @@ export default function Submission() {
     }
 
 
-    const headerRow = csvColumns.join(', ');
+    return csvColumns.join(', ');
+  }
 
+  function buildCSVRowLine(line) {
+    const data = [];
 
+    if (startTimeBox) {
+      data.push(`"${convertMsToTime(line.start)}"`);
+    }
 
+    if (endTimeBox) {
+      data.push(`"${convertMsToTime(line.end)}"`);
+    }
+
+    if (speakerBox) {
+      data.push(`"${line.speaker}"`);
+    }
+
+    if (isQuestionBox) {
+      data.push(`"${line.isQuestion}"`);
+    }
+
+    if (questionTypeBox) {
+      data.push(`"${line.label}"`);
+    }
+
+    if (sentencesBox) {
+      data.push(`"${line.text.trim().replace(/"/g, '""')}"`);
+    }
+
+    return data;
+
+  }
+
+  function saveToCSV(transcript, sentences) {
+   
+    const headerRow = buildCSVHeader();
+
+    var lines = sentences;
+
+    // Only export questions
+    if (questionsBox) {
+      lines = lines.filter((line) => line.isQuestion);
+    }
+  
     // Create a CSV content with three columns: Timestamp, Speaker, and Sentences
     const csvContent = `${headerRow}\n${lines.map((line, index) => {
-      const data = [];
-      let push = false;
-      if (questionsBox) {
-        if (sentences[index].isQuestion)
-        {
-          push = true;
-        }
-      }else {
-        push = true;
-      }
+      var data = [];
 
-      if (startTimeBox && push) {
-        data.push(`"${convertMsToTime(sentences[index].start)}"`);
-      }
-
-      if (endTimeBox && push) {
-        data.push(`"${convertMsToTime(sentences[index].end)}"`);
-      }
-
-      if (speakerBox && push) {
-        data.push(`"${sentences[index].speaker}"`);
-      }
-
-      if (isQuestionBox && push) {
-        data.push(`"${sentences[index].isQuestion}"`);
-      }
-
-      if (questionTypeBox && push) {
-        data.push(`"${sentences[index].label}"`);
-      }
-
-      if (sentencesBox && push) {
-        data.push(`"${line.trim().replace(/"/g, '""')}"`);
-      }
+      data = buildCSVRowLine(line);
 
       return data.join(', ');
     })
@@ -1465,7 +1470,7 @@ export default function Submission() {
             <label className="checkBox">isQuestion Label<input type="checkbox" className="checkBox" checked={isQuestionBox} onChange={() => setIsQuestionBox(!isQuestionBox)}></input></label>
             <label className="checkBox">Question Type<input type="checkbox" className="checkBox" checked={questionTypeBox} onChange={() => setQuestionTypeBox(!questionTypeBox)}></input></label>
             <label className="checkBox">Text<input type="checkbox" className="checkBox" checked={sentencesBox} onChange={() => setSentencesBox(!sentencesBox)}></input></label>
-            <label className="checkBox">Only Questions<input type="checkbox" className="checkBox" checked={questionsBox} onChange={() => setQuestionsBox(!questionsBox)}></input></label>
+            <label className="checkBox">Only Include Questions<input type="checkbox" className="checkBox" checked={questionsBox} onChange={() => setQuestionsBox(!questionsBox)}></input></label>
 
           </div>
           
