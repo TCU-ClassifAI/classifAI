@@ -3,3 +3,7 @@ __pycache__/
 node_modules
 .env
 backend/old.index.js
+uploads
+
+testMongo
+Workstation_Testing

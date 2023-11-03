@@ -30,7 +30,7 @@ const Audio = mongoose.model('Audio', audioSchema);
 
 async function generateData() {
     for(let i = 0; i < 100; i++) { // Generate 100 sample data
-        const status = faker.random.arrayElement(['pending', 'error', 'completed']);
+        const status = faker.random.arrayElement(['in progress', 'error', 'completed']);
         let transcription = '';
 
         if(status === 'completed') { // Only compeleted entries have a transcription
