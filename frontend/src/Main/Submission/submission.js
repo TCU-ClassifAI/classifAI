@@ -233,7 +233,19 @@ export default function Submission() {
     // Create a temporary anchor element for downloading
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${reportName}.csv`; // Specify the filename here
+    if (reportName.trim() === "") {
+      const date = new Date()
+      let day = date.getDate();
+      let month = date.getMonth() + 1;
+      let year = date.getFullYear();
+
+      // This arrangement can be altered based on how we want the date's format to appear.
+      let currentDate = `${month}_${day}_${year}`;
+      setReportName(currentDate.concat("Transcript"));
+    }
+
+    a.download = `${reportName}.csv`;
+    
 
     // Trigger a click event to download the CSV
     a.click();
@@ -1470,7 +1482,10 @@ export default function Submission() {
             <label className="checkBox">isQuestion Label<input type="checkbox" className="checkBox" checked={isQuestionBox} onChange={() => setIsQuestionBox(!isQuestionBox)}></input></label>
             <label className="checkBox">Question Type<input type="checkbox" className="checkBox" checked={questionTypeBox} onChange={() => setQuestionTypeBox(!questionTypeBox)}></input></label>
             <label className="checkBox">Text<input type="checkbox" className="checkBox" checked={sentencesBox} onChange={() => setSentencesBox(!sentencesBox)}></input></label>
-            <label className="checkBox">Only Include Questions<input type="checkbox" className="checkBox" checked={questionsBox} onChange={() => setQuestionsBox(!questionsBox)}></input></label>
+            <select className="dropdown" value={questionsBox ? "questions" : "fullTranscript"} onChange={(e) => setQuestionsBox(e.target.value === "questions")}>
+              <option value="fullTranscript">Include Full Transcript</option>
+              <option value="questions">Only Include Questions</option>
+            </select>
 
           </div>
           
