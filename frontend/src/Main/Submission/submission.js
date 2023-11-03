@@ -97,7 +97,6 @@ export default function Submission() {
     setSpeakerBox(true)
     setIsQuestionBox(true);
     setQuestionTypeBox(true);
-    setQuestionsBox(true);
     setSentencesBox(true);
   };
 
@@ -108,7 +107,6 @@ export default function Submission() {
     setSpeakerBox(false);
     setIsQuestionBox(false);
     setQuestionTypeBox(false);
-    setQuestionsBox(false);
     setSentencesBox(false);
   };
 
