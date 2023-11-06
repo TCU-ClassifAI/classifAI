@@ -3,7 +3,6 @@ const express = require("express");
 const multer = require('multer'); // For handling file uploads
 const cors = require("cors");
 const axios = require("axios");
-const mongoose = require('mongoose'); // For connecting to MongoDB
 const fs = require('fs');
 const path = require('path');
 const FormData = require('form-data');
@@ -49,27 +48,7 @@ var upload = multer({
 
 ///////////// MongoDB setup
 
-// Connect to MongoDB using mongoose, not setup with an actual DB rn
-mongoose.connect(process.env.MONGODB_URL)  // connect to MongoDB on localhost
-  .catch(error => console.error("Error connecting to MongoDB:", error));
-
-
-const mongo = mongoose.connection;
-mongo.on('error', console.error.bind(console, 'connection error:'));
-mongo.once('open', function() {
-  console.log('Connected to MongoDB');
-});
-
-// Define a schema and a model for storing audio files in MongoDB
-const audioSchema = new mongoose.Schema({
-    //implement user_id when we figure out authentication
-    // File ID: MongoDB automatically generates a unique id assigns it to the _id field
-    filename: String,
-    path: String,
-    transcription: String,  //transcription itself is written into db
-    status: String
-});
-const Audio = mongoose.model('Audio', audioSchema);
+const Report = require('./mongo');
 
 /////////////
 
@@ -91,26 +70,22 @@ app.post("/upload", upload.single('file'), async (req, res) => {
     }
 
     try {
-      // Create a new audio document in MongoDB with the file info
-      const audioFile = new Audio({
-        filename: req.file.originalname,
-        path: req.file.path,
-        transcription: '',
+      // Create a new Report in MongoDB with the file info we have
+      const audioFile = new Report({  //Audio({
+        // want a userID passed in
+        audioPath: req.file.path,
         status: 'in progress'
       });
 
       // Save the audio document in MongoDB
-      await audioFile.save();
+      await audioFile.save();   //send to mongoDB Connector
       res.status(200).json({ success: true, id: audioFile._id, message: 'File uploaded and Database entry created successfully' });
 
 
       const flaskBackendUrl = 'http://localhost:5555/start_transcription';    //'http://WORKSTATION:XXXX/start_transcription';
       
 
-      //// streaming the audio file and sending audioId: Workstation intends on transcribing then updating DB (needs the audioID), loading in memory not very efficient, good starting point. Switch to streaming idea later
-      // Read the file into memory
-
-      //11-22vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+      //// streaming the audio file and sending reportID: Workstation intends on transcribing then updating DB (needs the reportID)
       // Create a new instance of FormData
       const formData = new FormData();
 
@@ -121,7 +96,7 @@ app.post("/upload", upload.single('file'), async (req, res) => {
       formData.append('file', fileStream);
 
       // Append other fields
-      formData.append('audioId', String(audioFile._id));
+      formData.append('reportID', String(audioFile._id));
 
       // Send the form data with Axios
       const response = await axios.post(flaskBackendUrl, formData, {
@@ -151,7 +126,7 @@ app.post("/upload", upload.single('file'), async (req, res) => {
 app.get('/transcript/:id', async (req, res) => {
   try{
     // Find audio document in MongoDB given ID
-    const audioFile = await Audio.findById(req.params.id);
+    const audioFile = await Report.findById(req.params.id);
 
     if (!audioFile) {
       // Send no audio file found error
@@ -187,7 +162,7 @@ app.get('/transcript/:id', async (req, res) => {
 app.put('/transcript/:id', async(req, res) => {
   try {
     // Find audio document in MongoDB given ID
-    const audioFile = await Audio.findById(req.params.id);
+    const audioFile = await Report.findById(req.params.id);
 
     if (!audioFile) {
       // Send a response indicating that the audio file was not found
