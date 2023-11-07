@@ -1,4 +1,3 @@
-import { Component } from "react";
 import '../SignUp/signUp.css';
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -8,7 +7,6 @@ import { Auth } from "aws-amplify";
 const SignUp = () => {
     let navigate = useNavigate();
     const [badState, setBadState] = useState()
-    const [badGrade, setBadGrade] = useState()
     const [badZip, setBadZip] = useState()
     const [badUserOrEmail, setBadUserOrEmail] = useState()
     const [user, setUser] = useState({
@@ -40,15 +38,14 @@ const SignUp = () => {
         }
     }
 
-    function checkGrade(){
-        const grades = ['K', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
-        if(grades.includes(user.grade_level)){
-            return true
-        }else{
-            setBadGrade(true)
-            return false
-        }
+    function generateGradeOptions() {
+        const gradeLevels = ["K", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th", "11th", "12th", "College", "Other"];
+    
+        return gradeLevels.map((level, index) => (
+            <option key={index} value={level}>{level}</option>
+        ));
     }
+
 
     function checkZip(){
         if(user.zip.length < 5 || isNaN(user.zip)){
@@ -62,12 +59,11 @@ const SignUp = () => {
     async function signUp(event){
         event.preventDefault();
         var goodState = checkState();
-        var goodGrade = checkGrade();
         var goodZip = checkZip();
         console.log(goodState)
-        console.log(goodGrade)
 
-        if(goodState && goodGrade && goodZip){
+
+        if(goodState && goodZip){
             try{
                 await Auth.signUp({
                     username: user.username,
@@ -113,11 +109,6 @@ const SignUp = () => {
                         <div className='alert alert-danger'>Please enter state in correct format. E.g. Texas, Hawaii, California,etc.</div>
                     </div>
                 ): null}
-            {badGrade ? (
-                    <div>
-                        <div className='alert alert-danger'>Please enter grade level in correct format. E.g. K, 1, 2, 3, etc.</div>
-                    </div>
-                ): null}
              {badZip ? (
                     <div>
                         <div className='alert alert-danger'>Please enter zipcode in correct format. Must include 5 digits </div>
@@ -153,13 +144,13 @@ const SignUp = () => {
                 </div>
                 <div className="col-md-4">
                     <label className="form-label">Grade Level</label>
-                    <input 
-                    type="text" 
-                    className="form-control" 
-                    
-                    value={user.grade_level} 
-                    placeholder="Grade Level (e.g. fourth, second)"
-                    onChange={(e) => handleInputChange(e, 'grade_level')}/>
+                    {/* Grade Level Handled by Dropdown*/}
+                    <select
+                        className="form-control selectpicker"
+                        value={user.grade_level}
+                        onChange={(e) => handleInputChange(e, 'grade_level')}>
+                        {generateGradeOptions()}
+                    </select>
                 </div>
                 <div className="col-md-4">
                     <label htmlFor="inputAddress2" className="form-label">State</label>
