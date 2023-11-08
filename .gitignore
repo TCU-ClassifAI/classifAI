@@ -1,3 +1,4 @@
 pycache
 __pycache__/
 node_modules
+/resources/mongo-data/
