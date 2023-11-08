@@ -240,6 +240,9 @@ app.put('/transcript/:id', async(req, res) => {
 
 //////////////
 
+// PUT or POST CSV path, PDF path to DB, front end will generate it and save it in the uploads/UID/RID/pdf blah blah blah 
+
+
 
 
 
