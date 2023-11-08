@@ -1451,13 +1451,13 @@ export default function Submission() {
                   </div>
             </Tab>
 
-              <Tab eventKey="questionCategoryKey" title="Question Category Graph">
+              <Tab eventKey="questionCategoryKey" title="Question Category Distribution">
               <div className="card-deck mb-3 text-center">
 
                 <div>
                   <tr>
                   <td id="barChartContainer">
-                    <Chart options={barChartProps.options} series={barChartProps.series} type="bar" width="800" />
+                    <Chart options={barChartProps.options} series={barChartProps.series} type="bar" width="1300" height="600" />
                   </td>
                   </tr>
                 </div>
@@ -1472,7 +1472,7 @@ export default function Submission() {
                 <div>
                   <tr>
                   <td id="pieChartContainer">
-                    <Chart options={pieChartProps.options} series={pieChartProps.series} type="pie" width="800" />
+                    <Chart options={pieChartProps.options} series={pieChartProps.series} type="pie" width="1300" height="600" />
                   </td>
                   </tr>
                 </div>
