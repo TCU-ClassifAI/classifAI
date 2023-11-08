@@ -1338,7 +1338,7 @@ export default function Submission() {
             </div>
           </div>
               <div className="alert alert-secondary">
-                <h5>From our analysis, <bold className={`transcript-speaker speaker-${teacher}`}> Speaker {teacher}</bold> is the Teacher and <u>all other speakers are Students</u>.</h5>
+                <h5>From our analysis, <strong className={`transcript-speaker speaker-${teacher}`}> Speaker {teacher}</strong> is the Teacher and <u>all other speakers are Students</u>.</h5>
                 <p>If this is not the case, please relabel the speakers in the "Full Transcript" box above to update this information.</p>
               </div>
 
@@ -1434,7 +1434,7 @@ export default function Submission() {
                                         </Dropdown>
                                         <button
                                           type="button"
-                                          class="btn btn-danger"
+                                          className="btn btn-danger"
                                           onClick={() => removeQuestion(index)}
                                         >
                                           Remove
@@ -1454,13 +1454,16 @@ export default function Submission() {
               <Tab eventKey="questionCategoryKey" title="Question Category Distribution">
               <div className="card-deck mb-3 text-center">
 
-                <div>
-                  <tr>
-                  <td id="barChartContainer">
-                    <Chart options={barChartProps.options} series={barChartProps.series} type="bar" width="1300" height="600" />
-                  </td>
-                  </tr>
-                </div>
+                <table>
+                  <tbody>
+                    <tr>
+                      <td id="barChartContainer">
+                        <Chart options={barChartProps.options} series={barChartProps.series} type="bar" width="1400" height="600" />
+                      </td>
+                    </tr>
+                  </tbody>
+                  
+                </table>
               
               </div>
               </Tab>
@@ -1469,13 +1472,16 @@ export default function Submission() {
 
               <div className="card-deck mb-3 text-center">
 
-                <div>
-                  <tr>
-                  <td id="pieChartContainer">
-                    <Chart options={pieChartProps.options} series={pieChartProps.series} type="pie" width="1300" height="600" />
-                  </td>
-                  </tr>
-                </div>
+                <table>
+                  <tbody>
+                    <tr>
+                      <td id="pieChartContainer">
+                        <Chart options={pieChartProps.options} series={pieChartProps.series} type="pie" width="1400" height="600" />
+                      </td>
+                    </tr>
+                  </tbody>
+                  
+                </table>
 
               </div>
 
@@ -1485,23 +1491,31 @@ export default function Submission() {
 
               <div className="card-deck mb-3 text-center">
 
-                <div>
-                <tr>
-                  <td id="timeChartContainer">
-                    <Chart options={getTimeChartProps(sentences).options} series={getTimeChartProps(sentences).series} type="rangeBar" height={600} width={1300} />
-                  </td>
-                </tr>
-                </div>
+                <table>
+                  <tbody>
+                    <tr>
+                      <td id="timeChartContainer">
+                        <Chart options={getTimeChartProps(sentences).options} series={getTimeChartProps(sentences).series} type="rangeBar" height={600} width={1400} />
+                      </td>
+                    </tr>
+                  </tbody>
+                
+                </table>
 
               </div>
               </Tab>
 
               <Tab eventKey="timeLineKey" title="Collapsed Timeline">
-              <tr>
-                <td id="timeLineContainer">
-                  <Chart options={getTimeLineProps(sentences).options} series={getTimeLineProps(sentences).series} type="rangeBar" height={200} width={1300} />
-                </td>
-              </tr>
+                <table>
+                  <tbody>
+                    <tr>
+                      <td id="timeLineContainer">
+                        <Chart options={getTimeLineProps(sentences).options} series={getTimeLineProps(sentences).series} type="rangeBar" height={200} width={1400} />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              
               </Tab>
 
           </Tabs>
@@ -1534,7 +1548,7 @@ export default function Submission() {
               <h6>File Save Success!!!</h6>
             ) : null}
             
-            <button class="btn btn-primary" onClick={() => generatePDF(transcript, sentences, questions)} type="primary" id="bottom-button">
+            <button className="btn btn-primary" onClick={() => generatePDF(transcript, sentences, questions)} type="primary" id="bottom-button">
               Download PDF
             </button>
             <button onClick={() => saveToCSV(transcript, sentences)} className='btn btn-primary' id="bottom-button2">
