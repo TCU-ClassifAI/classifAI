@@ -28,7 +28,7 @@ const LogIn = () => {
             const test = await Auth.signIn({username: user.username, password: user.password});
             console.log(test);
             setBadSignIn(false);
-            navigate("/home/submission")
+            navigate("/home/transcribe")
         }catch(error){
             setBadSignIn(true);
             console.log(error)

@@ -8,8 +8,8 @@ const SideMenu = () => {
         <div className="side-menu">
         <ul>
             <li>
-                <NavLink to="./submission" className={({ isActive }) => isActive ? "active-link" : ""}>
-                    Submission
+                <NavLink to="./transcribe" className={({ isActive }) => isActive ? "active-link" : ""}>
+                    Transcribe
                 </NavLink>
             </li>
             <li><NavLink to="./files" className={({ isActive }) => isActive ? "active-link" : ""}>All Files</NavLink></li>
