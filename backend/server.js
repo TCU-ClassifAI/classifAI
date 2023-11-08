@@ -80,6 +80,7 @@ app.listen(PORT, () => {
 
 
 ////////////// Upload endpoint: Stores file in the web server, uploads info to MongoDB, sends to Workstation
+// supports other optional attributes like subject, grade level, and is_premium
 
 app.post("/upload", upload.single('file'), async (req, res) => {
      
@@ -100,6 +101,9 @@ app.post("/upload", upload.single('file'), async (req, res) => {
       const audioFile = new Report({  //Audio({
         // want a userID passed in
         userId: userId,
+        gradeLevel: req.body.gradeLevel,
+        subject: req.body.subject,
+        isPremium: req.body.is_premium,
         status: 'in progress'
       });
 
