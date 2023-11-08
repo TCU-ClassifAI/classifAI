@@ -30,6 +30,12 @@
   background-color: #ddd;
 }
 
+.active-link {
+  color: #4a90e2;
+  font-weight: bold;
+  background-color: #ddd; 
+}
+
 .main-layout .main-content {
   flex-grow: 1;
   padding: 20px;
