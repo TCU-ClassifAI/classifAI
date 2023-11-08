@@ -31,6 +31,28 @@ const reportSchema = new mongoose.Schema({
 });
 const Report = mongoose.model('Report', reportSchema);
 
+// Define a schema and a model for storing users in MongoDB
+const userSchema = new mongoose.Schema({                           
+    userID: String,
+    school: String,
+    email: String,
+    reportCount: String,
+    audioLength: String,
+    isPremium: Boolean,
+    name: String,
+    state: String,
+    disabledAccount: Boolean
+});
+const User = mongoose.model('User', userSchema);
+
+// Define a schema and a model for storing admin accounts in MongoDB
+const adminSchema = new mongoose.Schema({                           
+  userID: String,
+  email: String,
+  name: String
+});
+const Admin = mongoose.model('Admin', adminSchema);
+
 // other schemas
 
 
