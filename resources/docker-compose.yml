@@ -1,0 +1,21 @@
+version: '3.1'
+
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongodb
+    restart: unless-stopped
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=user
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+      - MONGO_INITDB_DATABASE=ClassifAI
+    volumes:
+      - ./mongo-data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    ports:
+      - "27017:27017"
+
+volumes:
+  mongo-data:
+    driver: local
+
