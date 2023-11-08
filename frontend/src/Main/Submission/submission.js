@@ -21,6 +21,7 @@ import AWS from "aws-sdk";
 import { Buffer } from "buffer";
 import { useLocation, useNavigate } from "react-router-dom";
 import html2canvas from 'html2canvas'
+import { Tab, Tabs } from 'react-bootstrap';
 
 export default function Submission() {
   const [transcript, setTranscript] = useState();
@@ -1274,7 +1275,9 @@ export default function Submission() {
       </div>
       {sentences && (
         <div>
-          <div className="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+          <Tabs id="controlled-tab-example">
+            <Tab eventKey="TranscriptKey" title="Full Transcript">
+            <div className="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
             <h1>Full Transcript</h1>
             <h4>Click on a sentence to make adjustments to "Questions" list</h4>
             <div className="lead" style={{ backgroundColor: "white" }}>
@@ -1334,136 +1337,175 @@ export default function Submission() {
               ))}
             </div>
           </div>
-          <div className="alert alert-secondary">
-            <h5>From our analysis, <bold className={`transcript-speaker speaker-${teacher}`}> Speaker {teacher}</bold> is the Teacher and <u>all other speakers are Students</u>.</h5>
-            <p>If this is not the case, please relabel the speakers in the "Full Transcript" box above to update this information.</p>
-          </div>
-          <div className="card-deck mb-3 text-center">
-            <div className="card mb-4 box-shadow">
-              <div className="card-header">
-                <h2>Questions</h2>
+              <div className="alert alert-secondary">
+                <h5>From our analysis, <bold className={`transcript-speaker speaker-${teacher}`}> Speaker {teacher}</bold> is the Teacher and <u>all other speakers are Students</u>.</h5>
+                <p>If this is not the case, please relabel the speakers in the "Full Transcript" box above to update this information.</p>
               </div>
-              <div className="card-header">
-                <h5>Number of Questions: {questions && questions.length}</h5>
-                <h5>Total Questioning Time: {questioningTime}</h5>
-              </div>
-              <div className="card-body" id="table">
-                <div className="container">
-                  <table className="table">
-                    <thead>
-                      <tr>
-                        <th scope="col">Time</th>
-                        <th scope="col">Question</th>
-                        <th scope="col">Speaker</th>
-                        <th scope="col">Response Time</th>
-                        <th scope="col">Question Type</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {sentences &&
-                        times &&
-                        sentences
-                          .filter(sentence => sentence.isQuestion === true)
-                          .map((question, index) => (
-                            <tr key={index} className="question">
-                              <td>{convertMsToTime(question.start)}</td>
-                              <td id="question-table-question" style={{ color: question.label === "Uncategorized" ? "#ff0000" : "#000000" }}>"{question.text}"</td>
-                              <td className={`transcript-speaker speaker-${question.speaker}`}>{question.speaker}</td>
-                              <td>
-                                {respTime[question.end] < 1 ? "< 1 second"
-                                  : respTime[question.end] === "No Response" ? "No Response"
-                                    : respTime[question.end] + " seconds"}
-                              </td>
-                              <td style={{ color: question.label === "Uncategorized" ? "#ff0000" : "#000000" }}>{question.label}</td>
-                              <td className="question-options">
-                                <Dropdown>
-                                  <Dropdown.Toggle variant="sm" id="dropdown-basic">
-                                    Select Type
-                                  </Dropdown.Toggle>
 
-                                  <Dropdown.Menu>
-                                    <Dropdown.Item
-                                      onClick={() => {
-                                        selectLabel(index, "Knowledge");
-                                      }}
-                                    >
-                                      Knowledge
-                                    </Dropdown.Item>
-                                    <Dropdown.Item
-                                      onClick={() => {
-                                        selectLabel(index, "Understand");
-                                      }}
-                                    >
-                                      Understand
-                                    </Dropdown.Item>
-                                    <Dropdown.Item
-                                      onClick={() => {
-                                        selectLabel(index, "Apply");
-                                      }}
-                                    >
-                                      Apply
-                                    </Dropdown.Item>
-                                    <Dropdown.Item
-                                      onClick={() => {
-                                        selectLabel(index, "Analyze");
-                                      }}
-                                    >
-                                      Analyze
-                                    </Dropdown.Item>
-                                    <Dropdown.Item
-                                      onClick={() => {
-                                        selectLabel(index, "Evaluate");
-                                      }}
-                                    >
-                                      Evaluate
-                                    </Dropdown.Item>
-                                    <Dropdown.Item
-                                      onClick={() => {
-                                        selectLabel(index, "Create");
-                                      }}
-                                    >
-                                      Create
-                                    </Dropdown.Item>
-                                  </Dropdown.Menu>
-                                </Dropdown>
-                                <button
-                                  type="button"
-                                  class="btn btn-danger"
-                                  onClick={() => removeQuestion(index)}
-                                >
-                                  Remove
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
-                    </tbody>
-                  </table>
+            </Tab>
+            <Tab eventKey="QuestionsKey" title="Questions">
+                <div className="card-deck mb-3 text-center">
+                  <div className="card mb-4 box-shadow">
+                      <div className="card-header">
+                        <h2>Questions</h2>
+                      </div>
+                      <div className="card-header">
+                        <h5>Number of Questions: {questions && questions.length}</h5>
+                        <h5>Total Questioning Time: {questioningTime}</h5>
+                      </div>
+                      <div className="card-body" id="table">
+                        <div className="container">
+                          <table className="table">
+                            <thead>
+                              <tr>
+                                <th scope="col">Time</th>
+                                <th scope="col">Question</th>
+                                <th scope="col">Speaker</th>
+                                <th scope="col">Response Time</th>
+                                <th scope="col">Question Type</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {sentences &&
+                                times &&
+                                sentences
+                                  .filter(sentence => sentence.isQuestion === true)
+                                  .map((question, index) => (
+                                    <tr key={index} className="question">
+                                      <td>{convertMsToTime(question.start)}</td>
+                                      <td id="question-table-question" style={{ color: question.label === "Uncategorized" ? "#ff0000" : "#000000" }}>"{question.text}"</td>
+                                      <td className={`transcript-speaker speaker-${question.speaker}`}>{question.speaker}</td>
+                                      <td>
+                                        {respTime[question.end] < 1 ? "< 1 second"
+                                          : respTime[question.end] === "No Response" ? "No Response"
+                                            : respTime[question.end] + " seconds"}
+                                      </td>
+                                      <td style={{ color: question.label === "Uncategorized" ? "#ff0000" : "#000000" }}>{question.label}</td>
+                                      <td className="question-options">
+                                        <Dropdown>
+                                          <Dropdown.Toggle variant="sm" id="dropdown-basic">
+                                            Select Type
+                                          </Dropdown.Toggle>
+
+                                          <Dropdown.Menu>
+                                            <Dropdown.Item
+                                              onClick={() => {
+                                                selectLabel(index, "Knowledge");
+                                              }}
+                                            >
+                                              Knowledge
+                                            </Dropdown.Item>
+                                            <Dropdown.Item
+                                              onClick={() => {
+                                                selectLabel(index, "Understand");
+                                              }}
+                                            >
+                                              Understand
+                                            </Dropdown.Item>
+                                            <Dropdown.Item
+                                              onClick={() => {
+                                                selectLabel(index, "Apply");
+                                              }}
+                                            >
+                                              Apply
+                                            </Dropdown.Item>
+                                            <Dropdown.Item
+                                              onClick={() => {
+                                                selectLabel(index, "Analyze");
+                                              }}
+                                            >
+                                              Analyze
+                                            </Dropdown.Item>
+                                            <Dropdown.Item
+                                              onClick={() => {
+                                                selectLabel(index, "Evaluate");
+                                              }}
+                                            >
+                                              Evaluate
+                                            </Dropdown.Item>
+                                            <Dropdown.Item
+                                              onClick={() => {
+                                                selectLabel(index, "Create");
+                                              }}
+                                            >
+                                              Create
+                                            </Dropdown.Item>
+                                          </Dropdown.Menu>
+                                        </Dropdown>
+                                        <button
+                                          type="button"
+                                          class="btn btn-danger"
+                                          onClick={() => removeQuestion(index)}
+                                        >
+                                          Remove
+                                        </button>
+                                      </td>
+                                    </tr>
+                                  ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+            </Tab>
+
+              <Tab eventKey="questionCategoryKey" title="Question Category Graph">
+              <div className="card-deck mb-3 text-center">
+
+                <div>
+                  <tr>
+                  <td id="barChartContainer">
+                    <Chart options={barChartProps.options} series={barChartProps.series} type="bar" width="800" />
+                  </td>
+                  </tr>
                 </div>
+              
               </div>
-            </div>
-            <div>
-              <tr id="barPieChartContainer">
-                <td id="barChartContainer">
-                  <Chart options={barChartProps.options} series={barChartProps.series} type="bar" width="650" />
-                </td>
-                <td id="pieChartContainer">
-                  <Chart options={pieChartProps.options} series={pieChartProps.series} type="pie" width="650" />
-                </td>
-              </tr>
-              <br></br>
-              <tr>
-                <td id="timeChartContainer">
-                  <Chart options={getTimeChartProps(sentences).options} series={getTimeChartProps(sentences).series} type="rangeBar" height={600} width={1300} />
-                </td>
-              </tr>
-              <br></br>
+              </Tab>
+
+              <Tab eventKey="barChartKey" title="Talking Distribution">
+
+              <div className="card-deck mb-3 text-center">
+
+                <div>
+                  <tr>
+                  <td id="pieChartContainer">
+                    <Chart options={pieChartProps.options} series={pieChartProps.series} type="pie" width="800" />
+                  </td>
+                  </tr>
+                </div>
+
+              </div>
+
+              </Tab>
+
+              <Tab eventKey="timeChartGraphKey" title="Teacher Question Timeline">
+
+              <div className="card-deck mb-3 text-center">
+
+                <div>
+                <tr>
+                  <td id="timeChartContainer">
+                    <Chart options={getTimeChartProps(sentences).options} series={getTimeChartProps(sentences).series} type="rangeBar" height={600} width={1300} />
+                  </td>
+                </tr>
+                </div>
+
+              </div>
+              </Tab>
+
+              <Tab eventKey="timeLineKey" title="Collapsed Timeline">
               <tr>
                 <td id="timeLineContainer">
                   <Chart options={getTimeLineProps(sentences).options} series={getTimeLineProps(sentences).series} type="rangeBar" height={200} width={1300} />
                 </td>
               </tr>
-            </div>
-          </div>
+              </Tab>
+
+          </Tabs>
+
           {!userReportToLoad ? (
             <input placeholder="Name this report" onBlur={handleInputChange} id="name-report"></input>
           ) : null}
