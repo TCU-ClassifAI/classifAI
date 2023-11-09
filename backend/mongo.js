@@ -2,6 +2,7 @@
 
 const mongoose = require('mongoose'); 
 
+
 // Connect to MongoDB using mongoose, not setup with an actual DB 
 mongoose.connect(process.env.MONGODB_URL)  // connect to MongoDB on localhost
   .catch(error => console.error("Error connecting to MongoDB:", error));

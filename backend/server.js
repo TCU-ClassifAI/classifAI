@@ -141,7 +141,7 @@ app.post("/upload", upload.single('file'), async (req, res) => {
       formData.append('reportID', String(audioFile._id));
 
       // Send the form data with Axios
-      const response = await axios.post(flaskBackendUrl, formData, {
+      const response = await axios.post(flaskBackendUrl, formData, { //make this a try catch so it doesnt crash
         headers: formData.getHeaders(),
       });
       // flask would look something like:

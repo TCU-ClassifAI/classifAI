@@ -1,7 +1,6 @@
 pycache
 __pycache__/
 node_modules
-<<<<<<< HEAD
 .env
 backend/old.index.js
 uploads
@@ -9,6 +8,7 @@ resources/mongo-data/*
 
 testMongo
 Workstation_Testing
-=======
 /resources/mongo-data/
->>>>>>> main
+mongo-data
+mongosh
+resources/mongo-data/.mongodb/mongosh/mongosh_repl_history
