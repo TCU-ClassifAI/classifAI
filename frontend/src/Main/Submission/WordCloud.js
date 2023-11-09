@@ -12,7 +12,7 @@ const colors = ["#143059", "#2F6B9A", "#82a6c2"];
  */
 function wordFreq(text) {
     // Define common words to exclude
-    const commonWords = ['the', 'a', 'in', 'it', 'of', 'and', 'it', 'is', 'i', 'to', 'that', 'this']; // This is hard-coded for now, but we can make it more dynamic later
+    const commonWords = ['the', 'a', 'in', 'it', 'of', 'and', 'it', 'is', 'i', 'to', 'that', 'this', 'you', 'so']; // This is hard-coded for now, but we can make it more dynamic later
   
 
     //Remove punctuation and split the text into words
