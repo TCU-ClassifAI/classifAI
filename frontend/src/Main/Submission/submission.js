@@ -8,8 +8,10 @@ import { evaluateArray } from "../../expertArrays/evaluate";
 import { createArray } from "../../expertArrays/create";
 
 import { uploadFile, transcribeFile } from "../../utils/assemblyAPI";
+
 import "./Submission.css";
 import "./transcript.scss";
+import WordCloud from "./WordCloud";
 
 import Dropdown from "react-bootstrap/Dropdown";
 import Spinner from "react-bootstrap/Spinner";
@@ -22,6 +24,7 @@ import { Buffer } from "buffer";
 import { useLocation, useNavigate } from "react-router-dom";
 import html2canvas from 'html2canvas'
 import { Tab, Tabs } from 'react-bootstrap';
+import ParentSize from "@visx/responsive/lib/components/ParentSize";
 
 export default function Submission() {
   const [transcript, setTranscript] = useState();
@@ -1515,6 +1518,17 @@ export default function Submission() {
                     </tr>
                   </tbody>
                 </table>
+              
+              </Tab>
+
+              <Tab eventKey="visualizations" title="Visualizations">
+                <h2>Word Cloud</h2>
+                <ParentSize>
+                  {({ width, height }) => (
+                    <WordCloud width={width} height={600} showControls="true" transcript={transcript} />
+                  )}
+                </ParentSize>
+                
               
               </Tab>
 
