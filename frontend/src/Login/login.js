@@ -47,7 +47,7 @@ const LogIn = () => {
         <div className='container'>
             <div className='left-side'>
                 <div className='logo-container'>
-                <img src='../images/logo.jpg' alt="Logo" /> 
+                <img src='../static/media/logo.18646aa75a5b064f6546.jpg' alt="Logo" /> 
                 {/*<p with working directory */}
                 </div>
                 <div className='welcome-message'>
@@ -61,7 +61,7 @@ const LogIn = () => {
                     </div>
                     <div className='feature'>
                         <FontAwesomeIcon icon={faDatabase} />
-                        <p>Advanced Data Management</p>
+                        <p>Automatic Transcription and Categorization</p>
                     </div>
                     <div className='feature'>
                         <FontAwesomeIcon icon={faCogs} />
