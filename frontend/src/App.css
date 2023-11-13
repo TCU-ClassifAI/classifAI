@@ -1,0 +1,52 @@
+.navbar{
+    display: flex;
+}
+
+
+#fileInputGroup{
+    height: 100px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 50px;
+}
+
+
+.input-group{
+    background-color: lightblue;
+    border: 1px solid black;
+}
+
+body{
+    text-align: center;
+    background-color: #fafafa;
+}
+
+.navbar-brand{
+    height: 75px;
+}
+
+.tcu-image{
+    height: 100px;
+    width: 100px;
+    margin-left: 10px;
+    padding-bottom: 30px;
+    padding-left: 10px;
+}
+
+.navbar-nav{
+    padding-right: 30px;
+}
+
+#main-nav{
+    background-color: #09283D;
+}
+
+.lead {
+    height: 400px;
+    overflow: auto;
+    border: 0.5px solid black;
+}
+
+.submission-main{
+    margin-bottom: 20px;
+}

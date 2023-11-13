@@ -1,0 +1,191 @@
+<div>
+          <button
+            type="button"
+            className="btn btn-primary"
+            disabled={isDisabled}
+            data-bs-toggle="modal"
+            data-bs-target="#progressModal"
+            onClick={handleSubmission}
+          >
+            Submit
+          </button>
+          <div className="addEmployee">
+            <div className="modal fade" ref={modalRef} tabIndex="-1" style={{ marginTop: "115px" }}>
+              <div className="modal-dialog">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <h5 className="modal-title" id="staticBackdropLabel">
+                      Analyzing
+                    </h5>
+                  </div>
+                  <div className="modal-body">
+                    <div>
+                      <ProgressBar bgcolor={"#6a1b9a"} completed={completed} />
+                    </div>
+                    <button
+                      onClick={() => window.location.reload(false)}
+                      style={{
+                        backgroundColor: "dodgerblue",
+                        color: "white",
+                        padding: "5px 15px",
+                        borderRadius: "5px",
+                        border: "0",
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {sentences ? (
+          <div>
+            <div className="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+              <h1>Full Transcript</h1>
+              <p className="lead">{transcript}</p>
+            </div>
+
+            <div className="card-deck mb-3 text-center">
+              <div className="card mb-4 box-shadow">
+                <div className="card-header">
+                  <h2>Questions</h2>
+                </div>
+                <div className="card-body">
+                  <div className="container">
+                    <table className="table">
+                      <thead>
+                        <tr>
+                          <th scope="col">Time</th>
+                          <th scope="col">Question</th>
+                          <th scope="col">Speaker</th>
+                          <th scope="col">Question Type</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {questions.map((question, index) => (
+                          <tr>
+                            <td>{times[index]}</td>
+                            <td>"{question.text}"</td>
+                            <td>{speakers[index]}</td>
+                            <td>{labeledQuestions[index]}</td>
+                            <td>
+                              <Dropdown>
+                                <Dropdown.Toggle variant="sm" id="dropdown-basic">
+                                  Select Type
+                                </Dropdown.Toggle>
+
+                                <Dropdown.Menu>
+                                  <Dropdown.Item
+                                    onClick={() => {
+                                      selectLabel(index, "Knowledge");
+                                    }}
+                                  >
+                                    Knowledge
+                                  </Dropdown.Item>
+                                  <Dropdown.Item
+                                    onClick={() => {
+                                      selectLabel(index, "Understand");
+                                    }}
+                                  >
+                                    Understand
+                                  </Dropdown.Item>
+                                  <Dropdown.Item
+                                    onClick={() => {
+                                      selectLabel(index, "Apply");
+                                    }}
+                                  >
+                                    Apply
+                                  </Dropdown.Item>
+                                  <Dropdown.Item
+                                    onClick={() => {
+                                      selectLabel(index, "Analyze");
+                                    }}
+                                  >
+                                    Analyze
+                                  </Dropdown.Item>
+                                  <Dropdown.Item
+                                    onClick={() => {
+                                      selectLabel(index, "Evaluate");
+                                    }}
+                                  >
+                                    Evaluate
+                                  </Dropdown.Item>
+                                  <Dropdown.Item
+                                    onClick={() => {
+                                      selectLabel(index, "Create");
+                                    }}
+                                  >
+                                    Create
+                                  </Dropdown.Item>
+                                </Dropdown.Menu>
+                              </Dropdown>
+                            </td>
+                            <td>
+                              <button onClick={() => removeQuestion(index)}>Remove</button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div className="card mb-4 box-shadow">
+                <div className="card-header">
+                  <h2>Number of Questions</h2>
+                </div>
+                <div className="card-body">
+                  <h2>{numQuestions}</h2>
+                </div>
+              </div>
+              <div className="card mb-4 box-shadow">
+                <div className="card-header">
+                  <h2>Total Questioning Time</h2>
+                </div>
+                <div className="card-body">
+                  <h2>{questioningTime}</h2>
+                </div>
+              </div>
+              <div>
+                <tr>
+                  <td>
+                    <Chart
+                      options={barChartProps.options}
+                      series={barChartProps.series}
+                      type="bar"
+                      width="650"
+                    />
+                  </td>
+                  <td>
+                    <Chart
+                      options={pieChartProps.options}
+                      series={pieChartProps.series}
+                      type="pie"
+                      width="650"
+                    />
+                  </td>
+                </tr>
+                <br></br>
+                {/* <tr>
+                  <td>
+                    <Chart
+                      options={timeChartProps.options}
+                      series={timeChartProps.series}
+                      type="rangeBar"
+                      height={600}
+                      width={1300}
+                    />
+                  </td>
+                </tr> */}
+              </div>
+            </div>
+
+            <div>
+              <button onClick={() => generatePDF(transcript, sentences, questions)} type="primary">
+                Download PDF
+              </button>
+            </div>
+          </div>
+        ) : null}
