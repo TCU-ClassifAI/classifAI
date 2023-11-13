@@ -1522,7 +1522,14 @@ export default function Submission() {
               </Tab>
 
               <Tab eventKey="visualizations" title="Visualizations">
-                <h2>Word Cloud</h2>
+                <div className="card-deck mb-3 text-center">
+                    <div className="card mb-4 box-shadow">
+                        <div className="card-header">
+                          <h2>Word Cloud</h2>
+                        </div>
+                    </div>
+                </div>
+
                 <ParentSize>
                   {({ width, height }) => (
                     <WordCloud width={width} height={600} showControls="true" transcript={transcript} />
