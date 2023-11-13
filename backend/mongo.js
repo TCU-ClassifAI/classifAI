@@ -19,7 +19,8 @@ const reportSchema = new mongoose.Schema({
     jsonPath: String,
     csvPath: String,
     audioPath: String,
-    userId: String,
+    reportID: String,
+    userID: String,
     isPremium: Boolean,
     summary: String,
     gradeLevel: String,
@@ -29,7 +30,6 @@ const reportSchema = new mongoose.Schema({
     transcription: String,  // if we want to store transcription in DB 
     status: String
 });
-const Report = mongoose.model('Report', reportSchema);
 
 // Define a schema and a model for storing users in MongoDB
 const userSchema = new mongoose.Schema({                           
@@ -43,7 +43,6 @@ const userSchema = new mongoose.Schema({
     state: String,
     disabledAccount: Boolean
 });
-const User = mongoose.model('User', userSchema);
 
 // Define a schema and a model for storing admin accounts in MongoDB
 const adminSchema = new mongoose.Schema({                           
@@ -51,10 +50,81 @@ const adminSchema = new mongoose.Schema({
   email: String,
   name: String
 });
+
+const User = mongoose.model('User', userSchema);
 const Admin = mongoose.model('Admin', adminSchema);
+const Report = mongoose.model('Report', reportSchema);
 
-// other schemas
+// CRUD operations
+// userSchema ------------------------------------------
 
+// Create User
+async function createUser(data) {
+  const user = new User(data);
+  return await user.save();
+}
 
+// Read User
+async function getUser(id) {
+  return await User.findOne({ userID: id });
+}
 
-module.exports = Report;
+// Update User
+async function updateUser(id, data) {
+  return await User.findOneAndUpdate({ userID: id }, data, { new: true });
+}
+
+// Delete User
+async function deleteUser(id) {
+  return await User.findOneAndDelete({ userID: id });
+}
+
+// reportSchema ------------------------------------------
+
+// Create Report
+async function createReport(data) {
+  const report = new Report(data);
+  return await report.save();
+}
+
+// Read Report
+async function getReport(id) {
+  return await Report.findOne({ reportID: id });
+}
+
+// Update Report
+async function updateReport(id, data) {
+  return await Report.findOneAndUpdate({ reportID: id }, data, { new: true });
+}
+
+// Delete Report
+async function deleteReport(id) {
+  return await Report.findOneAndDelete({ reportID: id });
+}
+
+// adminSchema ---------------------------------------------
+
+// Create Admin
+async function createAdmin(data) {
+  const admin = new Admin(data);
+  return await admin.save();
+}
+
+// Read Admin
+async function getAdmin(id) {
+  return await Admin.findOne({ userID: id });
+}
+
+// Update Admin
+async function updateAdmin(id, data) {
+  return await Admin.findOneAndUpdate({ userID: id }, data, { new: true });
+}
+
+// Delete Admin
+async function deleteAdmin(id) {
+  return await Admin.findOneAndDelete({ userID: id });
+}
+
+// Validation Functions? maybe include in another module
+
+module.exports = Report, User, Admin;
