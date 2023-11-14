@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { saveAs } from 'file-saver';
+import { saveAs } from "file-saver";
 import { knowledgeArray } from "../../expertArrays/knowledge";
 import { understandArray } from "../../expertArrays/understand";
 import { applyArray } from "../../expertArrays/apply";
@@ -22,8 +22,8 @@ import { Auth } from "aws-amplify";
 import AWS from "aws-sdk";
 import { Buffer } from "buffer";
 import { useLocation, useNavigate } from "react-router-dom";
-import html2canvas from 'html2canvas'
-import { Tab, Tabs } from 'react-bootstrap';
+import html2canvas from "html2canvas";
+import { Tab, Tabs } from "react-bootstrap";
 import ParentSize from "@visx/responsive/lib/components/ParentSize";
 
 export default function Submission() {
@@ -62,8 +62,6 @@ export default function Submission() {
   const [questionTypeBox, setQuestionTypeBox] = useState(false);
   const [questionsBox, setQuestionsBox] = useState(false);
   const [sentencesBox, setSentencesBox] = useState(false);
-  
-
 
   let navigate = useNavigate();
 
@@ -98,7 +96,7 @@ export default function Submission() {
     setAllSelected(!allSelected);
     setStartTimeBox(true);
     setEndTimeBox(true);
-    setSpeakerBox(true)
+    setSpeakerBox(true);
     setIsQuestionBox(true);
     setQuestionTypeBox(true);
     setSentencesBox(true);
@@ -136,41 +134,37 @@ export default function Submission() {
 
   // Helper Function for saveToCSV()
   function buildCSVHeader() {
-    
     const csvColumns = [];
     // Build the Header of the CSV based on checkboxes
     // Example Start Time, End Time, Type, Text
 
     if (startTimeBox) {
-      csvColumns.push('Start Time');
+      csvColumns.push("Start Time");
     }
-  
+
     if (endTimeBox) {
-      csvColumns.push('End Time');
+      csvColumns.push("End Time");
     }
-  
+
     if (speakerBox) {
-      csvColumns.push('Speaker');
+      csvColumns.push("Speaker");
     }
-  
+
     if (isQuestionBox) {
-      csvColumns.push('isQuestion');
+      csvColumns.push("isQuestion");
     }
-  
+
     if (questionTypeBox) {
-      csvColumns.push('Type');
+      csvColumns.push("Type");
     }
-  
+
     if (questionsBox) {
-      csvColumns.push('Questions');
-    }
-    else if(sentencesBox)
-    {
-      csvColumns.push('Text');
+      csvColumns.push("Questions");
+    } else if (sentencesBox) {
+      csvColumns.push("Text");
     }
 
-
-    return csvColumns.join(', ');
+    return csvColumns.join(", ");
   }
 
   function buildCSVRowLine(line) {
@@ -201,11 +195,9 @@ export default function Submission() {
     }
 
     return data;
-
   }
 
   function saveToCSV(transcript, sentences) {
-   
     const headerRow = buildCSVHeader();
 
     var lines = sentences;
@@ -214,29 +206,30 @@ export default function Submission() {
     if (questionsBox) {
       lines = lines.filter((line) => line.isQuestion);
     }
-  
+
     // Create a CSV content with three columns: Timestamp, Speaker, and Sentences
-    const csvContent = `${headerRow}\n${lines.map((line, index) => {
-      var data = [];
+    const csvContent = `${headerRow}\n${lines
+      .map((line, index) => {
+        var data = [];
 
-      data = buildCSVRowLine(line);
+        data = buildCSVRowLine(line);
 
-      return data.join(', ');
-    })
-    .filter((row) => row.length > 0) // Filter out empty rows
-    .join('\n')}`;
+        return data.join(", ");
+      })
+      .filter((row) => row.length > 0) // Filter out empty rows
+      .join("\n")}`;
 
     // Create a Blob with the CSV content
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8" });
 
     // Create a data URI for the CSV content
     const url = window.URL.createObjectURL(blob);
 
     // Create a temporary anchor element for downloading
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     if (reportName.trim() === "") {
-      const date = new Date()
+      const date = new Date();
       let day = date.getDate();
       let month = date.getMonth() + 1;
       let year = date.getFullYear();
@@ -247,7 +240,6 @@ export default function Submission() {
     }
 
     a.download = `${reportName}.csv`;
-    
 
     // Trigger a click event to download the CSV
     a.click();
@@ -255,7 +247,6 @@ export default function Submission() {
     // Clean up
     window.URL.revokeObjectURL(url);
   }
-
 
   async function saveUserObject() {
     AWS.config.update({
@@ -289,9 +280,9 @@ export default function Submission() {
       const folderName = user.username;
       const location = folderName + "/" + reportName;
       if (reportName === "") {
-        setBadReportName(true)
+        setBadReportName(true);
       } else {
-        setBadReportName(false)
+        setBadReportName(false);
         var data = {
           Bucket: "c2ai-storage-e5d3ddbc163336-staging",
           Key: location,
@@ -371,8 +362,6 @@ export default function Submission() {
       return prevSentence;
     });
     setSentences(newSentences);
-
-
   };
 
   function findQuestions() {
@@ -398,10 +387,12 @@ export default function Submission() {
               sentences[i].label = "non-question";
             }
           }
-        }
-        else {
+        } else {
           for (let i = 0; i < sentences.length; i++) {
-            if (sentences[i].text.includes("?") || sentences[i].isQuestion == true) {
+            if (
+              sentences[i].text.includes("?") ||
+              sentences[i].isQuestion == true
+            ) {
               qs.push(sentences[i]);
               sentences[i].isQuestion = true;
               sentences[i].label = "";
@@ -421,16 +412,21 @@ export default function Submission() {
   function toResponse() {
     if (questions) {
       // const isQuestion = (sentence) => sentences.some((question) => question.isQuestion === sentence.isQuestion);
-      const isQuestion = (sentence) => questions.some((question) => question.text === sentence.text);
+      const isQuestion = (sentence) =>
+        questions.some((question) => question.text === sentence.text);
       // console.log(isQuestion)
 
       let stamps = sentences.reduce((acc, current, index, arr) => {
         const isCurrentQuestion = isQuestion(current);
         const isNextNonQuestionAndDifferentSpeaker =
-          index < arr.length - 1 && !isQuestion(arr[index + 1]) && arr[index + 1].speaker !== current.speaker;
+          index < arr.length - 1 &&
+          !isQuestion(arr[index + 1]) &&
+          arr[index + 1].speaker !== current.speaker;
 
         if (isCurrentQuestion) {
-          acc[current.end] = isNextNonQuestionAndDifferentSpeaker ? (arr[index + 1].start - current.end) / 1000 : "No Response";
+          acc[current.end] = isNextNonQuestionAndDifferentSpeaker
+            ? (arr[index + 1].start - current.end) / 1000
+            : "No Response";
           //
           //
         }
@@ -475,9 +471,10 @@ export default function Submission() {
     // or `36:15:31` instead of `12:15:31`, etc.
     hours = hours % 24;
 
-    return `${padTo2Digits(hours)}:${padTo2Digits(minutes)}:${padTo2Digits(seconds)}`;
+    return `${padTo2Digits(hours)}:${padTo2Digits(minutes)}:${padTo2Digits(
+      seconds
+    )}`;
   }
-
 
   function findQuestionsLabels(quests) {
     //console.log("quests:")
@@ -500,23 +497,32 @@ export default function Submission() {
       });
       setLabeledQuestions(labeled);
     } else {
-      const sanitizeWord = (word) => word.replace(/[.,/#!$%^&*;:{}=-_`~()]/g, "").replace(/\s{2,}/g, " ");
+      const sanitizeWord = (word) =>
+        word.replace(/[.,/#!$%^&*;:{}=-_`~()]/g, "").replace(/\s{2,}/g, " ");
 
       const findCategories = (word) =>
         Object.keys(categoryMap)
           .filter((key) => categoryMap[key].includes(word))
           .join(" or ");
 
-      if (sentences.some((sentence) => sentence.isQuestion && sentence.label !== "Uncategorized" && sentence.label !== "")) {
+      if (
+        sentences.some(
+          (sentence) =>
+            sentence.isQuestion &&
+            sentence.label !== "Uncategorized" &&
+            sentence.label !== ""
+        )
+      ) {
         labeled = quests.map((quest) => {
           if (quest.label !== "non-question") {
             return quest.label;
           }
-        })
-      }
-      else {
+        });
+      } else {
         labeled = quests.map((quest) => {
-          const words = quest.words.map((wordObj) => sanitizeWord(wordObj.text));
+          const words = quest.words.map((wordObj) =>
+            sanitizeWord(wordObj.text)
+          );
           for (const word of words) {
             const category = findCategories(word);
             if (category) {
@@ -526,7 +532,6 @@ export default function Submission() {
           return "Uncategorized";
         });
       }
-
 
       // newLabeledObj = sentences.filter(function(sentence){
       //   if(sentence.isQuestion === true){
@@ -550,28 +555,30 @@ export default function Submission() {
     }
   }
 
-
-
   function removeQuestion(idx) {
     let newSentences = [...sentences];
-    let filteredQuestions = newSentences.filter(sentence => sentence.isQuestion);
+    let filteredQuestions = newSentences.filter(
+      (sentence) => sentence.isQuestion
+    );
     let questionIndex = newSentences.indexOf(filteredQuestions[idx]);
     if (questionIndex !== -1) {
       newSentences[questionIndex].isQuestion = false;
     }
     labeledQuestions.splice(idx, 1);
     times.splice(idx, 1);
-    setQuestions(newSentences.filter(sentence => sentence.isQuestion));
+    setQuestions(newSentences.filter((sentence) => sentence.isQuestion));
   }
 
   function selectLabel(index, label) {
     let newSentences = [...sentences];
-    let filteredQuestions = newSentences.filter(sentence => sentence.isQuestion);
+    let filteredQuestions = newSentences.filter(
+      (sentence) => sentence.isQuestion
+    );
     let questionIndex = newSentences.indexOf(filteredQuestions[index]);
     if (questionIndex !== -1) {
       newSentences[questionIndex].label = label;
     }
-    setQuestions(sentences.filter(sentence => sentence.isQuestion));
+    setQuestions(sentences.filter((sentence) => sentence.isQuestion));
   }
 
   function getAmountOfLabel(label) {
@@ -617,7 +624,8 @@ export default function Submission() {
     if (sentences) {
       let timeData = [];
       let questionList = sentences.filter(
-        (item) => item.isQuestion && Object.keys(labelColors).includes(item.label)
+        (item) =>
+          item.isQuestion && Object.keys(labelColors).includes(item.label)
       );
 
       // Calculate the total time range of the timeline
@@ -665,7 +673,8 @@ export default function Submission() {
       //console.log("sentences:")
       //console.log(sentences)
       let questionList = sentences.filter(
-        (item) => item.isQuestion && Object.keys(labelColors).includes(item.label)
+        (item) =>
+          item.isQuestion && Object.keys(labelColors).includes(item.label)
       );
       //console.log("questionList");
       //console.log(questionList);
@@ -686,7 +695,10 @@ export default function Submission() {
         if (labelColors.hasOwnProperty(questionList[i].label)) {
           let endTime;
           if (i < questionList.length - 1) {
-            endTime = Math.min(questionList[i + 1].start / 1000, questionList[i].start / 1000 + constantWidth);
+            endTime = Math.min(
+              questionList[i + 1].start / 1000,
+              questionList[i].start / 1000 + constantWidth
+            );
           } else {
             endTime = questionList[i].start / 1000 + constantWidth;
           }
@@ -742,16 +754,21 @@ export default function Submission() {
               fontSize: "20px",
             },
           },
-          categories: ["Knowledge", "Understand", "Apply", "Analyze", "Evaluate", "Create"],
+          categories: [
+            "Knowledge",
+            "Understand",
+            "Apply",
+            "Analyze",
+            "Evaluate",
+            "Create",
+          ],
         },
         tooltip: {
           enabled: true,
           custom: function ({ seriesIndex, dataPointIndex, w }) {
             //because 6 init entries
             let tooltipIndex = dataPointIndex - 6;
-            let questionList = sentences.filter(
-              (item) => item.isQuestion
-            );
+            let questionList = sentences.filter((item) => item.isQuestion);
             //console.log("copy of sentences: ")
             //console.log(sentences)
             let question = questionList[tooltipIndex];
@@ -760,9 +777,17 @@ export default function Submission() {
             //console.log(questionList)
             return (
               '<div class="arrow_box">' +
-              '<span><strong>Speaker ' + question.speaker + ': </strong>' + question.text + '</span><br>' +
-              '<span>' + convertMsToTime(question.start) + '-' + convertMsToTime(question.end) + '</span>' +
-              '</div>'
+              "<span><strong>Speaker " +
+              question.speaker +
+              ": </strong>" +
+              question.text +
+              "</span><br>" +
+              "<span>" +
+              convertMsToTime(question.start) +
+              "-" +
+              convertMsToTime(question.end) +
+              "</span>" +
+              "</div>"
             );
           },
         },
@@ -775,7 +800,7 @@ export default function Submission() {
       series: [
         {
           data: setTimeLineData(),
-          name: 'Questions',
+          name: "Questions",
         },
       ],
       options: {
@@ -809,9 +834,7 @@ export default function Submission() {
           custom: function ({ seriesIndex, dataPointIndex, w }) {
             //because 6 init entries
             let tooltipIndex = dataPointIndex - 1;
-            let questionList = sentences.filter(
-              (item) => item.isQuestion
-            );
+            let questionList = sentences.filter((item) => item.isQuestion);
             //console.log("copy of sentences: ")
             //console.log(sentences)
             let question = questionList[tooltipIndex];
@@ -820,9 +843,17 @@ export default function Submission() {
             //console.log(questionList)
             return (
               '<div class="arrow_box">' +
-              '<span><strong>Speaker ' + question.speaker + ': </strong>' + question.text + '</span><br>' + 
-              '<span>' + convertMsToTime(question.start) + '-' + convertMsToTime(question.end) + '</span>' +
-              '</div>'
+              "<span><strong>Speaker " +
+              question.speaker +
+              ": </strong>" +
+              question.text +
+              "</span><br>" +
+              "<span>" +
+              convertMsToTime(question.start) +
+              "-" +
+              convertMsToTime(question.end) +
+              "</span>" +
+              "</div>"
             );
           },
         },
@@ -872,7 +903,15 @@ export default function Submission() {
             fontSize: "20px",
           },
         },
-        categories: ["Knowledge", "Understand", "Apply", "Analyze", "Evaluate", "Create", "Uncategorized"],
+        categories: [
+          "Knowledge",
+          "Understand",
+          "Apply",
+          "Analyze",
+          "Evaluate",
+          "Create",
+          "Uncategorized",
+        ],
       },
       tooltip: {
         enabled: false, // Disable the tooltip on mouseover
@@ -955,7 +994,10 @@ export default function Submission() {
       tooltip: {
         enabled: true,
         y: {
-          formatter: function (value, { series, seriesIndex, dataPointIndex, w }) {
+          formatter: function (
+            value,
+            { series, seriesIndex, dataPointIndex, w }
+          ) {
             const ms = value;
             return convertMsToTime(ms);
           },
@@ -963,11 +1005,20 @@ export default function Submission() {
       },
       labels: ["Teacher", "Students", "Non-Speaking"],
     },
-    series: [getSpeakingTime(getMaxSpeaker()), sumSpeakingTime() - getSpeakingTime(getMaxSpeaker()), getNonSpeakingTime(sentences)],
+    series: [
+      getSpeakingTime(getMaxSpeaker()),
+      sumSpeakingTime() - getSpeakingTime(getMaxSpeaker()),
+      getNonSpeakingTime(sentences),
+    ],
   };
 
   function getNonSpeakingTime(sentences) {
-    if (sentences) return sentences[sentences.length - 1].end - sentences[0].start - sumSpeakingTime(sentences);
+    if (sentences)
+      return (
+        sentences[sentences.length - 1].end -
+        sentences[0].start -
+        sumSpeakingTime(sentences)
+      );
   }
 
   function getSpeakingTime(speakerName) {
@@ -986,74 +1037,93 @@ export default function Submission() {
     if (sentences) {
       let doc = new jsPDF("p", "pt", "letter");
 
-
-
-
       // Add the title
       doc.setFontSize(24);
       doc.setFont("helvetica", "bold");
       const title2 = "Analysis Visualizations";
-      const titleWidth2 = doc.getStringUnitWidth(title2) * doc.internal.getFontSize() / doc.internal.scaleFactor;
+      const titleWidth2 =
+        (doc.getStringUnitWidth(title2) * doc.internal.getFontSize()) /
+        doc.internal.scaleFactor;
       const pageWidth2 = doc.internal.pageSize.getWidth();
       const titleXX = (pageWidth2 - titleWidth2) / 2;
       doc.text(title2, titleXX, 50);
 
       // Add the first chart to the bottom
-      const timeChartElement = document.getElementById('timeLineContainer');
+      const timeChartElement = document.getElementById("timeLineContainer");
       const timeCanvas = await html2canvas(timeChartElement, {
         scale: 2, // Increase the scale for better quality
         useCORS: true,
       });
-      const timeImgData = timeCanvas.toDataURL('image/png');
+      const timeImgData = timeCanvas.toDataURL("image/png");
       const timeImgWidth = doc.internal.pageSize.getWidth() - 40; // 20px margin on both sides
-      const timeImgHeight = (timeCanvas.height * timeImgWidth) / timeCanvas.width;
+      const timeImgHeight =
+        (timeCanvas.height * timeImgWidth) / timeCanvas.width;
 
       const pageHeight = doc.internal.pageSize.getHeight();
       const timeYPos = pageHeight - timeImgHeight - 30; // 30px margin from the bottom
 
-      doc.addImage(timeImgData, 'PNG', 20, timeYPos, timeImgWidth, timeImgHeight);
+      doc.addImage(
+        timeImgData,
+        "PNG",
+        20,
+        timeYPos,
+        timeImgWidth,
+        timeImgHeight
+      );
 
       // Add the second chart to the baseline
-      const chartElement = document.getElementById('timeChartContainer');
+      const chartElement = document.getElementById("timeChartContainer");
       const canvas = await html2canvas(chartElement, {
         scale: 2, // Increase the scale for better quality
         useCORS: true,
       });
-      const imgData = canvas.toDataURL('image/png');
+      const imgData = canvas.toDataURL("image/png");
       const imgWidth = doc.internal.pageSize.getWidth() - 40; // 20px margin on both sides
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
       const yPos = timeYPos - imgHeight - 30; // 30px margin from the first chart
 
-      doc.addImage(imgData, 'PNG', 20, yPos, imgWidth, imgHeight);
+      doc.addImage(imgData, "PNG", 20, yPos, imgWidth, imgHeight);
 
       // Add the third chart to the baseline
-      const barChartElement = document.getElementById('barChartContainer');
+      const barChartElement = document.getElementById("barChartContainer");
       const barCanvas = await html2canvas(barChartElement, {
         scale: 2, // Increase the scale for better quality
         useCORS: true,
       });
-      const pieChartElement = document.getElementById('pieChartContainer');
+      const pieChartElement = document.getElementById("pieChartContainer");
       const pieCanvas = await html2canvas(pieChartElement, {
         scale: 2, // Increase the scale for better quality
         useCORS: true,
       });
 
-      const barImgData = barCanvas.toDataURL('image/png');
+      const barImgData = barCanvas.toDataURL("image/png");
       const barImgWidth = doc.internal.pageSize.getWidth() / 2 - 40; // 20px margin on both sides
       const barImgHeight = (barCanvas.height * barImgWidth) / barCanvas.width;
 
-      const pieImgData = pieCanvas.toDataURL('image/png');
+      const pieImgData = pieCanvas.toDataURL("image/png");
       const pieImgWidth = doc.internal.pageSize.getWidth() / 2 - 40; // 20px margin on both sides
       const pieImgHeight = (pieCanvas.height * pieImgWidth) / pieCanvas.width;
 
       const chartYPos = yPos - barImgHeight - 30;
-      doc.addImage(barImgData, 'PNG', 20, chartYPos, barImgWidth, barImgHeight);
-      doc.addImage(pieImgData, 'PNG', doc.internal.pageSize.getWidth() / 2 + 20, chartYPos, pieImgWidth, pieImgHeight);
+      doc.addImage(barImgData, "PNG", 20, chartYPos, barImgWidth, barImgHeight);
+      doc.addImage(
+        pieImgData,
+        "PNG",
+        doc.internal.pageSize.getWidth() / 2 + 20,
+        chartYPos,
+        pieImgWidth,
+        pieImgHeight
+      );
 
-      let questionList = sentences.filter(sentence => sentence.isQuestion);
+      let questionList = sentences.filter((sentence) => sentence.isQuestion);
       let questionArray = new Array();
       for (let i = 0; i < questionList.length; i++) {
-        questionArray[i] = new Array(convertMsToTime(questionList[i].start), questionList[i].speaker, questionList[i].text, questionList[i].label);
+        questionArray[i] = new Array(
+          convertMsToTime(questionList[i].start),
+          questionList[i].speaker,
+          questionList[i].text,
+          questionList[i].label
+        );
       }
 
       const pageWidth1 = doc.internal.pageSize.getWidth();
@@ -1067,7 +1137,9 @@ export default function Submission() {
       doc.setFontSize(24);
       doc.setFont("helvetica", "bold");
       const title1 = "Questions Details";
-      const titleWidth1 = doc.getStringUnitWidth(title1) * doc.internal.getFontSize() / doc.internal.scaleFactor;
+      const titleWidth1 =
+        (doc.getStringUnitWidth(title1) * doc.internal.getFontSize()) /
+        doc.internal.scaleFactor;
       const titleX = (pageWidth1 - titleWidth1) / 2;
       doc.text(title1, titleX, margin * 2);
       doc.autoTable({
@@ -1076,8 +1148,6 @@ export default function Submission() {
         startY: margin * 4 + 5,
         theme: "grid",
       });
-
-
 
       doc.save("demo.pdf");
     }
@@ -1139,8 +1209,10 @@ export default function Submission() {
     }
   };
   const handleAddNewSpeaker = (sentence) => {
-    const newSpeaker = String.fromCharCode(Array.from(new Set(speakers)).length + 65);
-    console.log(newSpeaker)// Assuming speakers are uppercase letters starting from 'A'
+    const newSpeaker = String.fromCharCode(
+      Array.from(new Set(speakers)).length + 65
+    );
+    console.log(newSpeaker); // Assuming speakers are uppercase letters starting from 'A'
     handleRelabelSpeaker(sentence, newSpeaker);
     setIsRelabelingSpeaker(false);
     setShow(null);
@@ -1167,7 +1239,9 @@ export default function Submission() {
   };
 
   const removeSentence = (removedSentence) => {
-    const updatedSentences = sentences.filter((sentence) => sentence.start !== removedSentence.start);
+    const updatedSentences = sentences.filter(
+      (sentence) => sentence.start !== removedSentence.start
+    );
     setSentences(updatedSentences);
   };
 
@@ -1183,7 +1257,11 @@ export default function Submission() {
       isQuestion: false,
       text: "",
     };
-    const updatedSentences = [...sentences.slice(0, selectedIndex + 1), newSentence, ...sentences.slice(selectedIndex + 1)];
+    const updatedSentences = [
+      ...sentences.slice(0, selectedIndex + 1),
+      newSentence,
+      ...sentences.slice(selectedIndex + 1),
+    ];
     setSentences(updatedSentences);
   };
 
@@ -1205,30 +1283,56 @@ export default function Submission() {
         {userReportToLoad ? (
           <div>
             <h5>Currently Viewing:</h5>
-            <h5>{userReportLocation.substring(userReportLocation.indexOf("/") + 1)}</h5>
+            <h5>
+              {userReportLocation.substring(
+                userReportLocation.indexOf("/") + 1
+              )}
+            </h5>
           </div>
         ) : null}
         {!userReportToLoad ? (
           <div>
             <label className="form-label" htmlFor="customFile">
-              <h4>Please upload an audio or video recording for transcription</h4>
-              <p>Accepted AUDIO file types: .mp3, .m4a, .aac, .oga, .ogg, .flac, .wav, .wv, .aiff</p>
-              <p>Accepted VIDEO file types: .webm, .MTS, .M2TS, .TS, .mov, .mp2, .mp4, .m4v, .mxf</p>
+              <h4>
+                Please upload an audio or video recording for transcription
+              </h4>
+              <p>
+                Accepted AUDIO file types: .mp3, .m4a, .aac, .oga, .ogg, .flac,
+                .wav, .wv, .aiff
+              </p>
+              <p>
+                Accepted VIDEO file types: .webm, .MTS, .M2TS, .TS, .mov, .mp2,
+                .mp4, .m4v, .mxf
+              </p>
             </label>
-            <input type="file" className="form-control" id="customFile" onChange={handleFileChange} />
+            <input
+              type="file"
+              className="form-control"
+              id="customFile"
+              onChange={handleFileChange}
+            />
           </div>
         ) : null}
         {isAudio ? (
           <div>
             <p>Click "Submit" to begin file analysis</p>
             <audio controls id="audio-player">
-              <source src={URL.createObjectURL(selectedFile)} type={selectedFile.type} />
+              <source
+                src={URL.createObjectURL(selectedFile)}
+                type={selectedFile.type}
+              />
             </audio>
             {isAnalyzing ? (
               <div>
-                <Spinner className="spinner" animation="border" role="status"></Spinner>
+                <Spinner
+                  className="spinner"
+                  animation="border"
+                  role="status"
+                ></Spinner>
                 <p>Analysis in progress...</p>
-                <p>Please do not refresh or exit this screen during this time</p>
+                <p>
+                  Please do not refresh or exit this screen during this time
+                </p>
               </div>
             ) : null}
           </div>
@@ -1239,13 +1343,22 @@ export default function Submission() {
           <div>
             <p>Click "Submit" to begin file analysis</p>
             <video controls id="video-player">
-              <source src={URL.createObjectURL(selectedFile)} type={selectedFile.type} />
+              <source
+                src={URL.createObjectURL(selectedFile)}
+                type={selectedFile.type}
+              />
             </video>
             {isAnalyzing ? (
               <div>
-                <Spinner className="spinner" animation="border" role="status"></Spinner>
+                <Spinner
+                  className="spinner"
+                  animation="border"
+                  role="status"
+                ></Spinner>
                 <p>Analysis in progress...</p>
-                <p>Please do not refresh or exit this screen during this time</p>
+                <p>
+                  Please do not refresh or exit this screen during this time
+                </p>
               </div>
             ) : null}
           </div>
@@ -1257,9 +1370,15 @@ export default function Submission() {
             <p>Click "Submit" to begin file analysis</p>
             {isAnalyzing ? (
               <div>
-                <Spinner className="spinner" animation="border" role="status"></Spinner>
+                <Spinner
+                  className="spinner"
+                  animation="border"
+                  role="status"
+                ></Spinner>
                 <p>Analysis in progress...</p>
-                <p>Please do not refresh or exit this screen during this time</p>
+                <p>
+                  Please do not refresh or exit this screen during this time
+                </p>
               </div>
             ) : null}
           </div>
@@ -1267,11 +1386,21 @@ export default function Submission() {
           <p></p>
         )}
         {!isAnalyzing && !sentences ? (
-          <button type="button" className="btn btn-primary" id="submission-main" onClick={() => handleSubmission({ selectedFile })}>
+          <button
+            type="button"
+            className="btn btn-primary"
+            id="submission-main"
+            onClick={() => handleSubmission({ selectedFile })}
+          >
             Analyze Recording
           </button>
         ) : isAnalyzing ? (
-          <button type="button" className="btn btn-primary" id="submission-main" onClick={() => window.location.reload()}>
+          <button
+            type="button"
+            className="btn btn-primary"
+            id="submission-main"
+            onClick={() => window.location.reload()}
+          >
             Cancel
           </button>
         ) : null}
@@ -1280,302 +1409,485 @@ export default function Submission() {
         <div>
           <Tabs id="controlled-tab-example">
             <Tab eventKey="TranscriptKey" title="Full Transcript">
-            <div className="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
-            <h1>Full Transcript</h1>
-            <h4>Click on a sentence to make adjustments to "Questions" list</h4>
-            <div className="lead" style={{ backgroundColor: "white" }}>
-              {sentences.map((sentence) => (
-                <div key={sentence.start} onClick={() => setShow(sentence.start)}>
-                  <Dropdown show={show === sentence.start}>
-                    <CustomToggle onClick={(event) => handleToggle(event)}>
-                      <div className="sentence" style={{ backgroundColor: show === sentence.start ? "#F0F0F0" : "white" }}>
-                        <div className="sentence-transcript">
-                          <div className="transcript-time">{convertMsToTime(sentence.start)}</div>
-                          <div className={`transcript-speaker speaker-${sentence.speaker}`}>Speaker {sentence.speaker}:</div>
-                          {editing === sentence.start ? (
-                            <input
-                              className="edit-text"
-                              type="text"
-                              value={sentence.text}
-                              onBlur={handleBlur}
-                              onChange={(event) => handleChangeText(sentence, event)}
-                              onKeyDown={(event) => handleKeyPress(event)}
-                              autoFocus
-                            />
-                          ) : (
-                            <div className="transcript-text">{sentence.text}</div>
-                          )}
-                        </div>
-                      </div>
-                    </CustomToggle>
-                    <Dropdown.Menu style={{ backgroundColor: "#F0F0F0" }}>
-                      {!isRelabelingSpeaker ? (
-                        <div>
-                          <Dropdown.Item
-                            onClick={(event) => {
-                              handleAddQuestion(sentence, event);
-                              handleToggle(null);
+              <div className="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+                <h1>Full Transcript</h1>
+                <h4>
+                  Click on a sentence to make adjustments to "Questions" list
+                </h4>
+                <div className="lead" style={{ backgroundColor: "white" }}>
+                  {sentences.map((sentence) => (
+                    <div
+                      key={sentence.start}
+                      onClick={() => setShow(sentence.start)}
+                    >
+                      <Dropdown show={show === sentence.start}>
+                        <CustomToggle onClick={(event) => handleToggle(event)}>
+                          <div
+                            className="sentence"
+                            style={{
+                              backgroundColor:
+                                show === sentence.start ? "#F0F0F0" : "white",
                             }}
                           >
-                            Add as a question
-                          </Dropdown.Item>
-                          <Dropdown.Item onClick={() => setIsRelabelingSpeaker(true)}>Relabel speaker</Dropdown.Item>
-                          <Dropdown.Item onClick={() => setEditing(sentence.start)}>Edit sentence</Dropdown.Item>
-                          <Dropdown.Item onClick={() => removeSentence(sentence)}>Remove sentence</Dropdown.Item>
-                          <Dropdown.Item onClick={() => handleAddNewSentence(sentence)}>Insert sentence after</Dropdown.Item>
-                        </div>
-                      ) : (
-                        <div>
-                          {Array.from(new Set(speakers.sort())).map((speaker) => (
-                            <Dropdown.Item onClick={() => handleItemClick(sentence, speaker)}>{speaker}</Dropdown.Item>
-                          ))}{" "}
-                          <div onClick={() => handleAddNewSpeaker(sentence)}>
-                            <Dropdown.Item>Label as new speaker</Dropdown.Item>
+                            <div className="sentence-transcript">
+                              <div className="transcript-time">
+                                {convertMsToTime(sentence.start)}
+                              </div>
+                              <div
+                                className={`transcript-speaker speaker-${sentence.speaker}`}
+                              >
+                                Speaker {sentence.speaker}:
+                              </div>
+                              {editing === sentence.start ? (
+                                <input
+                                  className="edit-text"
+                                  type="text"
+                                  value={sentence.text}
+                                  onBlur={handleBlur}
+                                  onChange={(event) =>
+                                    handleChangeText(sentence, event)
+                                  }
+                                  onKeyDown={(event) => handleKeyPress(event)}
+                                  autoFocus
+                                />
+                              ) : (
+                                <div className="transcript-text">
+                                  {sentence.text}
+                                </div>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </Dropdown.Menu>
-                  </Dropdown>
+                        </CustomToggle>
+                        <Dropdown.Menu style={{ backgroundColor: "#F0F0F0" }}>
+                          {!isRelabelingSpeaker ? (
+                            <div>
+                              <Dropdown.Item
+                                onClick={(event) => {
+                                  handleAddQuestion(sentence, event);
+                                  handleToggle(null);
+                                }}
+                              >
+                                Add as a question
+                              </Dropdown.Item>
+                              <Dropdown.Item
+                                onClick={() => setIsRelabelingSpeaker(true)}
+                              >
+                                Relabel speaker
+                              </Dropdown.Item>
+                              <Dropdown.Item
+                                onClick={() => setEditing(sentence.start)}
+                              >
+                                Edit sentence
+                              </Dropdown.Item>
+                              <Dropdown.Item
+                                onClick={() => removeSentence(sentence)}
+                              >
+                                Remove sentence
+                              </Dropdown.Item>
+                              <Dropdown.Item
+                                onClick={() => handleAddNewSentence(sentence)}
+                              >
+                                Insert sentence after
+                              </Dropdown.Item>
+                            </div>
+                          ) : (
+                            <div>
+                              {Array.from(new Set(speakers.sort())).map(
+                                (speaker) => (
+                                  <Dropdown.Item
+                                    onClick={() =>
+                                      handleItemClick(sentence, speaker)
+                                    }
+                                  >
+                                    {speaker}
+                                  </Dropdown.Item>
+                                )
+                              )}{" "}
+                              <div
+                                onClick={() => handleAddNewSpeaker(sentence)}
+                              >
+                                <Dropdown.Item>
+                                  Label as new speaker
+                                </Dropdown.Item>
+                              </div>
+                            </div>
+                          )}
+                        </Dropdown.Menu>
+                      </Dropdown>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </div>
-              <div className="alert alert-secondary">
-                <h5>From our analysis, <strong className={`transcript-speaker speaker-${teacher}`}> Speaker {teacher}</strong> is the Teacher and <u>all other speakers are Students</u>.</h5>
-                <p>If this is not the case, please relabel the speakers in the "Full Transcript" box above to update this information.</p>
               </div>
-
+              <div className="alert alert-secondary">
+                <h5>
+                  From our analysis,{" "}
+                  <strong className={`transcript-speaker speaker-${teacher}`}>
+                    {" "}
+                    Speaker {teacher}
+                  </strong>{" "}
+                  is the Teacher and <u>all other speakers are Students</u>.
+                </h5>
+                <p>
+                  If this is not the case, please relabel the speakers in the
+                  "Full Transcript" box above to update this information.
+                </p>
+              </div>
             </Tab>
             <Tab eventKey="QuestionsKey" title="Questions">
-                <div className="card-deck mb-3 text-center">
-                  <div className="card mb-4 box-shadow">
-                      <div className="card-header">
-                        <h2>Questions</h2>
-                      </div>
-                      <div className="card-header">
-                        <h5>Number of Questions: {questions && questions.length}</h5>
-                        <h5>Total Questioning Time: {questioningTime}</h5>
-                      </div>
-                      <div className="card-body" id="table">
-                        <div className="container">
-                          <table className="table">
-                            <thead>
-                              <tr>
-                                <th scope="col">Time</th>
-                                <th scope="col">Question</th>
-                                <th scope="col">Speaker</th>
-                                <th scope="col">Response Time</th>
-                                <th scope="col">Question Type</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {sentences &&
-                                times &&
-                                sentences
-                                  .filter(sentence => sentence.isQuestion === true)
-                                  .map((question, index) => (
-                                    <tr key={index} className="question">
-                                      <td>{convertMsToTime(question.start)}</td>
-                                      <td id="question-table-question" style={{ color: question.label === "Uncategorized" ? "#ff0000" : "#000000" }}>"{question.text}"</td>
-                                      <td className={`transcript-speaker speaker-${question.speaker}`}>{question.speaker}</td>
-                                      <td>
-                                        {respTime[question.end] < 1 ? "< 1 second"
-                                          : respTime[question.end] === "No Response" ? "No Response"
-                                            : respTime[question.end] + " seconds"}
-                                      </td>
-                                      <td style={{ color: question.label === "Uncategorized" ? "#ff0000" : "#000000" }}>{question.label}</td>
-                                      <td className="question-options">
-                                        <Dropdown>
-                                          <Dropdown.Toggle variant="sm" id="dropdown-basic">
-                                            Select Type
-                                          </Dropdown.Toggle>
-
-                                          <Dropdown.Menu>
-                                            <Dropdown.Item
-                                              onClick={() => {
-                                                selectLabel(index, "Knowledge");
-                                              }}
-                                            >
-                                              Knowledge
-                                            </Dropdown.Item>
-                                            <Dropdown.Item
-                                              onClick={() => {
-                                                selectLabel(index, "Understand");
-                                              }}
-                                            >
-                                              Understand
-                                            </Dropdown.Item>
-                                            <Dropdown.Item
-                                              onClick={() => {
-                                                selectLabel(index, "Apply");
-                                              }}
-                                            >
-                                              Apply
-                                            </Dropdown.Item>
-                                            <Dropdown.Item
-                                              onClick={() => {
-                                                selectLabel(index, "Analyze");
-                                              }}
-                                            >
-                                              Analyze
-                                            </Dropdown.Item>
-                                            <Dropdown.Item
-                                              onClick={() => {
-                                                selectLabel(index, "Evaluate");
-                                              }}
-                                            >
-                                              Evaluate
-                                            </Dropdown.Item>
-                                            <Dropdown.Item
-                                              onClick={() => {
-                                                selectLabel(index, "Create");
-                                              }}
-                                            >
-                                              Create
-                                            </Dropdown.Item>
-                                          </Dropdown.Menu>
-                                        </Dropdown>
-                                        <button
-                                          type="button"
-                                          className="btn btn-danger"
-                                          onClick={() => removeQuestion(index)}
-                                        >
-                                          Remove
-                                        </button>
-                                      </td>
-                                    </tr>
-                                  ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    </div>
-
+              <div className="card-deck mb-3 text-center">
+                <div className="card mb-4 box-shadow">
+                  <div className="card-header">
+                    <h2>Questions</h2>
                   </div>
+                  <div className="card-header">
+                    <h5>
+                      Number of Questions: {questions && questions.length}
+                    </h5>
+                    <h5>Total Questioning Time: {questioningTime}</h5>
+                  </div>
+                  <div className="card-body" id="table">
+                    <div className="container">
+                      <table className="table">
+                        <thead>
+                          <tr>
+                            <th scope="col">Time</th>
+                            <th scope="col">Question</th>
+                            <th scope="col">Speaker</th>
+                            <th scope="col">Response Time</th>
+                            <th scope="col">Question Type</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {sentences &&
+                            times &&
+                            sentences
+                              .filter(
+                                (sentence) => sentence.isQuestion === true
+                              )
+                              .map((question, index) => (
+                                <tr key={index} className="question">
+                                  <td>{convertMsToTime(question.start)}</td>
+                                  <td
+                                    id="question-table-question"
+                                    style={{
+                                      color:
+                                        question.label === "Uncategorized"
+                                          ? "#ff0000"
+                                          : "#000000",
+                                    }}
+                                  >
+                                    "{question.text}"
+                                  </td>
+                                  <td
+                                    className={`transcript-speaker speaker-${question.speaker}`}
+                                  >
+                                    {question.speaker}
+                                  </td>
+                                  <td>
+                                    {respTime[question.end] < 1
+                                      ? "< 1 second"
+                                      : respTime[question.end] === "No Response"
+                                      ? "No Response"
+                                      : respTime[question.end] + " seconds"}
+                                  </td>
+                                  <td
+                                    style={{
+                                      color:
+                                        question.label === "Uncategorized"
+                                          ? "#ff0000"
+                                          : "#000000",
+                                    }}
+                                  >
+                                    {question.label}
+                                  </td>
+                                  <td className="question-options">
+                                    <Dropdown>
+                                      <Dropdown.Toggle
+                                        variant="sm"
+                                        id="dropdown-basic"
+                                      >
+                                        Select Type
+                                      </Dropdown.Toggle>
+
+                                      <Dropdown.Menu>
+                                        <Dropdown.Item
+                                          onClick={() => {
+                                            selectLabel(index, "Knowledge");
+                                          }}
+                                        >
+                                          Knowledge
+                                        </Dropdown.Item>
+                                        <Dropdown.Item
+                                          onClick={() => {
+                                            selectLabel(index, "Understand");
+                                          }}
+                                        >
+                                          Understand
+                                        </Dropdown.Item>
+                                        <Dropdown.Item
+                                          onClick={() => {
+                                            selectLabel(index, "Apply");
+                                          }}
+                                        >
+                                          Apply
+                                        </Dropdown.Item>
+                                        <Dropdown.Item
+                                          onClick={() => {
+                                            selectLabel(index, "Analyze");
+                                          }}
+                                        >
+                                          Analyze
+                                        </Dropdown.Item>
+                                        <Dropdown.Item
+                                          onClick={() => {
+                                            selectLabel(index, "Evaluate");
+                                          }}
+                                        >
+                                          Evaluate
+                                        </Dropdown.Item>
+                                        <Dropdown.Item
+                                          onClick={() => {
+                                            selectLabel(index, "Create");
+                                          }}
+                                        >
+                                          Create
+                                        </Dropdown.Item>
+                                      </Dropdown.Menu>
+                                    </Dropdown>
+                                    <button
+                                      type="button"
+                                      className="btn btn-danger"
+                                      onClick={() => removeQuestion(index)}
+                                    >
+                                      Remove
+                                    </button>
+                                  </td>
+                                </tr>
+                              ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </Tab>
 
-              <Tab eventKey="questionCategoryKey" title="Question Category Distribution">
+            <Tab
+              eventKey="questionCategoryKey"
+              title="Question Category Distribution"
+            >
               <div className="card-deck mb-3 text-center">
-
                 <table>
                   <tbody>
                     <tr>
                       <td id="barChartContainer">
-                        <Chart options={barChartProps.options} series={barChartProps.series} type="bar" width="1400" height="600" />
+                        <Chart
+                          options={barChartProps.options}
+                          series={barChartProps.series}
+                          type="bar"
+                          width="1400"
+                          height="600"
+                        />
                       </td>
                     </tr>
                   </tbody>
-                  
                 </table>
-              
               </div>
-              </Tab>
+            </Tab>
 
-              <Tab eventKey="barChartKey" title="Talking Distribution">
-
+            <Tab eventKey="barChartKey" title="Talking Distribution">
               <div className="card-deck mb-3 text-center">
-
                 <table>
                   <tbody>
                     <tr>
                       <td id="pieChartContainer">
-                        <Chart options={pieChartProps.options} series={pieChartProps.series} type="pie" width="1400" height="600" />
+                        <Chart
+                          options={pieChartProps.options}
+                          series={pieChartProps.series}
+                          type="pie"
+                          width="1400"
+                          height="600"
+                        />
                       </td>
                     </tr>
                   </tbody>
-                  
                 </table>
-
               </div>
+            </Tab>
 
-              </Tab>
-
-              <Tab eventKey="timeChartGraphKey" title="Teacher Question Timeline">
-
+            <Tab eventKey="timeChartGraphKey" title="Teacher Question Timeline">
               <div className="card-deck mb-3 text-center">
-
                 <table>
                   <tbody>
                     <tr>
                       <td id="timeChartContainer">
-                        <Chart options={getTimeChartProps(sentences).options} series={getTimeChartProps(sentences).series} type="rangeBar" height={600} width={1400} />
+                        <Chart
+                          options={getTimeChartProps(sentences).options}
+                          series={getTimeChartProps(sentences).series}
+                          type="rangeBar"
+                          height={600}
+                          width={1400}
+                        />
                       </td>
                     </tr>
                   </tbody>
-                
                 </table>
-
               </div>
-              </Tab>
+            </Tab>
 
-              <Tab eventKey="timeLineKey" title="Collapsed Timeline">
-                <table>
-                  <tbody>
-                    <tr>
-                      <td id="timeLineContainer">
-                        <Chart options={getTimeLineProps(sentences).options} series={getTimeLineProps(sentences).series} type="rangeBar" height={200} width={1400} />
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              
-              </Tab>
+            <Tab eventKey="timeLineKey" title="Collapsed Timeline">
+              <table>
+                <tbody>
+                  <tr>
+                    <td id="timeLineContainer">
+                      <Chart
+                        options={getTimeLineProps(sentences).options}
+                        series={getTimeLineProps(sentences).series}
+                        type="rangeBar"
+                        height={200}
+                        width={1400}
+                      />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </Tab>
 
-              <Tab eventKey="visualizations" title="Visualizations">
-                <div className="card-deck mb-3 text-center">
-                    <div className="card mb-4 box-shadow">
-                        <div className="card-header">
-                          <h2>Word Cloud</h2>
-                        </div>
-                    </div>
+            <Tab eventKey="visualizations" title="Visualizations">
+              <div className="card-deck mb-3 text-center">
+                <div className="card mb-4 box-shadow">
+                  <div className="card-header">
+                    <h2>Word Cloud</h2>
+                  </div>
                 </div>
+              </div>
 
-                <ParentSize>
-                  {({ width, height }) => (
-                    <WordCloud width={width} height={600} showControls="true" transcript={transcript} />
-                  )}
-                </ParentSize>
-                
-              
-              </Tab>
-
+              <ParentSize>
+                {({ width, height }) => (
+                  <WordCloud
+                    width={width}
+                    height={600}
+                    showControls="true"
+                    transcript={transcript}
+                  />
+                )}
+              </ParentSize>
+            </Tab>
           </Tabs>
 
           {!userReportToLoad ? (
-            <input placeholder="Name this report" onBlur={handleInputChange} id="name-report"></input>
+            <input
+              placeholder="Name this report"
+              onBlur={handleInputChange}
+              id="name-report"
+            ></input>
           ) : null}
           {badReportName ? (
-            <div className="alert alert-danger">Please name your report before saving!</div>
+            <div className="alert alert-danger">
+              Please name your report before saving!
+            </div>
           ) : null}
-         
+
           <div className="checkBox">
             <strong>Select what to include in CSV:</strong>
-            <label className="checkBox">Select All<input type="checkbox" className="checkBox" checked={allSelected} onChange={allSelected ? handleDeselectAll : handleSelectAll}></input></label>
-            <label className="checkBox">Start Times<input type="checkbox" className="checkBox" checked={startTimeBox} onChange={() => setStartTimeBox(!startTimeBox)}></input></label>
-            <label className="checkBox">End Times<input type="checkbox" className="checkBox" checked={endTimeBox} onChange={() => setEndTimeBox(!endTimeBox)}></input></label>
-            <label className="checkBox">Speakers<input type="checkbox" className="checkBox" checked={speakerBox} onChange={() => setSpeakerBox(!speakerBox)}></input></label>
-            <label className="checkBox">isQuestion Label<input type="checkbox" className="checkBox" checked={isQuestionBox} onChange={() => setIsQuestionBox(!isQuestionBox)}></input></label>
-            <label className="checkBox">Question Type<input type="checkbox" className="checkBox" checked={questionTypeBox} onChange={() => setQuestionTypeBox(!questionTypeBox)}></input></label>
-            <label className="checkBox">Text<input type="checkbox" className="checkBox" checked={sentencesBox} onChange={() => setSentencesBox(!sentencesBox)}></input></label>
-            <select className="dropdown" value={questionsBox ? "questions" : "fullTranscript"} onChange={(e) => setQuestionsBox(e.target.value === "questions")}>
+            <label className="checkBox">
+              Select All
+              <input
+                type="checkbox"
+                className="checkBox"
+                checked={allSelected}
+                onChange={allSelected ? handleDeselectAll : handleSelectAll}
+              ></input>
+            </label>
+            <label className="checkBox">
+              Start Times
+              <input
+                type="checkbox"
+                className="checkBox"
+                checked={startTimeBox}
+                onChange={() => setStartTimeBox(!startTimeBox)}
+              ></input>
+            </label>
+            <label className="checkBox">
+              End Times
+              <input
+                type="checkbox"
+                className="checkBox"
+                checked={endTimeBox}
+                onChange={() => setEndTimeBox(!endTimeBox)}
+              ></input>
+            </label>
+            <label className="checkBox">
+              Speakers
+              <input
+                type="checkbox"
+                className="checkBox"
+                checked={speakerBox}
+                onChange={() => setSpeakerBox(!speakerBox)}
+              ></input>
+            </label>
+            <label className="checkBox">
+              isQuestion Label
+              <input
+                type="checkbox"
+                className="checkBox"
+                checked={isQuestionBox}
+                onChange={() => setIsQuestionBox(!isQuestionBox)}
+              ></input>
+            </label>
+            <label className="checkBox">
+              Question Type
+              <input
+                type="checkbox"
+                className="checkBox"
+                checked={questionTypeBox}
+                onChange={() => setQuestionTypeBox(!questionTypeBox)}
+              ></input>
+            </label>
+            <label className="checkBox">
+              Text
+              <input
+                type="checkbox"
+                className="checkBox"
+                checked={sentencesBox}
+                onChange={() => setSentencesBox(!sentencesBox)}
+              ></input>
+            </label>
+            <select
+              className="dropdown"
+              value={questionsBox ? "questions" : "fullTranscript"}
+              onChange={(e) => setQuestionsBox(e.target.value === "questions")}
+            >
               <option value="fullTranscript">Include Full Transcript</option>
               <option value="questions">Only Include Questions</option>
             </select>
-
           </div>
-          
+
           <div>
-            {successfullUpload ? (
-              <h6>File Save Success!!!</h6>
-            ) : null}
-            
-            <button className="btn btn-primary" onClick={() => generatePDF(transcript, sentences, questions)} type="primary" id="bottom-button">
+            {successfullUpload ? <h6>File Save Success!!!</h6> : null}
+
+            <button
+              className="btn btn-primary"
+              onClick={() => generatePDF(transcript, sentences, questions)}
+              type="primary"
+              id="bottom-button"
+            >
               Download PDF
             </button>
-            <button onClick={() => saveToCSV(transcript, sentences)} className='btn btn-primary' id="bottom-button2">
+            <button
+              onClick={() => saveToCSV(transcript, sentences)}
+              className="btn btn-primary"
+              id="bottom-button2"
+            >
               Download CSV
             </button>
-            <button className="btn btn-primary" onClick={(e) => reloadPage(e)} id="bottom-button2">Upload New Recording</button>
+            <button
+              className="btn btn-primary"
+              onClick={(e) => reloadPage(e)}
+              id="bottom-button2"
+            >
+              Upload New Recording
+            </button>
           </div>
         </div>
       )}
