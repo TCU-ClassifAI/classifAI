@@ -1,6 +1,5 @@
 <a name="readme-top"></a>
 
-<!-- PROJECT LOGO -->
 <br />
 <div align="center">
   <a href="https://github.com/TCU-Instructional-AI/classifAI">
@@ -12,10 +11,10 @@
   <p align="center">
     ClassifAI enhances educational content by transcribing video and audio into text for user modification and categorizes questions, offering engagement insights and user-friendly access.<br>
     <br />
-    <a href="https://github.com/TCU-Instructional-AI/classifAI"><strong>Explore the docs »</strong></a>
+    <a href="https://classifai.tcu.edu/"><strong>Visit the Portal »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/TCU-Instructional-AI/classifAI">Visit Portal</a>
+    <a href="https://tcu-instructional-ai.github.io/classifai-docs">Documentation</a>
     ·
     <a href="https://github.com/TCU-Instructional-AI/classifAI/issues">Report Bug</a>
     ·
@@ -48,9 +47,7 @@
     <li><a href="#usage">Usage</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
 
@@ -59,19 +56,22 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+![Classifai Screenshot](docs/images/product.png)
 
-Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `TCU-Instructional-AI`, `classifAI`, `twitter_handle`, `linkedin_username`, `email_client`, `email`, `project_title`, `project_description`
-
-
+ClassifAI is a web application that enhances educational content by transcribing video and audio into text for user modification and categorizes questions, offering engagement insights and user-friendly access.
 
 
 
 ### Built With
 
-* Bullet point list
-  
+* [React JS](https://react.dev/) (Frontend)
+* [D3](https://d3js.org/) + [VisX](https://airbnb.io/visx) (Visualization)
+* [Express JS](https://expressjs.com/) (Backend)
+* MongoDB (Database)
+* Docker (Deployment)
+* AWS Cognito (Deployment)
 
+This connects to the [ClassifAI Engine](https://github.com/TCU-Instructional-AI/classifAI-engine) that handles the transcription and classification of the videos.
 
 
 <!-- GETTING STARTED -->
@@ -80,49 +80,67 @@ Here's a blank template to get started: To avoid retyping too much info. Do a se
 This is an example of how you may give instructions on setting up your project locally.
 To get a local copy up and running follow these simple example steps.
 
+More detailed instructions can be found in the [documentation](https://tcu-instructional-ai.github.io/classifai-docs).
+
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
+* [Node.js](https://nodejs.org/en/download/)
+* [MongoDB](https://www.mongodb.com/try/download/community)
+* [Docker](https://www.docker.com/products/docker-desktop)
 
 ### Installation
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
-   ```sh
-   git clone https://github.com/TCU-Instructional-AI/classifAI.git
-   ```
-3. Install NPM packages
-   ```sh
-   npm install
-   ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
-   ```
+1. Clone the repo
+```sh
+git clone https://github.com/TCU-Instructional-AI/classifAI.git
+```
+For Frontend:
 
+2. Install NPM packages
+```sh
+cd frontend
+npm install
+```
+3. Run the frontend
+```sh
+npm run dev
+```
+For Backend:
 
+2. Install NPM packages
+```sh
+cd backend
+npm install
+```
+3. Run the backend
+```sh
+npm run dev
+```
+For Database:
 
-<!-- USAGE EXAMPLES -->
-## Usage
-
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
-
-_For more examples, please refer to the [Documentation](https://example.com)_
-
-
-
+1. Install MongoDB
+2. Run MongoDB
+```sh
+mongod
+```
 
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Feature 1
-- [ ] Feature 2
-- [ ] Feature 3
-    - [ ] Nested Feature
+- Add more features to the dashboard
+  - [x] Word Clouds
+  - [x] Automatic Question Categorization via NLP
+  - [x] Question Categorization via User Input
+  - [ ] Identify student questions that are not answered in the video
+  - [ ] Identify students that are struggling with the content
+  - [ ] Give a summary of the video
+  - [ ] Give a summary of the questions
+- Update the User Experience
+  - [ ] Add Google Authentication for login
+  - [ ] Streamline the process of uploading videos
+  - [ ] Add a way to upload videos from YouTube
+  - [ ] Add a way to upload videos from Zoom
+
 
 See the [open issues](https://github.com/TCU-Instructional-AI/classifAI/issues) for a full list of proposed features (and known issues).
 
@@ -147,13 +165,6 @@ Don't forget to give the project a star! Thanks again!
 
 
 
-<!-- LICENSE -->
-## License
-
-Distributed under the MIT License. See `LICENSE.txt` for more information.
-
-
-
 <!-- CONTACT -->
 ## Contact
 
@@ -161,14 +172,10 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 Project Link: [https://github.com/TCU-Instructional-AI/classifAI](https://github.com/TCU-Instructional-AI/classifAI)
 
+More info about AI work being done at TCU: [https://ai.tcu.edu/](https://ai.tcu.edu/)
 
+Check out the  [documentation](https://tcu-instructional-ai.github.io/classifai-docs) for more information about the project!
 
-<!-- ACKNOWLEDGMENTS -->
-## Acknowledgments
-
-* []()
-* []()
-* []()
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
