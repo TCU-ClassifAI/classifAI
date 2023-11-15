@@ -16,8 +16,9 @@ mongo.once('open', function() {
 // Define a schema and a model for storing audio files in MongoDB
 const reportSchema = new mongoose.Schema({                           
     // Report ID: MongoDB automatically generates a unique id assigns it to the _id field
-    jsonPath: String,
     csvPath: String,
+    jsonPath: String,
+    pdfPath: String,
     audioPath: String,
     reportID: String,
     userID: String,
@@ -81,10 +82,16 @@ async function deleteUser(id) {
 
 // reportSchema ------------------------------------------
 
-// Create Report
+// Create Report - this function assumes that an userID will always be passed when creating a new report
 async function createReport(data) {
-  const report = new Report(data);
-  return await report.save();
+  // generate a reportID for this entry, assign it to the report
+  const newRID = generateUniqueReportID(data.userID);
+
+  const report = new Report(data, newRID);
+  await report.save();
+
+  // return the report to the caller
+  return report;
 }
 
 // Read Report
@@ -125,6 +132,28 @@ async function deleteAdmin(id) {
   return await Admin.findOneAndDelete({ userID: id });
 }
 
-// Validation Functions? maybe include in another module
+// Util Functions
 
-module.exports = Report, User, Admin;
+// Generate new reportID
+async function generateUniqueReportID(userID) {
+  let isUnique = false;
+  let reportID;
+
+  while (!isUnique) {
+    // Generate a random 4-digit number
+    reportID = Math.floor(1000 + Math.random() * 9000);
+
+    // Check if this reportID already exists for the given userID
+    const existingReport = await Report.findOne({ reportID, userID });
+    if (!existingReport) {
+      isUnique = true;
+    }
+  }
+
+  return reportID;
+}
+
+
+module.exports.Report = Report;
+module.exports.User = User;
+module.exports.Admin = Admin;
