@@ -70,6 +70,12 @@ async function getUser(id) {
   return await User.findOne({ userID: id });
 }
 
+// Get User Where - search by query
+// expected input: getUserWhere({ state: someState })
+async function getUserWhere(query) {
+  return await User.findOne(query);
+}
+
 // Update User
 async function updateUser(id, data) {
   return await User.findOneAndUpdate({ userID: id }, data, { new: true });
@@ -87,7 +93,7 @@ async function createReport(data) {
   // generate a reportID for this entry, assign it to the report
   const newRID = generateUniqueReportID(data.userID);
 
-  const report = new Report(data, newRID);
+  const report = new Report(data, { reportID: newRID });
   await report.save();
 
   // return the report to the caller
@@ -97,6 +103,12 @@ async function createReport(data) {
 // Read Report
 async function getReport(id) {
   return await Report.findOne({ reportID: id });
+}
+
+// Get Report  - search by query
+// expected input: getReportWhere({ userID: someUserID })
+async function getReportWhere(query) {
+  return await Report.findOne(query);
 }
 
 // Update Report
@@ -144,7 +156,7 @@ async function generateUniqueReportID(userID) {
     reportID = Math.floor(1000 + Math.random() * 9000);
 
     // Check if this reportID already exists for the given userID
-    const existingReport = await Report.findOne({ reportID, userID });
+    const existingReport = await Report.findOne({ reportID: reportID, userID: userID });
     if (!existingReport) {
       isUnique = true;
     }
@@ -157,3 +169,22 @@ async function generateUniqueReportID(userID) {
 module.exports.Report = Report;
 module.exports.User = User;
 module.exports.Admin = Admin;
+
+module.exports = {
+  createUser,
+  getUser,
+  getUserWhere,
+  updateUser,
+  deleteUser,
+
+  createReport,
+  getReport,
+  getReportWhere,
+  updateReport,
+  deleteReport,
+
+  createAdmin,
+  getAdmin,
+  updateAdmin,
+  deleteAdmin,
+};
