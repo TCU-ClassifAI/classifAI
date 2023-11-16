@@ -7,13 +7,17 @@ const fs = require('fs');
 const path = require('path');
 const FormData = require('form-data');
 
+const dbconnect = require('./mongo');
+
 // Look into PQueue; improve the performance by processing multiple files concurrently (specified by the concurrency option)
 
 const PORT = 5000;
 const app = express();
 app.use(cors());
 
-
+// SHOULD EXIST IN .env
+// FlaskBackendURL
+// 
 
 
 
@@ -65,7 +69,7 @@ var upload = multer({
 
 ///////////// MongoDB setup
 
-const Report = require('./mongo');
+
 
 /////////////
 
@@ -82,8 +86,9 @@ app.listen(PORT, () => {
 ////////////// Upload endpoint: Stores file in the web server, uploads info to MongoDB, sends to Workstation
 // supports other optional attributes like subject, grade level, and is_premium
 
+// Upload endpoint, to accept audio, video, json, CSV, or PDF files, requires an userID, and optionally a reportID
 app.post("/upload", upload.single('file'), async (req, res) => {
-     
+    
     // Check if userID is provided
     const userId = req.body.userId;
     if (!userId) {
@@ -94,34 +99,94 @@ app.post("/upload", upload.single('file'), async (req, res) => {
       res.status(400).json({ success: false, message: "No file uploaded" });
     }
 
+
+
+    // Check if reportID is provided
+    const reportID = req.body.reportID;
+    if (!reportID) {
+      try {
+        // if not, create a new report in MongoDB with the file info provided, and save the reportID
+        const reportData = req.body;
+
+        const newReport = await dbconnect.createReport(reportData);
+        const reportID = newReport.reportID;
+
+        res.status(201).json({ error: error.message });
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    }
+
     
 
+    // if the uploaded file is a JSON, CSV, PDF, or audio file it should be saved in /uploads
+
+  
+
+    // create the directory within /uploads for the new report
     try {
-      // Create a new Report in MongoDB with the file info we have
-      const audioFile = new Report({  //Audio({
-        // want a userID passed in
-        userId: userId,
-        gradeLevel: req.body.gradeLevel,
-        subject: req.body.subject,
-        isPremium: req.body.is_premium,
-        status: 'in progress'
-      });
-
-      // Save the audio document in MongoDB
-      await audioFile.save();   //send to mongoDB Connector
-
-      // Move the file to a new directory with the _id
-      const newDir = path.join(__dirname, 'uploads', req.body.userId, String(audioFile._id));
+      const newDir = path.join('./uploads', req.body.userId, reportID);
       fs.mkdirSync(newDir, { recursive: true });
-      fs.renameSync(req.file.path, path.join(newDir, req.file.filename));
 
-      const newPath = path.join(newDir, req.file.filename);
+      // here, list our allowed audio types
+      const allowedAudioTypes = [
+        'audio/mpeg',       // MP3 files
+        'audio/wav',        // WAV files
+        'audio/aac',        // AAC files
+        'audio/ogg',        // OGG files
+        'audio/webm'        // WebM files
+      ];
 
-      // Update the audioPath in MongoDB
-      audioFile.audioPath = newPath;
-      await audioFile.save();
+      // from here, we'll need to name the file according to its filetype, and save it accordingly
+      const fileType = req.file.mimetype;
+      if (fileType == 'application/json') {
+        fs.renameSync(req.file.path, path.join(newDir, String('json_' + req.file.filename)));
+        // store this information as jsonPath
+        const jsonPath = path.join(newDir, String('json_' + req.file.filename));
+        dbconnect.updateReport(reportID, jsonPath);
 
-      res.status(200).json({ success: true, id: audioFile._id, message: 'File uploaded and Database entry created successfully' });
+        // additionally, save this as newPath for generic reference
+        const newPath = jsonPath;
+      }
+
+      else if (fileType == 'text/csv') {
+        fs.renameSync(req.file.path, path.join(newDir, String('csv_' + req.file.filename)));
+        // store this information as newPath
+        const csvPath = path.join(newDir, String('csv_' + req.file.filename));
+        dbconnect.updateReport(reportID, csvPath);
+
+        // additionally, save this as newPath for generic reference
+        const newPath = csvPath;
+      }
+
+      else if (fileType == 'application/pdf') {
+        fs.renameSync(req.file.path, path.join(newDir, String('pdf_' + req.file.filename)));
+        // store this information as newPath
+        const pdfPath = path.join(newDir, String('pdf_' + req.file.filename));
+        dbconnect.updateReport(reportID, pdfPath);
+
+        // additionally, save this as newPath for generic reference
+        const newPath = pdfPath;
+      }
+
+      // check if the file is an audio file
+      else if (allowedAudioTypes.includes(fileType)) {
+        fs.renameSync(req.file.path, path.join(newDir, String('audio_' + req.file.filename)));
+        // store this information as newPath
+        const audioPath = path.join(newDir, String('audio_' + req.file.filename));
+        dbconnect.updateReport(reportID, audioPath);
+
+        // additionally, save this as newPath for generic reference
+        const newPath = audioPath;
+      }
+
+      // if no valid filetype has been provided, return success: false
+      else {
+        res.status(200).json({ success: false, id: reportID, message: 'Invalid file type provided' });
+      }
+
+      // valid file type provided, return success: true
+      res.status(200).json({ success: true, id: reportID, message: 'File uploaded and Database entry created successfully' });
 
 
       const flaskBackendUrl = 'http://localhost:5555/start_transcription';    //'http://WORKSTATION:XXXX/start_transcription';
@@ -138,7 +203,7 @@ app.post("/upload", upload.single('file'), async (req, res) => {
       formData.append('file', fileStream);
 
       // Append other fields
-      formData.append('reportID', String(audioFile._id));
+      formData.append('reportID', String());
 
       // Send the form data with Axios
       const response = await axios.post(flaskBackendUrl, formData, { //make this a try catch so it doesnt crash
@@ -165,17 +230,17 @@ app.post("/upload", upload.single('file'), async (req, res) => {
 
 ////////////// Get transcript/analysis endpoint:  grab the transcript if available from the given audio file
 
-app.get('/transcript/:id', async (req, res) => {
+app.get('/transcript/:reportID', async (req, res) => {
   try{
     // Find audio document in MongoDB given ID
-    const audioFile = await Report.findById(req.params.id);
+    const report = await dbconnect.getReport(req.params.reportID);
 
-    if (!audioFile) {
-      // Send no audio file found error
-      return res.status(404).json({ success: false, message: 'Audio file not found.'});
+    if (!report) {
+      // Send no report found error
+      return res.status(404).json({ success: false, message: 'Report file not found.'});
     }
 
-    if (audioFile.status === 'in progress'){
+    if (report.status === 'in progress'){
       // Send response indicating pending status
       return res.json({success: false, message:'Transcription still in progress.'});
     }
@@ -186,7 +251,7 @@ app.get('/transcript/:id', async (req, res) => {
     }
 
     // Send a response with the transcription of the audio file
-    res.json({ success: true, transcription: audioFile.transcription });
+    res.json({ success: true, transcription: report.transcription });
 
   }
   catch(error) {
@@ -201,17 +266,17 @@ app.get('/transcript/:id', async (req, res) => {
 
 ////////////// Update Transcription with changes, this will probably need more work
 
-app.put('/transcript/:id', async(req, res) => {
+app.put('/transcript/:reportID', async(req, res) => {
   try {
     // Find audio document in MongoDB given ID
-    const audioFile = await Report.findById(req.params.id);
+    const report = await dbconnect.getReport(req.params.reportID);
 
-    if (!audioFile) {
+    if (!report) {
       // Send a response indicating that the audio file was not found
-      return res.status(404).json({ success: false, message: 'Audio file not found.' });
+      return res.status(404).json({ success: false, message: 'Report file not found.' });
     }
 
-    if (audioFile.status !== 'complete') {
+    if (report.status !== 'complete') {
       // Restrict updates to completed transcriptions only
       return res.status(400).json({ success: false, message: 'Transcription can only be updated for completed files.' });
     }
@@ -220,10 +285,7 @@ app.put('/transcript/:id', async(req, res) => {
     const newTranscription = req.body.transcription;
 
     // Update the transcription in the audio document
-    audioFile.transcription = newTranscription;
-
-    // Save the updated audio document in MongoDB
-    await audioFile.save();
+    await dbconnect.updateReport(report.reportID, {transcription: newTranscription} );
 
     // Send a response indicating a successful update
     res.json({ success: true, message: 'Transcription updated successfully' });
