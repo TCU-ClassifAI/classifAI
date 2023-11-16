@@ -75,7 +75,12 @@ var upload = multer({
 
 
 app.get("/", (req, res) => {
+  res.sendFile('<a href="/auth/google"> Auth with Google</a>'); // Development html for google auth, ideally frontend makes this button
   return res.status(200).send("It's working");
+});
+
+app.get('/protected', (req, res) => { //development endpoint for google auth testing
+  res.send('Hello')
 });
 
 app.listen(PORT, () => {
@@ -212,7 +217,7 @@ app.post("/upload", upload.single('file'), async (req, res) => {
       // flask would look something like:
           // def start_transcription():
               // audio_file = request.files.get('file')
-              // audio_id = request.form.get('audioId')
+              // audio_id = request.form.get('reportID')
               // to get audio file and audio id
 
     } 
