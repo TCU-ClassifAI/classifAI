@@ -1,7 +1,7 @@
 // about.js
 import React from 'react';
 import './about.css'; // Import the CSS file for styling
-import ImageOne from '../images/michael-img.jpg';
+import ImageOne from '../images/michael-img.jpg'
 import ImageTwo from '../images/curby-img.jpg';
 import ImageThree from '../images/ma_liran-img.jpg';
 
@@ -27,7 +27,7 @@ const About = () => {
             can identify potential vectors of ineffective instruction.
             </p>
 
-            <h2>Client</h2>
+
 
             <div className="image-text-row">
                 <img src={ImageOne} alt="Description of Image One" className="about-image" />
