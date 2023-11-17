@@ -1,0 +1,52 @@
+/* About.css */
+.about-container {
+  background-color: #fafafa;
+  color: #333;
+  text-align: center;
+  padding: 20px;
+  margin-top: 50px;
+}
+
+.about-description {
+  max-width: 800px;
+  margin: auto;
+  margin-bottom: 60px;
+  margin-top: 20px;
+  font-size: 15px;
+}
+
+.image-text-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.about-image {
+  width: auto;
+  max-width: 15%;
+  margin-right: 20px;
+  object-fit: cover;
+  border-radius: 10px; /* Rounded corners for images */
+}
+
+.text-section {
+  max-width: 45%;
+  text-align: left;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+  .image-text-row {
+      flex-direction: column;
+  }
+
+  .about-image, .text-section {
+      max-width: 100%;
+      margin-right: 0;
+  }
+
+  .text-section {
+      margin-top: 20px;
+  }
+}
