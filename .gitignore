@@ -4,7 +4,11 @@ node_modules
 .env
 backend/old.index.js
 uploads
+
 resources/*
+!resources/docker-compose.yaml
+!resources/mongo-init.js
+!resources/Dockerfile
 
 testMongo
 Workstation_Testing
