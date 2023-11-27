@@ -55,7 +55,7 @@ const Navbar_Landing = () => {
                                 <Link to="/" className="nav-link text-light"> Home</Link>
                             </li>
                             <li className="nav-item">
-                                <Link to="/company" className="nav-link text-light"> Company </Link>
+                                <Link to="/about" className="nav-link text-light"> About </Link>
                             </li>
                             <li className="nav-item">
                                 <Link to="/pricing" className="nav-link text-light"> Pricing </Link>
