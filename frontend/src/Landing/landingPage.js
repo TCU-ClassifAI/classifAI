@@ -1,11 +1,31 @@
-// about.js
+// landingPage.js
 import React from 'react';
 import './landing.css'; // Import the CSS file for styling
-import ImageOne from '../images/michael-img.jpg'
-import ImageTwo from '../images/curby-img.jpg';
-import ImageThree from '../images/ma_liran-img.jpg';
+import {useNavigate } from 'react-router-dom'
 
-const landingPage = () => {
+
+
+const LandingPage = () => {
+    let navigate = useNavigate();
+
+
+
+    function learnMore(event) {
+        event.preventDefault();
+        navigate("/about")
+    }
+
+    function login(event) {
+        event.preventDefault();
+        navigate("/login")
+    }
+
+    function signUp(event) {
+        event.preventDefault();
+        navigate("/signup")
+    }
+
+
     return (
         <div className="about-container">
             <h1>The ClassifAI Project</h1>
@@ -27,6 +47,11 @@ const landingPage = () => {
             can identify potential vectors of ineffective instruction.
             </p>
 
+            <button className="learn-more-button" onClick={(e) => learnMore(e)}>Learn More</button>
+            
+            <button className="login-button" onClick={(e) => login(e)}>Login</button>
+            <button className="sign-up-button" onClick={(e) => signUp(e)}>Sign Up</button>
+
 
 
             
@@ -34,4 +59,4 @@ const landingPage = () => {
     );
 };
 
-export default landingPage;
+export default LandingPage;
