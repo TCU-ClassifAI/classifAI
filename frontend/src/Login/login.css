@@ -12,7 +12,11 @@ html, body, #root {
 
 .left-side {
     flex: 1;
-    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 150px;
+
 }
 
 .right-side {
