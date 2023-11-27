@@ -2,9 +2,10 @@ import React from "react"
 import {Outlet, Link} from "react-router-dom";
 import signOut from "../SignOut/signOut";
 import "./Navbar_Landing.css"
-import C2Image from '../images/logo.jpg'
+import C2Image from '../images/frogv2.png'
 import { Auth } from "aws-amplify";
 import { useNavigate } from "react-router-dom";
+import "../App.css"
 
 const Navbar_Landing = () => {
     let navigate = useNavigate();
@@ -41,8 +42,6 @@ const Navbar_Landing = () => {
                         <img
                             src={C2Image}
                             className="tcu-image"
-                            width="500"
-                            height="500"
                             alt="" />
                 </a>
 
@@ -56,9 +55,6 @@ const Navbar_Landing = () => {
                             </li>
                             <li className="nav-item">
                                 <Link to="/about" className="nav-link text-light"> About </Link>
-                            </li>
-                            <li className="nav-item">
-                                <Link to="/pricing" className="nav-link text-light"> Pricing </Link>
                             </li>
                         </>
                     </ul>
