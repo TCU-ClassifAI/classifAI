@@ -1,6 +1,6 @@
 .left-side {
-    background-color: #3498db; /* Blue background color */
-    color: #fff; /* White text color */
+    
+    color: #000; /* White text color */
     padding: 20px;
     display: flex;
     flex-direction: column;
