@@ -6,7 +6,7 @@ backend/old.index.js
 uploads
 
 resources/*
-!resources/docker-compose.yaml
+!resources/docker-compose.yml
 !resources/mongo-init.js
 !resources/Dockerfile
 
