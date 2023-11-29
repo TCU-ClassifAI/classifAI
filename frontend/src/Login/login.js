@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { Auth } from 'aws-amplify'
 import { NavItem } from 'react-bootstrap'
 import signOut from '../SignOut/signOut'
+import logo from '../images/frogv2.png'
 import { faCheckCircle, faDatabase, faCogs, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -47,7 +48,7 @@ const LogIn = () => {
         <div className='container'>
             <div className='left-side'>
                 <div className='logo-container'>
-                <img src='../static/media/logo.18646aa75a5b064f6546.jpg' alt="Logo" /> 
+                <img src={logo} alt="Logo" /> 
                 {/*<p with working directory */}
                 </div>
                 <div className='welcome-message'>
