@@ -40,8 +40,6 @@ const Navbar_Home = () => {
                         <img
                             src={C2Image}
                             className="tcu-image"
-                            width="500"
-                            height="500"
                             alt="" />
                 </a>
 
