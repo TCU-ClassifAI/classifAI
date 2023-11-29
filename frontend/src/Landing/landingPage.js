@@ -41,7 +41,7 @@ const LandingPage = () => {
             Quantifying these instructional variables helps these instructors more accurately 
             understand the areas that they are strong in, and more importantly, the areas in 
             which they can be more interactive with the students as to allow them to better absorb 
-            the lessons being taught. With the help of our tool (hosted at http://classifai.tcu.edu), 
+            the lessons being taught. With the help of our tool (hosted at https://classifai.tcu.edu), 
             we can allow teachers to quickly and efficiently gather this data about each of their lessons 
             so that data driven changes in teaching techniques is possible, and moreover, so that teachers 
             can identify potential vectors of ineffective instruction.
