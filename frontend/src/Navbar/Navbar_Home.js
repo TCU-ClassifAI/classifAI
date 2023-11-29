@@ -1,7 +1,7 @@
 import React from "react"
 import {Outlet, Link} from "react-router-dom";
 import signOut from "../SignOut/signOut";
-import C2Image from '../images/logo.jpg'
+import C2Image from '../images/frogv2.png'
 import { Auth } from "aws-amplify";
 import { useNavigate } from "react-router-dom";
 
