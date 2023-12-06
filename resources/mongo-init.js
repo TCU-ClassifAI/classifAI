@@ -4,7 +4,7 @@ db.auth('user', 'secret');
 // Inserting example user with specific fields
 db.user.insertMany([
   {
-    Email: "j.l.hill@tcu.com",
+    Email: "jaxon@tcu.com",
     FirstName: "Jaxon",
     UserID: 12345678, // Assuming UserID is unique and an integer
     HashedPassword: "e3b0c44298fc1c149afbf4c8996fb924" // Example of a 32 char hash
