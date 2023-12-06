@@ -1,10 +1,14 @@
 import React, { Component } from 'react'
 import '../Login/login.css'
+import '../Login/landing.css'
 import { Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { Auth } from 'aws-amplify'
 import { NavItem } from 'react-bootstrap'
 import signOut from '../SignOut/signOut'
+import logo from '../images/frogv2.png'
+import { faCheckCircle, faDatabase, faCogs, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
 const LogIn = () => {
@@ -28,19 +32,56 @@ const LogIn = () => {
             const test = await Auth.signIn({username: user.username, password: user.password});
             console.log(test);
             setBadSignIn(false);
-            navigate("/home/submission")
+            navigate("/home/transcribe")
         }catch(error){
             setBadSignIn(true);
             console.log(error)
         }
     }
 
+    function learnMore(event) {
+        event.preventDefault();
+        navigate("/about")
+    }
+
     return (
         <div className='container'>
-            <div className="left-side"></div>
+            <div className='left-side'>
+                <div className='logo-container'>
+                <img src={logo} alt="Logo" /> 
+                {/*<p with working directory */}
+                </div>
+                <div className='welcome-message'>
+                    <h3>Welcome to ClassifAI</h3>
+                    <p>A Machine Learning Approach to Enhancing Student Engagement</p>
+                </div>
+                <div className='additional-info'>
+                    <div className='feature'>
+                        <FontAwesomeIcon icon={faCheckCircle} />
+                        <p>Easy and Secure Login</p>
+                    </div>
+                    <div className='feature'>
+                        <FontAwesomeIcon icon={faDatabase} />
+                        <p>Automatic Transcription and Categorization</p>
+                    </div>
+                    <div className='feature'>
+                        <FontAwesomeIcon icon={faCogs} />
+                        <p>Customizable AI Settings</p>
+                    </div>
+                </div>
+                <div id="container">
+                    <button class="learn-more">
+                        <span class="circle" aria-hidden="true">
+                        <span class="icon arrow"></span>
+                        </span>
+                        <span class="button-text" onClick={(e) => learnMore(e)}>Learn More</span>
+                    </button>
+                </div>
+
+            </div>
             <div className="right-side">
                 <form id='login-form'>
-                <h2 id='title'>ClassifAI</h2>
+                <h2 id='title'>Log In</h2>
                 <div className="form-group">
                     <label>Email address</label>
                     <div className='input-login'>
