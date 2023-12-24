@@ -41,6 +41,8 @@ const Navbar_Home = () => {
                             src={C2Image}
                             className="tcu-image"
                             alt="" />
+                    <span style={{ color: 'white', justifyContent: 'center', fontWeight: 'bold' }}>ClassifAI</span>
+
                 </a>
 
                 <div className="collapse navbar-collapse justify-content-end" id="navbarCollapse">

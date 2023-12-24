@@ -6,7 +6,7 @@
 
 /* Link hover styles */
 .navbar-nav .nav-link:hover {
-    text-decoration: underline;
+    text-decoration: underline 3px orange;
 }
 
 /* Responsive styles for mobile */
