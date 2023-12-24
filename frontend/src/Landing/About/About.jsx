@@ -51,7 +51,7 @@ export default function About() {
         {
             name: 'Taylor Griffin',
             role: 'Developer',
-            description: `A senior computer information technology student. Developed the backend written in Express.js`,
+            description: `A senior computer information technology student. Developed the backend written in Express.js. Additionally, designed ClassifAI logo.`,
             imageUrl: LiranMa,
         },
         {
