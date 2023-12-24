@@ -7,7 +7,7 @@ html, body, #root {
 
 .container {
     display: flex;
-    height: 100vh; /* Ensure the container takes the full viewport height */
+    padding-top: 125px;
 }
 
 .left-side {
@@ -15,7 +15,6 @@ html, body, #root {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding-bottom: 150px;
 
 }
 
@@ -24,13 +23,11 @@ html, body, #root {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 2em; /* Optional padding to prevent content sticking to edges */
-    padding-bottom: 150px;
 }
 
 #login-form {
     width: 100%;
-    margin-top: 100px;
+    margin-top: 20px;
 }
 
 .input-login {
@@ -61,3 +58,24 @@ hr {
 #password-alert {
     margin-top: 30px;
 }
+
+/* Media query for screens with a maximum width of 768px (typical for tablets and mobiles) */
+@media (max-width: 768px) {
+    .container {
+        padding-bottom: 50px; /* Reduce padding on the container for smaller screens */
+    }
+
+    .left-side, .right-side {
+        padding-bottom: 50px; /* Reduce padding on sides for smaller screens */
+    }
+
+    #login-form {
+        margin-top: 50px;
+    }
+}
+
+
+.icon {
+    font-size: 2em; /* Adjust the size as needed */ 
+}
+

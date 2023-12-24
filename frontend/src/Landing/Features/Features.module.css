@@ -1,0 +1,53 @@
+/* FeaturesComponent.module.css */
+
+.featuresContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  padding-left: 50px;
+  padding-right: 50px;
+}
+
+.featureItem {
+  text-align: center;
+  padding: 20px;
+}
+
+.featureIcon {
+  font-size: 2em;
+  margin-bottom: 10px;
+}
+
+.featureDetails {
+  font-family: 'Roboto', sans-serif; /* Apply the custom font */
+  h3 {
+    margin-bottom: 10px;
+    color: #09283D;
+    font-weight: bold;
+  }
+  p {
+    font-style: italic;
+  }
+}
+
+/* Media Query for Responsive Design */
+@media (max-width: 768px) {
+  .featuresContainer {
+    grid-template-columns: 1fr;
+    /* Change to a single column layout on smaller screens */
+  }
+}
+
+.title {
+  padding-top: 20px;
+  h1 {
+    font-family: 'Roboto', sans-serif; /* Apply the custom font */
+    font-weight: bold;
+    color: orange;
+ 
+  }
+  
+}
+

@@ -1,3 +1,29 @@
 #sign-out:hover{
     cursor: pointer;
 }
+.navbar-nav .nav-link {
+
+}
+
+/* Link hover styles */
+.navbar-nav .nav-link:hover {
+    text-decoration: underline;
+  }
+
+/* Responsive styles for mobile */
+@media screen and (max-width: 600px) {
+    /* Adjust styles for mobile screens here */
+    .navbar-nav {
+        flex-direction: column; /* Stack nav links vertically */
+    }
+
+    .navbar-nav .nav-link {
+        text-align: center; /* Center text for each nav link */
+        padding: 10px 0; /* Add padding to separate nav links */
+        border-bottom: 1px solid #ddd; /* Add a border between nav links */
+    }
+
+    .navbar-nav .nav-link:last-child {
+        border-bottom: none; /* Remove border for the last nav link */
+    }
+}

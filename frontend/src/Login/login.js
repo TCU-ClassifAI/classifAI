@@ -41,7 +41,7 @@ const LogIn = () => {
 
     function learnMore(event) {
         event.preventDefault();
-        navigate("/about")
+        navigate("/")
     }
 
     return (
@@ -57,15 +57,15 @@ const LogIn = () => {
                 </div>
                 <div className='additional-info'>
                     <div className='feature'>
-                        <FontAwesomeIcon icon={faCheckCircle} />
+                        <FontAwesomeIcon icon={faCheckCircle} className='icon' />
                         <p>Easy and Secure Login</p>
                     </div>
                     <div className='feature'>
-                        <FontAwesomeIcon icon={faDatabase} />
+                        <FontAwesomeIcon icon={faDatabase} className='icon'/>
                         <p>Automatic Transcription and Categorization</p>
                     </div>
                     <div className='feature'>
-                        <FontAwesomeIcon icon={faCogs} />
+                        <FontAwesomeIcon icon={faCogs} className="icon"/>
                         <p>Customizable AI Settings</p>
                     </div>
                 </div>

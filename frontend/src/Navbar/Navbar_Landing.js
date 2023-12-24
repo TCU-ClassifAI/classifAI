@@ -1,5 +1,6 @@
 import React from "react"
-import {Outlet, Link} from "react-router-dom";
+import { Outlet, Link } from "react-router-dom";
+import { Link as ScrollLink, animateScroll as scroll } from "react-scroll";
 import signOut from "../SignOut/signOut";
 import "./Navbar_Landing.css"
 import C2Image from '../images/frogv2.png'
@@ -33,15 +34,17 @@ const Navbar_Landing = () => {
             console.log('error signing out: ', error);
         }
     }
-    
+
     return (
         <>
             <nav className="navbar navbar-expand-lg" id="main-nav">
-                <a className="navbar-brand" href="#">
-                        <img
-                            src={C2Image}
-                            className="tcu-image"
-                            alt="" />
+                <a className="navbar-brand" href="/">
+                    <img
+                        src={C2Image}
+                        className="tcu-image"
+                        alt="" />
+                    <span style={{ color: 'white', justifyContent: 'center', fontWeight: 'bold'}}>ClassifAI</span>
+
                 </a>
 
                 <div className="collapse navbar-collapse justify-content-end" id="navbarCollapse">
@@ -53,8 +56,27 @@ const Navbar_Landing = () => {
                                 <Link to="/" className="nav-link text-light"> Home</Link>
                             </li>
                             <li className="nav-item">
-                                <Link to="/about" className="nav-link text-light"> About </Link>
+                                <ScrollLink
+                                    to="features"
+                                    spy={true}
+                                    smooth={true}
+                                    duration={200}
+                                    className="nav-link text-light"
+                                > Features
+                                </ScrollLink>
                             </li>
+                            <li className="nav-item">
+                                <ScrollLink to="about"
+                                    spy={true}
+                                    smooth={true}
+                                    duration={200}
+                                    className="nav-link text-light"> About Us </ScrollLink>
+                            </li>
+                            
+                            <li className="nav-item">
+                                <Link to="/login" className="nav-link text-light"> Login/Register </Link>
+                            </li>
+
                         </>
                     </ul>
                 </div>
