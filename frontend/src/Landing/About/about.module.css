@@ -39,6 +39,7 @@
   font-family: 'Roboto', sans-serif; /* Apply the custom font */
   font-weight: bold;
   color: orange;
+  padding-top: 100px;
 }
 
 @media screen and (max-width: 600px) {
