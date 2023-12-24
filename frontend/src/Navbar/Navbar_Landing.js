@@ -43,7 +43,7 @@ const Navbar_Landing = () => {
                         src={C2Image}
                         className="tcu-image"
                         alt="" />
-                    <span style={{ color: 'white', justifyContent: 'center', fontWeight: 'bold'}}>ClassifAI</span>
+                    <span style={{ color: 'white', justifyContent: 'center', fontWeight: 'bold' }}>ClassifAI</span>
 
                 </a>
 
@@ -72,7 +72,7 @@ const Navbar_Landing = () => {
                                     duration={200}
                                     className="nav-link text-light"> About Us </ScrollLink>
                             </li>
-                            
+
                             <li className="nav-item">
                                 <Link to="/login" className="nav-link text-light"> Login/Register </Link>
                             </li>

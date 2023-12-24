@@ -16,8 +16,8 @@ export default function About() {
         {
             name: 'Dr. Curby Alexander',
             role: 'Researcher',
-            description: 
-            `An Associate Professor of Professional Practice in the TCU College of Education. 
+            description:
+                `An Associate Professor of Professional Practice in the TCU College of Education. 
             He teaches courses on the foundations of education, instructional methods, digital 
             communication and collaboration, and experiential education. His current scholarship 
             is focused on K-12 technology integration, cybersecurity education and workforce development, 
@@ -64,26 +64,26 @@ export default function About() {
 
     return (
         <div id="about">
-        <div className={styles.titleContainer}>
-            <h1 className={styles.title}>Research and Developer Team</h1>
+            <div className={styles.titleContainer}>
+                <h1 className={styles.title}>Research and Developer Team</h1>
+            </div>
+
+            <div className={styles.teamContainer}>
+                {teamMembers.map((member, index) => (
+                    <div key={index} className={styles.teamMember}>
+                        <img
+                            src={member.imageUrl}
+                            alt={member.name}
+                            className={styles.circularImage}
+                        />
+                        <h3>{member.name}</h3>
+                        <p className={styles.role}>{member.role}</p>
+                        <p className={styles.description}>{member.description}</p>
+                    </div>
+                ))}
+            </div>
         </div>
-        
-        <div className={styles.teamContainer}>
-            {teamMembers.map((member, index) => (
-                <div key={index} className={styles.teamMember}>
-                    <img
-                        src={member.imageUrl}
-                        alt={member.name}
-                        className={styles.circularImage}
-                    />
-                    <h3>{member.name}</h3>
-                    <p className={styles.role}>{member.role}</p>
-                    <p className={styles.description}>{member.description}</p>
-                </div>
-            ))}
-        </div>
-        </div>
-        
+
     );
 };
 
