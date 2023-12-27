@@ -74,8 +74,13 @@ const Navbar_Landing = () => {
                             </li>
 
                             <li className="nav-item">
-                                <Link to="/login" className="nav-link text-light"> Login/Register </Link>
+                                <Link to="/signup" className="nav-link text-light"> Sign Up </Link>
                             </li>
+
+                            <li className="nav-item">
+                                <Link to="/login" className="nav-link text-light"> Login </Link>
+                            </li>
+                            
 
                         </>
                     </ul>

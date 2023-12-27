@@ -1,14 +1,14 @@
 import styles from './Footer.module.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGithub, faLinkedin } from "@fortawesome/free-brands-svg-icons";
-import { faMicrochip } from '@fortawesome/free-solid-svg-icons';
+import { faGithub} from "@fortawesome/free-brands-svg-icons";
+import { faMicrochip, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
 import C2Image from '../images/frogv2.png'
 
 export default function Footer() {
   const socialLinks = [
     { name: 'AI@TCU', url: 'https://ai.tcu.edu', icon: faMicrochip },
     { name: 'GitHub', url: 'https://github.com/TCU-ClassifAI', icon: faGithub },
-    { name: 'LinkedIn', url: 'https://linkedin.com', icon: faLinkedin },
+    { name: 'Documentation', url: 'https://tcu-classifai.github.io/classifAI/', icon: faFolderOpen },
   ]
 
   return (
@@ -17,13 +17,13 @@ export default function Footer() {
         <img
           src={C2Image}
           className="tcu-image"
-          alt="" />
+          alt="classifAI logo" />
       </a>
       <div className={styles.footerContent}>
         <div className={styles.footerLinks}>
           <a href="https://ai.tcu.edu">AI@TCU</a>
           <a href="https://github.com/TCU-ClassifAI">GitHub</a>
-          <a href="#contact">LinkedIn</a>
+          <a href="https://tcu-classifai.github.io/classifAI/">Documentation</a>
         </div>
         <div className={styles.footerIcons}>
           {socialLinks.map((link, index) => (
