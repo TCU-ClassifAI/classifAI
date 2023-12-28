@@ -1,126 +1,44 @@
 require('dotenv').config();
 const express = require("express");
-const multer = require('multer'); // For handling file uploads
 const cors = require("cors");
-const axios = require("axios");
-const fs = require('fs');
-const path = require('path');
-const FormData = require('form-data');
 
-
-const dbconnect = require('./mongo');
 const uploadRoute = require('./routes/uploadRoute.js');
+const transcriptionRoutes = require('./routes/transcriptionRoutes.js'); // Adjust the path as necessary
 
 
-// Look into PQueue; improve the performance by processing multiple files concurrently (specified by the concurrency option)
+//Idea bank:
+  // Look into PQueue; improve the performance by processing multiple files concurrently (specified by the concurrency option)
+  // What if in another js file we auto compress audio files when they've been uploaded?
+//
 
 const PORT = 5000;
 const app = express();
 app.use(cors());
 
-// SHOULD EXIST IN .env
-// FlaskBackendURL
-// 
 
 
 
-//  What if in another js file we auto compress audio files when they've been uploaded?
-
-
-
-
-/////////////
-
-
-app.get("/", (req, res) => {
+app.get("/", (req, res) => { // Dev route
   return res.status(200).send("It's working");
 });
-
-
 
 app.listen(PORT, () => {
   console.log("Server Running sucessfully.");
 });
 
+app.use('/upload', uploadRoute); // Testing: audio upload works as expected on newest refactor 12/28
 
-app.use('/upload', uploadRoute); //test
-
-
-
-
-
-
-////////////// Get transcript/analysis endpoint:  grab the transcript if available from the given audio file
-
-app.get('/transcript/:reportID', async (req, res) => {
-  try{
-    // Find audio document in MongoDB given ID
-    const report = await dbconnect.getReport(req.params.reportID);
-
-    if (!report) {
-      // Send no report found error
-      return res.status(404).json({ success: false, message: 'Report file not found.'});
-    }
-
-    if (report.status === 'in progress'){
-      // Send response indicating pending status
-      return res.json({success: false, message:'Transcription still in progress.'});
-    }
-
-    if (audioFile.status === 'error') {
-      // Send a response indicating an error occurred during transcription
-      return res.json({ success: false, message: "An error occurred during transcription" });
-    }
-
-    // Send a response with the transcription of the audio file
-    res.json({ success: true, transcription: report.transcription });
-
-  }
-  catch(error) {
-    res.status(500).json({ success: false, message: "An error occurred" });
-  }
-});
-
-//////////////
+app.use('/transcript', transcriptionRoutes);
 
 
 
 
-////////////// Update Transcription with changes, this will probably need more work
 
-app.put('/transcript/:reportID', async(req, res) => {
-  try {
-    // Find audio document in MongoDB given ID
-    const report = await dbconnect.getReport(req.params.reportID);
 
-    if (!report) {
-      // Send a response indicating that the audio file was not found
-      return res.status(404).json({ success: false, message: 'Report file not found.' });
-    }
 
-    if (report.status !== 'complete') {
-      // Restrict updates to completed transcriptions only
-      return res.status(400).json({ success: false, message: 'Transcription can only be updated for completed files.' });
-    }
 
-    // Get the new transcription text from the request body
-    const newTranscription = req.body.transcription;
 
-    // Update the transcription in the audio document
-    await dbconnect.updateReport(report.reportID, {transcription: newTranscription} );
 
-    // Send a response indicating a successful update
-    res.json({ success: true, message: 'Transcription updated successfully' });
-  }
-
-  catch(error) {
-    console.error(error);
-
-    // Send a response indicating an error occurred
-    res.status(500).json({ success: false, message: 'An error occurred' });
-  }
-
-});
 
 //////////////
 

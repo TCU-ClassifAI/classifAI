@@ -11,7 +11,8 @@ resources/*
 !resources/Dockerfile
 
 testMongo
-Workstation_Testing
+DB_Testing
+backend/Workstation_Testing/audios
 /resources/mongo-data/
 mongo-data
 mongosh
