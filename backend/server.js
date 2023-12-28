@@ -67,21 +67,14 @@ var upload = multer({
 
 
 
-///////////// MongoDB setup
-
-
-
 /////////////
 
 
 app.get("/", (req, res) => {
-  res.sendFile('<a href="/auth/google"> Auth with Google</a>'); // Development html for google auth, ideally frontend makes this button
   return res.status(200).send("It's working");
 });
 
-app.get('/protected', (req, res) => { //development endpoint for google auth testing
-  res.send('Hello')
-});
+
 
 app.listen(PORT, () => {
   console.log("Server Running sucessfully.");
