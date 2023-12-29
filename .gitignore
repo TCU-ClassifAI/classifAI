@@ -16,3 +16,5 @@ Workstation_Testing
 mongo-data
 mongosh
 resources/mongo-data/.mongodb/mongosh/mongosh_repl_history
+
+/frontend/build
