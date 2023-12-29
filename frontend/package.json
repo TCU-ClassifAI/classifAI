@@ -17,6 +17,7 @@
     "@visx/scale": "^3.3.0",
     "@visx/text": "^3.3.0",
     "@visx/wordcloud": "^3.3.0",
+    "@vitejs/plugin-react": "^4.2.1",
     "apexcharts": "^3.36.3",
     "aws-amplify": "^5.0.23",
     "aws-sdk": "^2.1348.0",
@@ -31,18 +32,18 @@
     "react-bootstrap": "^2.7.3",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.8.1",
-    "react-scripts": "5.0.1",
     "react-scroll": "^1.9.0",
     "react-wavify": "^1.9.0",
     "sass": "^1.60.0",
     "sveltestrap": "github:laxadev/sveltestrap",
+    "vite": "^5.0.10",
+    "vite-plugin-svgr": "^4.2.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "eslintConfig": {
     "extends": [
