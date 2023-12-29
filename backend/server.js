@@ -26,7 +26,7 @@ app.listen(PORT, () => {
   console.log("Server Running sucessfully.");
 });
 
-app.use('/upload', uploadRoute); // Testing: audio upload works as expected on newest refactor 12/28
+app.use('/upload', uploadRoute); // Testing: audio upload works as expected on newest refactor 12/28, uploaded files given reportID are put into the same folder
 
 app.use('/transcript', transcriptionRoutes);
 

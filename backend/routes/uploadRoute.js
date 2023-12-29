@@ -31,6 +31,7 @@ const upload = multer({
 //////////// 
 
 
+
 //////////// Upload endpoint: Stores file in the web server, uploads info to MongoDB, sends to Workstation
 ////// supports other optional attributes like subject, grade level, and is_premium
 router.post("/", upload.single('file'), async (req, res) => {  // Ignore route, our server.js will serve this on /upload
@@ -41,8 +42,23 @@ router.post("/", upload.single('file'), async (req, res) => {  // Ignore route, 
       return res.status(400).json({ success: false, message: "No userId or file uploaded" });
     }
 
-    const reportID = providedReportID || (await dbconnect.createReport(req.body)).reportID;
-    const newDir = path.join('./uploads', userId, String(reportID));
+    
+    let reportID;
+    let newDir;
+
+    // Check if reportID is provided
+    if (providedReportID) {
+        reportID = providedReportID;
+        newDir = path.join('./uploads', userId, String(reportID)); // Place in 'reports' folder
+    } 
+    else {
+        // Create a new report if no reportID is provided
+        const newReport = await dbconnect.createReport(req.body);
+        reportID = newReport.reportID;
+        newDir = path.join('./uploads', userId, String(reportID));
+    }
+        
+    
     fs.mkdirSync(newDir, { recursive: true });
 
     const allowedAudioTypes = ['audio/mpeg', 'audio/wav', 'audio/aac', 'audio/ogg', 'audio/webm'];
@@ -51,7 +67,8 @@ router.post("/", upload.single('file'), async (req, res) => {  // Ignore route, 
     let newPath;
     if (['application/json', 'text/csv', 'application/pdf'].includes(fileType) || allowedAudioTypes.includes(fileType)) {
       newPath = await handleFileUpload(req, fileType, reportID, newDir);
-    } else {
+    } 
+    else {
       return res.status(400).json({ success: false, id: reportID, message: 'Invalid file type provided' });
     }
 
@@ -63,7 +80,8 @@ router.post("/", upload.single('file'), async (req, res) => {  // Ignore route, 
     formData.append('reportID', String(reportID));
 
     await axios.post(flaskBackendUrl, formData, { headers: formData.getHeaders() });
-  } catch (error) {
+  } 
+  catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: "An error occurred" });
   }
@@ -73,11 +91,16 @@ router.post("/", upload.single('file'), async (req, res) => {  // Ignore route, 
 // Function to handle file upload and update report
 const handleFileUpload = async (req, fileType, reportID, newDir) => {
     const fileSuffix = fileType.split('/').pop();
-    const newPath = path.join(newDir, fileSuffix + '_' + req.file.filename);
+    const newPath = path.join(newDir, `${fileSuffix}_${req.file.filename}`);
     fs.renameSync(req.file.path, newPath);
-    await dbconnect.updateReport(reportID, { [`${fileSuffix}Path`]: newPath });
+
+    // Update to audioField if audio
+    const updateField = fileType.startsWith('audio/') ? 'audioPath' : `${fileSuffix}Path`;
+
+    //console.log("Updating database with path:", newPath);
+    await dbconnect.updateReport(reportID, { [updateField]: newPath });
     return newPath;
-  };
+};
 //////////// 
 
 module.exports = router;
