@@ -15,7 +15,6 @@ import awsconfig from "./aws-exports";
 import { Amplify } from "aws-amplify";
 import Navbar_Landing from "./Navbar/Navbar_Landing";
 import Navbar_Home from "./Navbar/Navbar_Home";
-import About from "./Landing/About/About";
 import Landing from "./Landing/Landing";
 
 Amplify.configure(awsconfig);
@@ -28,7 +27,6 @@ function App() {
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/about" element={<About />} />
           <Route path="/confirmSignUp" element={<ConfirmRegister />} />
         </Route>
 
