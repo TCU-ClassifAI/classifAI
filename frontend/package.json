@@ -18,7 +18,6 @@
     "@visx/scale": "^3.3.0",
     "@visx/text": "^3.3.0",
     "@visx/wordcloud": "^3.3.0",
-    "@vitejs/plugin-react": "^4.2.1",
     "apexcharts": "^3.36.3",
     "aws-amplify": "^5.0.23",
     "aws-sdk": "^2.1348.0",
@@ -37,7 +36,6 @@
     "react-wavify": "^1.9.0",
     "sass": "^1.60.0",
     "sveltestrap": "github:laxadev/sveltestrap",
-    "vite": "^5.0.10",
     "vite-plugin-svgr": "^4.2.0",
     "web-vitals": "^2.1.4"
   },
@@ -65,6 +63,14 @@
     ]
   },
   "devDependencies": {
-    "npm-run-all": "^4.1.5"
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@types/react": "^18.0.17",
+    "@types/react-dom": "^18.0.6",
+    "@vitejs/plugin-react": "^2.2.0",
+    "eslint": "^8.56.0",
+    "eslint-config-react-app": "^7.0.1",
+    "npm-run-all": "^4.1.5",
+    "vite": "^3.2.7",
+    "vite-plugin-eslint": "^1.8.1"
   }
 }
