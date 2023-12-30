@@ -200,7 +200,7 @@ const SignUp = () => {
                     <p className="text-gray-700 pb-2 pt-2 text-sm">You already have an account?</p>
                     <Link
                         to={{
-                        pathname: '/'
+                        pathname: '/login'
                         }}
                         className="btn btn-success"
                     >
