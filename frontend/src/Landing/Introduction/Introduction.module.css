@@ -46,3 +46,21 @@
 .strong {
   color: orange;
 }
+
+.button {
+  display: inline-block;
+  padding: 15px 20px;
+  font-size: 18px;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 10px; /* Set border-radius for a bubbled look */
+  background-color: #09283D; /* Set background color */
+  color: #ffffff; /* Set text color */
+  margin-right: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: orange;
+}

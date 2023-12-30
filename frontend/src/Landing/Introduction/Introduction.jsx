@@ -1,5 +1,7 @@
+import { Link } from "react-router-dom";
 import styles from "./Introduction.module.css";
 import classroomgraphic from "../../images/classroomgraphic.jpg";
+
 
 export default function Introduction() {
     const title =
@@ -41,7 +43,7 @@ export default function Introduction() {
     };
 
     return (
-        <div className={styles.imageDescriptionContainer}>
+        <div id="home" className={styles.imageDescriptionContainer}>
             <div className={styles.description}>
                 <h2>{title}</h2>
                 {sections.map((section, index) => (
@@ -54,6 +56,14 @@ export default function Introduction() {
                         }}
                     />
                 ))}
+                 <div className={styles.buttonsContainer}>
+                    <Link to="/signup">
+                        <button className={styles.button}>Sign Up</button>
+                    </Link>
+                    <Link to="/login">
+                        <button className={styles.button}>Login</button>
+                    </Link>
+                </div>
             </div>
             <div className={styles.image}>
                 <img src={classroomgraphic} alt="Description" />
