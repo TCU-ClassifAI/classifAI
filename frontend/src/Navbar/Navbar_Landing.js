@@ -64,10 +64,17 @@ const Navbar_Landing = () => {
             <>
               {/* menu when user is not signed in */}
               <li className="nav-item">
-                <Link to="/" className="nav-link text-light">
+              <ScrollLink
+                  to="home"
+                  spy={true}
+                  smooth={true}
+                  duration={200}
+                  onClick={() => scrollToSection("home")}
+                  className="nav-link text-light"
+                >
                   {" "}
                   Home
-                </Link>
+                </ScrollLink>
               </li>
               <li className="nav-item">
                 <ScrollLink

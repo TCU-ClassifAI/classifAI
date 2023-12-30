@@ -43,7 +43,7 @@ export default function Introduction() {
     };
 
     return (
-        <div className={styles.imageDescriptionContainer}>
+        <div id="home" className={styles.imageDescriptionContainer}>
             <div className={styles.description}>
                 <h2>{title}</h2>
                 {sections.map((section, index) => (
