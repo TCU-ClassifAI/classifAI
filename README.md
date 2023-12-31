@@ -101,9 +101,14 @@ For Frontend:
 cd frontend
 npm install
 ```
-3. Run the frontend
+3. Run the frontend development server
 ```sh
 npm run dev
+```
+
+4. (Optional) Build the project for deployment
+```sh
+npm run build
 ```
 For Backend:
 
