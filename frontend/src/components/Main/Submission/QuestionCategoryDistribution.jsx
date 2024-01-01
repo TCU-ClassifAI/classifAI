@@ -1,5 +1,6 @@
 import Chart from "react-apexcharts";
 
+
 export default function questionCategoryDistribution({ labeledQuestions }) {
   function getAmountOfLabel(label) {
     let amount = 0;

@@ -7,6 +7,7 @@ import { evaluateArray } from "../../../expertArrays/evaluate";
 import { createArray } from "../../../expertArrays/create";
 import CsvOptions from "./CsvOptions";
 import QuestionCategoryDistribution from "./QuestionCategoryDistribution";
+import TalkingDistribution from "./TalkingDistribution";
 
 import { uploadFile, transcribeFile } from "../../../utils/assemblyAPI";
 
@@ -654,6 +655,14 @@ export default function Submission() {
     }
   }
 
+  function buildTalkingDistributionSeries() {
+    return [
+      getSpeakingTime(getMaxSpeaker()),
+      sumSpeakingTime() - getSpeakingTime(getMaxSpeaker()),
+      getNonSpeakingTime(sentences)
+    ]
+  }
+
   function setTimeLineData() {
     if (sentences) {
       let timeData = [];
@@ -863,53 +872,6 @@ export default function Submission() {
       },
     };
   }
-
-
-
-  const pieChartProps = {
-    options: {
-      title: {
-        text: "Talking Distribution",
-        align: "left",
-        style: {
-          fontSize: "30px",
-          fontWeight: "bold",
-          fontFamily: undefined,
-          color: "#263238",
-        },
-      },
-      dataLabels: {
-        enabled: true,
-        formatter: function (val, opts) {
-          const label = opts.w.config.labels[opts.seriesIndex];
-          return `${label}: ${val.toFixed(1)}%`;
-        },
-        style: {
-          fontSize: "18px",
-          fontFamily: "Helvetica, Arial, sans-serif",
-          fontWeight: "bold",
-        },
-      },
-      tooltip: {
-        enabled: true,
-        y: {
-          formatter: function (
-            value,
-            { series, seriesIndex, dataPointIndex, w }
-          ) {
-            const ms = value;
-            return convertMsToTime(ms);
-          },
-        },
-      },
-      labels: ["Teacher", "Students", "Non-Speaking"],
-    },
-    series: [
-      getSpeakingTime(getMaxSpeaker()),
-      sumSpeakingTime() - getSpeakingTime(getMaxSpeaker()),
-      getNonSpeakingTime(sentences),
-    ],
-  };
 
   function getNonSpeakingTime(sentences) {
     if (sentences)
@@ -1579,23 +1541,10 @@ export default function Submission() {
             </Tab>
 
             <Tab eventKey="barChartKey" title="Talking Distribution">
-              <div className="card-deck mb-3 text-center">
-                <table>
-                  <tbody>
-                    <tr>
-                      <td id="pieChartContainer">
-                        <Chart
-                          options={pieChartProps.options}
-                          series={pieChartProps.series}
-                          type="pie"
-                          width="1400"
-                          height="600"
-                        />
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+                <TalkingDistribution 
+                  convertMsToTime={convertMsToTime}
+                  series={buildTalkingDistributionSeries()}
+                />
             </Tab>
 
             <Tab eventKey="timeChartGraphKey" title="Teacher Question Timeline">
