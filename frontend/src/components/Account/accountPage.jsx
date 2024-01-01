@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import '../Account/Account.css'
+import './Account.css'
 import { Auth } from "aws-amplify";
 import { Storage } from "@aws-amplify/storage"
 import AWS from "aws-sdk";
 import {Buffer} from "buffer";
-import Submission from "../Main/Submission/submission";
+import Submission from "../../Main/Submission/submission";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { Modal } from "react-bootstrap";

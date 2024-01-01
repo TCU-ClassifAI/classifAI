@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import '../Login/login.css'
-import '../Login/landing.css'
+import './login.css'
+import './landing.css'
 import { Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { Auth } from 'aws-amplify'
