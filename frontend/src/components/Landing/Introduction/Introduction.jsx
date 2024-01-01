@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import styles from "./Introduction.module.css";
-import classroomgraphic from "../../images/classroomgraphic.jpg";
+import classroomgraphic from "../../../images/classroomgraphic.jpg";
 
 
 export default function Introduction() {

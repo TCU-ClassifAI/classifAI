@@ -6,7 +6,7 @@ import { useState } from 'react'
 import { Auth } from 'aws-amplify'
 import { NavItem } from 'react-bootstrap'
 import signOut from '../SignOut/signOut'
-import logo from '../images/frogv2.png'
+import logo from '../../images/frogv2.png'
 import { faCheckCircle, faDatabase, faCogs, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 

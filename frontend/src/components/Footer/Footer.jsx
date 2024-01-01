@@ -2,7 +2,7 @@ import styles from './Footer.module.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub} from "@fortawesome/free-brands-svg-icons";
 import { faMicrochip, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
-import C2Image from '../images/frogv2.png'
+import C2Image from '../../images/frogv2.png'
 
 export default function Footer() {
   const socialLinks = [

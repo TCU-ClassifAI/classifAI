@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
 import { saveAs } from "file-saver";
-import { knowledgeArray } from "../../expertArrays/knowledge";
-import { understandArray } from "../../expertArrays/understand";
-import { applyArray } from "../../expertArrays/apply";
-import { analyzeArray } from "../../expertArrays/analyze";
-import { evaluateArray } from "../../expertArrays/evaluate";
-import { createArray } from "../../expertArrays/create";
+import { knowledgeArray } from "../../../expertArrays/knowledge";
+import { understandArray } from "../../../expertArrays/understand";
+import { applyArray } from "../../../expertArrays/apply";
+import { analyzeArray } from "../../../expertArrays/analyze";
+import { evaluateArray } from "../../../expertArrays/evaluate";
+import { createArray } from "../../../expertArrays/create";
 
-import { uploadFile, transcribeFile } from "../../utils/assemblyAPI";
+import { uploadFile, transcribeFile } from "../../../utils/assemblyAPI";
 
 import "./Submission.css";
 import "./transcript.scss";

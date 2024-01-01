@@ -3,7 +3,7 @@ import { Outlet, Link } from "react-router-dom";
 import { Link as ScrollLink, animateScroll as scroll } from "react-scroll";
 import signOut from "../SignOut/signOut";
 import "./Navbar_Landing.css";
-import C2Image from "../images/frogv2.png";
+import C2Image from "../../images/frogv2.png";
 import { Auth } from "aws-amplify";
 import { useNavigate } from "react-router-dom";
 

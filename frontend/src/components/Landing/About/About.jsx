@@ -1,9 +1,9 @@
 // about.js
 import React from 'react';
 import styles from './about.module.css'; // Import the CSS file for styling
-import MichaelFaggella from '../../images/michael-img.jpg'
-import CurbyAlexander from '../../images/curby-img.jpg';
-import LiranMa from '../../images/ma_liran-img.jpg';
+import MichaelFaggella from '../../../images/michael-img.jpg'
+import CurbyAlexander from '../../../images/curby-img.jpg';
+import LiranMa from '../../../images/ma_liran-img.jpg';
 
 export default function About() {
     const teamMembers = [
