@@ -12,15 +12,13 @@ import "./Submission.css";
 import "./transcript.scss";
 import WordCloud from "./WordCloud";
 
-import Dropdown from "react-bootstrap/Dropdown";
-import Spinner from "react-bootstrap/Spinner";
+import { Dropdown, Spinner, Tab, Tabs } from "react-bootstrap";
 import jsPDF from "jspdf";
 import Chart from "react-apexcharts";
 import { Auth } from "aws-amplify";
 import AWS from "aws-sdk";
 import { useLocation, useNavigate } from "react-router-dom";
 import html2canvas from "html2canvas";
-import { Tab, Tabs } from "react-bootstrap";
 import ParentSize from "@visx/responsive/lib/components/ParentSize";
 
 export default function Submission() {
@@ -68,7 +66,7 @@ export default function Submission() {
 
   useEffect(() => {
     checkLoadReport();
-  }, []);
+  }, [checkLoadReport]);
 
   useEffect(() => {
     if (sentences) {
@@ -79,7 +77,7 @@ export default function Submission() {
       printTimes();
       getTimeChartProps();
     }
-  }, [sentences]);
+  }, [sentences, setSentences]);
 
   useEffect(() => {
     if (questions) {
@@ -244,7 +242,7 @@ export default function Submission() {
     // Clean up
     window.URL.revokeObjectURL(url);
   }
-
+  
   async function saveUserObject() {
     AWS.config.update({
       region: "us-east-2",
@@ -377,7 +375,7 @@ export default function Submission() {
         //added so that not all question marks are identified as questions every time a question is added
         if (sentences.some((sentence) => sentence.isQuestion)) {
           for (let i = 0; i < sentences.length; i++) {
-            if (sentences[i].isQuestion == true) {
+            if (sentences[i].isQuestion === true) {
               qs.push(sentences[i]);
             } else {
               sentences[i].isQuestion = false;
@@ -388,7 +386,7 @@ export default function Submission() {
           for (let i = 0; i < sentences.length; i++) {
             if (
               sentences[i].text.includes("?") ||
-              sentences[i].isQuestion == true
+              sentences[i].isQuestion === true
             ) {
               qs.push(sentences[i]);
               sentences[i].isQuestion = true;
@@ -488,7 +486,7 @@ export default function Submission() {
 
     if (userReportToLoad) {
       labeled = userReportToLoad.filter(function (sentence) {
-        if (sentence.label != "non-question") {
+        if (sentence.label !== "non-question") {
           return sentence.label;
         }
       });
@@ -542,7 +540,7 @@ export default function Submission() {
 
       for (let j = 0; j < quests.length; j++) {
         for (let k = 0; k < sentences.length; k++) {
-          if (quests[j].start == sentences[k].start) {
+          if (quests[j].start === sentences[k].start) {
             sentences[k].label = quests[j].label;
           }
         }
@@ -582,7 +580,7 @@ export default function Submission() {
     let amount = 0;
     if (labeledQuestions) {
       for (let i = 0; i < labeledQuestions.length; i++) {
-        if (labeledQuestions[i].label == label) {
+        if (labeledQuestions[i].label === label) {
           amount++;
         }
       }
@@ -630,7 +628,7 @@ export default function Submission() {
       const maxTime = Math.max(...sentences.map((s) => s.start / 1000));
       const totalTimeRange = maxTime - minTime;
 
-      const earliestStartTime = Math.min(...sentences.map((s) => s.start));
+      Math.min(...sentences.map((s) => s.start));
 
       // Define the percentage of the total time range to use as the constant width for the entries
       const entryWidthPercentage = 0.04; // Adjust this value as needed
@@ -1113,18 +1111,18 @@ export default function Submission() {
       );
 
       let questionList = sentences.filter((sentence) => sentence.isQuestion);
-      let questionArray = new Array();
+      let questionArray = [];
       for (let i = 0; i < questionList.length; i++) {
-        questionArray[i] = new Array(
+        questionArray[i] = [
           convertMsToTime(questionList[i].start),
           questionList[i].speaker,
           questionList[i].text,
           questionList[i].label
-        );
+        ];
       }
 
       const pageWidth1 = doc.internal.pageSize.getWidth();
-      const pageHeight1 = doc.internal.pageSize.getHeight();
+      //const pageHeight1 = doc.internal.pageSize.getHeight();
       const margin = 20;
 
       // Add a page break after charts

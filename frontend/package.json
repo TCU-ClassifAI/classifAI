@@ -1,6 +1,6 @@
 {
-  "name": "senior-design-project",
-  "version": "0.1.0",
+  "name": "ClassifAI",
+  "version": "1.0.0",
   "type": "module",
   "private": true,
   "dependencies": {
