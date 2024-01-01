@@ -5,6 +5,7 @@ import { applyArray } from "../../../expertArrays/apply";
 import { analyzeArray } from "../../../expertArrays/analyze";
 import { evaluateArray } from "../../../expertArrays/evaluate";
 import { createArray } from "../../../expertArrays/create";
+import CsvOptions from "./CsvOptions";
 
 import { uploadFile, transcribeFile } from "../../../utils/assemblyAPI";
 
@@ -1783,80 +1784,26 @@ export default function Submission() {
             </div>
           ) : null}
 
-          <div className="checkBox">
-            <strong>Select what to include in CSV:</strong>
-            <label className="checkBox">
-              Select All
-              <input
-                type="checkbox"
-                className="checkBox"
-                checked={allSelected}
-                onChange={allSelected ? handleDeselectAll : handleSelectAll}
-              ></input>
-            </label>
-            <label className="checkBox">
-              Start Times
-              <input
-                type="checkbox"
-                className="checkBox"
-                checked={startTimeBox}
-                onChange={() => setStartTimeBox(!startTimeBox)}
-              ></input>
-            </label>
-            <label className="checkBox">
-              End Times
-              <input
-                type="checkbox"
-                className="checkBox"
-                checked={endTimeBox}
-                onChange={() => setEndTimeBox(!endTimeBox)}
-              ></input>
-            </label>
-            <label className="checkBox">
-              Speakers
-              <input
-                type="checkbox"
-                className="checkBox"
-                checked={speakerBox}
-                onChange={() => setSpeakerBox(!speakerBox)}
-              ></input>
-            </label>
-            <label className="checkBox">
-              isQuestion Label
-              <input
-                type="checkbox"
-                className="checkBox"
-                checked={isQuestionBox}
-                onChange={() => setIsQuestionBox(!isQuestionBox)}
-              ></input>
-            </label>
-            <label className="checkBox">
-              Question Type
-              <input
-                type="checkbox"
-                className="checkBox"
-                checked={questionTypeBox}
-                onChange={() => setQuestionTypeBox(!questionTypeBox)}
-              ></input>
-            </label>
-            <label className="checkBox">
-              Text
-              <input
-                type="checkbox"
-                className="checkBox"
-                checked={sentencesBox}
-                onChange={() => setSentencesBox(!sentencesBox)}
-              ></input>
-            </label>
-            <select
-              className="dropdown"
-              value={questionsBox ? "questions" : "fullTranscript"}
-              onChange={(e) => setQuestionsBox(e.target.value === "questions")}
-            >
-              <option value="fullTranscript">Include Full Transcript</option>
-              <option value="questions">Only Include Questions</option>
-            </select>
-          </div>
+          <CsvOptions
+                allSelected={allSelected}
+                setAllSelected={setAllSelected}
+                startTimeBox={startTimeBox}
+                setStartTimeBox={setStartTimeBox}
+                endTimeBox={endTimeBox}
+                setEndTimeBox={setEndTimeBox}
+                speakerBox={speakerBox}
+                setSpeakerBox={setSpeakerBox}
+                isQuestionBox={isQuestionBox}
+                setIsQuestionBox={setIsQuestionBox}
+                questionTypeBox={questionTypeBox}
+                setQuestionTypeBox={setQuestionTypeBox}
+                sentencesBox={sentencesBox}
+                setSentencesBox={setSentencesBox}
+                questionsBox={questionsBox}
+                setQuestionsBox={setQuestionsBox}
+                handleSelectAll={handleSelectAll}
+                handleDeselectAll={handleDeselectAll}
+              />
 
           <div>
             {successfullUpload ? <h6>File Save Success!!!</h6> : null}
