@@ -16,7 +16,7 @@ function wordFreq(text) {
   
 
     //Remove punctuation and split the text into words
-    text = text.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"");
+    text = text.replace(/[.,/#!$%^&*;:{}=\-_`~()]/g,"");
     const words = text.replace(/\./g, "").split(/\s/);
   
     // Create a frequency map

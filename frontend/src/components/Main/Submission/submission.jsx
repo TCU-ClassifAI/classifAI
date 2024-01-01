@@ -1,5 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
-import { saveAs } from "file-saver";
+import React, { useState, useEffect } from "react";
 import { knowledgeArray } from "../../../expertArrays/knowledge";
 import { understandArray } from "../../../expertArrays/understand";
 import { applyArray } from "../../../expertArrays/apply";
@@ -16,11 +15,9 @@ import WordCloud from "./WordCloud";
 import Dropdown from "react-bootstrap/Dropdown";
 import Spinner from "react-bootstrap/Spinner";
 import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
 import Chart from "react-apexcharts";
 import { Auth } from "aws-amplify";
 import AWS from "aws-sdk";
-import { Buffer } from "buffer";
 import { useLocation, useNavigate } from "react-router-dom";
 import html2canvas from "html2canvas";
 import { Tab, Tabs } from "react-bootstrap";
@@ -52,7 +49,7 @@ export default function Submission() {
   const [badReportName, setBadReportName] = useState(false);
   const [teacher, setTeacher] = useState();
 
-  const [transcriptSpeakers, setTranscriptSpeakers] = useState([]);
+ //const [transcriptSpeakers, setTranscriptSpeakers] = useState([]);
 
   const [allSelected, setAllSelected] = useState(false);
   const [startTimeBox, setStartTimeBox] = useState(false);

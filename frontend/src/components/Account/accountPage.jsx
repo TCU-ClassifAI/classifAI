@@ -1,13 +1,8 @@
 import React, { useEffect, useState } from "react";
 import './Account.css'
 import { Auth } from "aws-amplify";
-import { Storage } from "@aws-amplify/storage"
 import AWS from "aws-sdk";
-import {Buffer} from "buffer";
-import Submission from "../Main/Submission/submission";
-import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { Modal } from "react-bootstrap";
 
 export default function Account(){
     const[isEditing, setIsEditing] = useState(false);
@@ -15,7 +10,7 @@ export default function Account(){
     const [report, setReport] = useState({});
     const [reportLoaded, setReportLoaded] = useState(false);
     const [listFiles, setListFiles] = useState([]);
-    const [filename, setFilename] = useState();
+    //const [filename, setFilename] = useState();
     const[location, setLocation] = useState();
     const [show, setShow] = useState(false)
     const [userObj, setUserObj] = useState({
@@ -122,7 +117,7 @@ export default function Account(){
     async function loadUserReport(key, event){
         event.preventDefault();
         const s3 = new AWS.S3();
-        const user = await Auth.currentAuthenticatedUser();
+        await Auth.currentAuthenticatedUser();
         setLocation(key)
 
         let params = {
@@ -150,7 +145,7 @@ export default function Account(){
         event.preventDefault();
         setShow(false)
         const s3 = new AWS.S3();
-        const user = await Auth.currentAuthenticatedUser();
+        await Auth.currentAuthenticatedUser();
         console.log("DELETING REPORT:")
         console.log(key)
         let params = {
@@ -167,9 +162,6 @@ export default function Account(){
             }
         })
     }
-
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
 
     return(
         <div className="container">

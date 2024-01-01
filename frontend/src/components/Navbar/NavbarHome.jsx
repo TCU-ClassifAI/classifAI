@@ -1,11 +1,10 @@
 import React from "react"
 import {Outlet, Link} from "react-router-dom";
-import signOut from "../SignOut/signOut";
 import C2Image from '../../images/frogv2.png'
 import { Auth } from "aws-amplify";
 import { useNavigate } from "react-router-dom";
 
-const Navbar_Home = () => {
+export default function NavbarHome() {
     let navigate = useNavigate();
     const [isAuthenticated, setIsAuthenticated] = React.useState(false);
 
@@ -36,7 +35,7 @@ const Navbar_Home = () => {
     return (
         <>
             <nav className="navbar navbar-expand-lg" id="main-nav">
-                <a className="navbar-brand" href="#">
+                <a className="navbar-brand" href="#home">
                         <img
                             src={C2Image}
                             className="tcu-image"
@@ -54,7 +53,7 @@ const Navbar_Home = () => {
                                     <Link to="account" className="nav-link text-light"> Account</Link>
                                 </li>
                                 <li className="nav-item">
-                                    <a className="nav-link text-light" onClick={(e) => signOut(e)} id='sign-out'>Sign Out</a>
+                                    <a href="#home" className="nav-link text-light" onClick={(e) => signOut(e)} id='sign-out'>Sign Out</a>
                                 </li>
                             </>
                     </ul>
@@ -65,4 +64,4 @@ const Navbar_Home = () => {
     );
 }
 
-export default Navbar_Home;
+

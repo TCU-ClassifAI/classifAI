@@ -1,13 +1,12 @@
 import React from "react";
 import { Outlet, Link } from "react-router-dom";
-import { Link as ScrollLink, animateScroll as scroll } from "react-scroll";
-import signOut from "../SignOut/signOut";
+import { Link as ScrollLink } from "react-scroll";
 import "./Navbar_Landing.css";
 import C2Image from "../../images/frogv2.png";
 import { Auth } from "aws-amplify";
 import { useNavigate } from "react-router-dom";
 
-const Navbar_Landing = () => {
+export default function NavbarLanding() {
   let navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
 
@@ -28,6 +27,8 @@ const Navbar_Landing = () => {
     navigate("/#" + sectionId);
   };
 
+  /* Commenting in case we want to allow logged in users to come back to the landing page down the line
+
   async function signOut(event) {
     event.preventDefault();
     try {
@@ -38,6 +39,7 @@ const Navbar_Landing = () => {
       console.log("error signing out: ", error);
     }
   }
+  */
 
   return (
     <>
@@ -125,4 +127,3 @@ const Navbar_Landing = () => {
   );
 };
 
-export default Navbar_Landing;

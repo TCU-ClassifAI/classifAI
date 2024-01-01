@@ -1,13 +1,11 @@
-import React, { Component } from 'react'
+import React from 'react'
 import './login.css'
 import './landing.css'
 import { Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { Auth } from 'aws-amplify'
-import { NavItem } from 'react-bootstrap'
-import signOut from '../SignOut/signOut'
 import logo from '../../images/frogv2.png'
-import { faCheckCircle, faDatabase, faCogs, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faCheckCircle, faDatabase, faCogs} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
