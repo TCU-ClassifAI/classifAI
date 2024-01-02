@@ -3,10 +3,12 @@
 <br />
 <div align="center">
   <a href="https://github.com/TCU-Instructional-AI/classifAI">
-    <img src="frontend/static/images/logo.jpg" alt="Logo" width="128" height="128">
+    <img src="docs/images/logo.png" alt="Logo" width="128" height="128">
   </a>
 
 <h2 align="center">ClassifAI</h2>
+
+
 
   <p align="center">
     ClassifAI enhances educational content by transcribing video and audio into text for user modification and categorizes questions, offering engagement insights and user-friendly access.<br>
@@ -14,17 +16,23 @@
     <a href="https://classifai.tcu.edu/"><strong>Visit the Portal »</strong></a>
     <br />
     <br />
-    <a href="https://tcu-instructional-ai.github.io/classifai-docs">Documentation</a>
+    <a href="https://tcu-classifai.github.io/classifAI/">Documentation</a>
     ·
-    <a href="https://github.com/TCU-Instructional-AI/classifAI/issues">Report Bug</a>
+    <a href="https://github.com/TCU-ClassifAI/classifAI/issues">Report Bug</a>
     ·
-    <a href="https://github.com/TCU-Instructional-AI/classifAI/issues">Request Feature</a>
+    <a href="https://github.com/TCU-ClassifAI/classifAI/issues">Request Feature</a>
     ·
-    <a href="https://github.com/TCU-Instructional-AI/classifAI/issues">Project Information</a>
+    <a href="http://riogrande.cs.tcu.edu/2324InstructionalEffectiveness">Project Information</a>
     
   </p>
 </div>
 
+[![GitHub contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+
+***
 
 
 <!-- TABLE OF CONTENTS -->
@@ -77,10 +85,9 @@ This connects to the [ClassifAI Engine](https://github.com/TCU-Instructional-AI/
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
+To get a local copy of this site up and running follow these simple steps.
 
-More detailed instructions can be found in the [documentation](https://tcu-instructional-ai.github.io/classifai-docs).
+More detailed instructions can be found in the [documentation](https://tcu-classifai.github.io/classifAI/).
 
 ### Prerequisites
 
@@ -92,7 +99,7 @@ More detailed instructions can be found in the [documentation](https://tcu-instr
 
 1. Clone the repo
 ```sh
-git clone https://github.com/TCU-Instructional-AI/classifAI.git
+git clone https://github.com/TCU-ClassifAI/classifAI
 ```
 For Frontend:
 
@@ -147,7 +154,7 @@ mongod
   - [ ] Add a way to upload videos from Zoom
 
 
-See the [open issues](https://github.com/TCU-Instructional-AI/classifAI/issues) for a full list of proposed features (and known issues).
+See the [open issues](https://github.com/TCU-ClassifAI/classifAI/issues) for a full list of proposed features (and known issues).
 
 
 
@@ -175,11 +182,11 @@ Don't forget to give the project a star! Thanks again!
 
 [Learn About the Team](http://riogrande.cs.tcu.edu/2324InstructionalEffectiveness)
 
-Project Link: [https://github.com/TCU-Instructional-AI/classifAI](https://github.com/TCU-Instructional-AI/classifAI)
+Project Link: [https://github.com/TCU-ClassifAI/classifAI](https://github.com/TCU-ClassifAI/classifAI/)
 
 More info about AI work being done at TCU: [https://ai.tcu.edu/](https://ai.tcu.edu/)
 
-Check out the  [documentation](https://tcu-instructional-ai.github.io/classifai-docs) for more information about the project!
+Check out the  [documentation](https://tcu-classifai.github.io/classifAI/) for more information about the project!
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
