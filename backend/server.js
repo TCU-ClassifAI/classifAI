@@ -17,7 +17,6 @@ app.use(cors());
 
 
 
-
 app.get("/", (req, res) => { // Dev route
   return res.status(200).send("It's working");
 });
@@ -26,9 +25,10 @@ app.listen(PORT, () => {
   console.log("Server Running sucessfully.");
 });
 
-app.use('/upload', uploadRoute); // Testing: audio upload works as expected on newest refactor 12/28, uploaded files given reportID are put into the same folder
+// Testing: audio upload works as expected on newest refactor 12/28, uploaded files given reportID are put into the same folder
+app.use('/upload', uploadRoute);  // uploadRoute is in routes/uploadRoute.js
 
-app.use('/transcript', transcriptionRoutes);
+app.use('/transcript', transcriptionRoutes); // transcriptionRoutes is in routes/transcriptionRoutes.js
 
 
 
@@ -84,7 +84,7 @@ app.use('/transcript', transcriptionRoutes);
 // const assembly = axios.create({
 //   baseURL: "https://api.assemblyai.com/v2",
 //   headers: {
-//     authorization: "c4c56ac5832249c1af9589d097463339",
+//     authorization: "",
 //     "content-type": "application/json",
 //     "transfer-encoding": "chunked",
 //   },

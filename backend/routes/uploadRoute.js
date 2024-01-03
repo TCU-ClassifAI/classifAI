@@ -1,7 +1,9 @@
+require('dotenv').config();
 const express = require("express");
 const multer = require('multer');
 const axios = require("axios");
-const fs = require('fs');
+const fsPromises = require('fs').promises;
+const fs = require('fs');  // For createReadStream, createWriteStream, etc.
 const path = require('path');
 const FormData = require('form-data');
 const dbconnect = require('../mongo.js');
@@ -15,8 +17,8 @@ const upload = multer({
       if (!userId) {
         return cb(new Error("No userId provided"), false);
       }
-      const dir = path.join(__dirname, 'uploads', userId);
-      fs.mkdirSync(dir, { recursive: true });
+      const dir = path.join('./uploads','.temporary_uploads', userId);
+      fsPromises.mkdir(dir, { recursive: true });
       cb(null, dir);
     },
     filename: (req, file, cb) => {
@@ -30,6 +32,7 @@ const upload = multer({
 });
 //////////// 
 
+dbconnect.connectToMongoDB();
 
 
 //////////// Upload endpoint: Stores file in the web server, uploads info to MongoDB, sends to Workstation
@@ -42,14 +45,13 @@ router.post("/", upload.single('file'), async (req, res) => {  // Ignore route, 
       return res.status(400).json({ success: false, message: "No userId or file uploaded" });
     }
 
-    
     let reportID;
     let newDir;
 
     // Check if reportID is provided
     if (providedReportID) {
         reportID = providedReportID;
-        newDir = path.join('./uploads', userId, String(reportID)); // Place in 'reports' folder
+        newDir = path.join('./uploads', userId, String(reportID)); // Place in uploads/userId/reportID/....... folder
     } 
     else {
         // Create a new report if no reportID is provided
@@ -59,7 +61,7 @@ router.post("/", upload.single('file'), async (req, res) => {  // Ignore route, 
     }
         
     
-    fs.mkdirSync(newDir, { recursive: true });
+    fsPromises.mkdir(newDir, { recursive: true });
 
     const allowedAudioTypes = ['audio/mpeg', 'audio/wav', 'audio/aac', 'audio/ogg', 'audio/webm'];
     const fileType = req.file.mimetype;
@@ -73,13 +75,8 @@ router.post("/", upload.single('file'), async (req, res) => {  // Ignore route, 
     }
 
     res.status(200).json({ success: true, id: reportID, message: 'File uploaded and Database entry created successfully' });
+    handleFileTransfer(process.env.WORKSTATION_URL, newPath, reportID);
 
-    const flaskBackendUrl = 'http://localhost:5555/start_transcription';
-    const formData = new FormData();
-    formData.append('file', fs.createReadStream(newPath));
-    formData.append('reportID', String(reportID));
-
-    await axios.post(flaskBackendUrl, formData, { headers: formData.getHeaders() });
   } 
   catch (error) {
     console.error(error);
@@ -92,7 +89,17 @@ router.post("/", upload.single('file'), async (req, res) => {  // Ignore route, 
 const handleFileUpload = async (req, fileType, reportID, newDir) => {
     const fileSuffix = fileType.split('/').pop();
     const newPath = path.join(newDir, `${fileSuffix}_${req.file.filename}`);
-    fs.renameSync(req.file.path, newPath);
+    const oldPath = req.file.path;
+
+
+    try {
+        await fsPromises.rename(oldPath, newPath);
+    } catch (error) {
+        console.error("Error in moving file:", error);
+        throw new Error("Failed to process file upload.");
+    }
+
+
 
     // Update to audioField if audio
     const updateField = fileType.startsWith('audio/') ? 'audioPath' : `${fileSuffix}Path`;
@@ -100,6 +107,16 @@ const handleFileUpload = async (req, fileType, reportID, newDir) => {
     //console.log("Updating database with path:", newPath);
     await dbconnect.updateReport(reportID, { [updateField]: newPath });
     return newPath;
+};
+
+
+// Function to handle file transfer to flask backend
+const handleFileTransfer = async (workstation, newPath, reportID) => {
+    const formData = new FormData();
+    formData.append('file', fs.createReadStream(newPath));
+    formData.append('reportID', String(reportID));
+
+    await axios.post(workstation, formData, { headers: formData.getHeaders() });
 };
 //////////// 
 

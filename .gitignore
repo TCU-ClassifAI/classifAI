@@ -10,8 +10,7 @@ resources/*
 !resources/mongo-init.js
 !resources/Dockerfile
 
-testMongo
-DB_Testing
+temporary_uploads
 backend/Workstation_Testing/audios
 /resources/mongo-data/
 mongo-data

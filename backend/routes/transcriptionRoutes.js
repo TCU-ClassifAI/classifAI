@@ -14,7 +14,7 @@ router.get('/:reportID', async (req, res) => {
         res.json({ success: false, message: "An error occurred during transcription" });
         break;
 
-      case 'Completed':
+      case 'completed' || 'Completed':
         res.json({ success: true, transcription: report.transcription });
         break;
 
