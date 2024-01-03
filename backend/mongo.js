@@ -2,29 +2,17 @@
 
 const mongoose = require('mongoose'); 
 
-const retryInterval = 5000; // in milliseconds
-const maxRetries = 5;
-let retryCount = 0;
 
-async function connectToMongoDB() {  // In case MongoDB is not available: retry,  kinda works
-  try {
-    await mongoose.connect(process.env.MONGODB_URL);
-    console.log('Connected to MongoDB');
-    mongoose.connection.on('error', error => {
-      console.error('MongoDB connection error:', error);
-    });
-    retryCount = 0; // reset retry count on successful connection
-  } catch (error) {
-    console.error("Error connecting to MongoDB:", error);
-    if (retryCount < maxRetries) {
-      setTimeout(connectToMongoDB, retryInterval);
-      retryCount++;
-    } else {
-      console.error("Maximum MongoDB connection retries reached");
-    }
-  }
-}
+// Connect to MongoDB using mongoose, not setup with an actual DB 
+mongoose.connect(process.env.MONGODB_URL)  // connect to MongoDB on localhost
+  .catch(error => console.error("Error connecting to MongoDB:", error));
 
+
+const mongo = mongoose.connection;
+mongo.on('error', console.error.bind(console, 'connection error:'));
+mongo.once('open', function() {
+  console.log('Connected to MongoDB');
+});
 
 // Define a schema and a model for storing audio files in MongoDB
 const reportSchema = new mongoose.Schema({                           
@@ -201,5 +189,4 @@ module.exports = {
   getAdmin,
   updateAdmin,
   deleteAdmin,
-  connectToMongoDB,
 };

@@ -32,7 +32,6 @@ const upload = multer({
 });
 //////////// 
 
-dbconnect.connectToMongoDB();
 
 
 //////////// Upload endpoint: Stores file in the web server, uploads info to MongoDB, sends to Workstation
