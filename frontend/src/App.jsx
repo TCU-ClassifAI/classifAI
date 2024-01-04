@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import { Main } from "./components/Main/mainUserPage";
 import Login from "./components/Login/Login";
-import SignUp from "./components/SignUp/signUp";
+import SignUp from "./components/SignUp/SignUp";
 import ConfirmRegister from "./components/SignUp/ConfirmRegister";
 import "@aws-amplify/ui-react/styles.css";
 import awsconfig from "./aws-exports";
