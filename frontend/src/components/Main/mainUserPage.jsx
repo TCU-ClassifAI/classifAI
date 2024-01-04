@@ -6,7 +6,7 @@ import AllFiles from "./AllFiles/AllFiles" ; // hypothetical component
 import Account from "../Account/AccountPage";
 import "./MainPage.css";
 
-export const Main = () => {
+export default function Main() {
     return (
         <div className="main-layout">
             <SideMenu />

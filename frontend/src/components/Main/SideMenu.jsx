@@ -2,7 +2,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
-const SideMenu = () => {
+export default function SideMenu() {
     return (
         <div className="side-menu">
         <ul>
@@ -19,4 +19,4 @@ const SideMenu = () => {
     );
 };
 
-export default SideMenu;
+

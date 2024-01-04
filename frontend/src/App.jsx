@@ -2,7 +2,7 @@ import React from "react";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import { Main } from "./components/Main/mainUserPage";
+import Main  from "./components/Main/MainUserPage";
 import Login from "./components/Login/Login";
 import SignUp from "./components/SignUp/SignUp";
 import ConfirmRegister from "./components/SignUp/ConfirmRegister";

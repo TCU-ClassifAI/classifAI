@@ -1,6 +1,6 @@
 import { Auth } from "aws-amplify";
 
-async function signOut(){
+export default async function signOut(){
     try{
         await Auth.signOut();
     }catch (error){
@@ -8,4 +8,3 @@ async function signOut(){
     }
 }
 
-export default signOut;

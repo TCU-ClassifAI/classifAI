@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Auth } from "aws-amplify";
 
 
-const SignUp = () => {
+export default function SignUp() {
     let navigate = useNavigate();
     const [badState, setBadState] = useState()
     const [badGrade, setBadGrade] = useState()
@@ -211,4 +211,3 @@ const SignUp = () => {
     )
 }
 
-export default SignUp;
