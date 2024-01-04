@@ -3,7 +3,7 @@ import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import { Main } from "./components/Main/mainUserPage";
-import Login from "./components/Login/login";
+import Login from "./components/Login/Login";
 import SignUp from "./components/SignUp/signUp";
 import ConfirmRegister from "./components/SignUp/ConfirmRegister";
 import "@aws-amplify/ui-react/styles.css";

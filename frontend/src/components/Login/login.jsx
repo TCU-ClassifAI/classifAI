@@ -9,7 +9,7 @@ import { faCheckCircle, faDatabase, faCogs} from '@fortawesome/free-solid-svg-ic
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
-const LogIn = () => {
+export default function Login(){
     let navigate = useNavigate();
     const [badSignIn, setBadSignIn]  = useState(false);
     const [user, setUser] = useState({
@@ -68,11 +68,11 @@ const LogIn = () => {
                     </div>
                 </div>
                 <div id="container">
-                    <button class="learn-more">
-                        <span class="circle" aria-hidden="true">
-                        <span class="icon arrow"></span>
+                    <button className="learn-more">
+                        <span className="circle" aria-hidden="true">
+                        <span className="icon arrow"></span>
                         </span>
-                        <span class="button-text" onClick={(e) => learnMore(e)}>Learn More</span>
+                        <span className="button-text" onClick={(e) => learnMore(e)}>Learn More</span>
                     </button>
                 </div>
 
@@ -130,5 +130,5 @@ const LogIn = () => {
         </div>
         </div>
     )
-}
-export default LogIn;
+};
+
