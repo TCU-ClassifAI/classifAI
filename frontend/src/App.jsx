@@ -26,7 +26,7 @@ function App() {
           <Route path="/confirmSignUp" element={<ConfirmRegister />} />
         </Route>
 
-        <Route path="/home/" element={<NavbarHome />}>
+        <Route path="/home" element={<NavbarHome />}>
           <Route path="*" element={<Main />} />
         </Route>
         {/* <Route path="/home/Files" element={<Files />} /> */}
