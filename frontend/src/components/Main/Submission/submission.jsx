@@ -5,20 +5,20 @@ import { applyArray } from "../../../expertArrays/apply";
 import { analyzeArray } from "../../../expertArrays/analyze";
 import { evaluateArray } from "../../../expertArrays/evaluate";
 import { createArray } from "../../../expertArrays/create";
+import { convertMsToTime } from "../../../utils/convertMsToTime";
 import CsvOptions from "./CsvOptions";
 import QuestionCategoryDistribution from "./QuestionCategoryDistribution";
 import TalkingDistribution from "./TalkingDistribution";
 import CollapsedTimeline from "./CollapsedTimeline";
-
-import { uploadFile, transcribeFile } from "../../../utils/assemblyAPI";
+import TeacherQuestionTimeline from "./TeacherQuestionTimeline";
+import UploadRecording from "./UploadRecording";
 
 import "./Submission.css";
 import "./transcript.scss";
 import WordCloud from "./WordCloud";
 
-import { Dropdown, Spinner, Tab, Tabs } from "react-bootstrap";
+import { Dropdown, Tab, Tabs } from "react-bootstrap";
 import jsPDF from "jspdf";
-import Chart from "react-apexcharts";
 import { Auth } from "aws-amplify";
 import AWS from "aws-sdk";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -36,14 +36,7 @@ export default function Submission() {
   const [respTime, setRespTime] = useState();
   const [labeledQuestions, setLabeledQuestions] = useState();
   const [questioningTime, setQuestioningTime] = useState();
-  const [isAudio, setIsAudio] = useState(false);
-  const [isVideo, setIsVideo] = useState(false);
-  const [isNeither, setIsNeither] = useState(false);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-
-  const [selectedFile, setSelectedFile] = useState("");
   const [reportName, setReportName] = useState("");
-  const [fileContent, setFileContent] = useState();
   const [show, setShow] = useState(false);
   const [isRelabelingSpeaker, setIsRelabelingSpeaker] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -300,35 +293,7 @@ export default function Submission() {
     }
   }
 
-  function handleFileChange(event) {
-    const file = event.target.files[0];
-    setSelectedFile(event.target.files[0]);
-    const reader = new FileReader();
-    reader.readAsArrayBuffer(file);
-    reader.onloadend = (event) => {
-      setFileContent(event.target.result);
-    };
-    const type = file.type;
-    if (type.includes("audio")) {
-      setIsAudio(true);
-      setIsVideo(false);
-    } else if (type.includes("video")) {
-      setIsVideo(true);
-      setIsAudio(false);
-    } else {
-      setIsAudio(false);
-      setIsVideo(false);
-      setIsNeither(true);
-    }
-  }
 
-  let handleSubmission = async () => {
-    setIsAnalyzing(true);
-    const audioUrl = await uploadFile(fileContent);
-    const transcriptionResult = await transcribeFile(audioUrl);
-    setSentences(transcriptionResult);
-    setIsAnalyzing(false);
-  };
 
   function createTranscript() {
     let transcript = "";
@@ -452,28 +417,7 @@ export default function Submission() {
     }
   }
 
-  function padTo2Digits(num) {
-    return num.toString().padStart(2, "0");
-  }
 
-  function convertMsToTime(milliseconds) {
-    let seconds = Math.floor(milliseconds / 1000);
-    let minutes = Math.floor(seconds / 60);
-    let hours = Math.floor(minutes / 60);
-
-    seconds = seconds % 60;
-    minutes = minutes % 60;
-
-    // 👇️ If you don't want to roll hours over, e.g. 24 to 00
-    // 👇️ comment (or remove) the line below
-    // commenting next line gets you `24:00:00` instead of `00:00:00`
-    // or `36:15:31` instead of `12:15:31`, etc.
-    hours = hours % 24;
-
-    return `${padTo2Digits(hours)}:${padTo2Digits(minutes)}:${padTo2Digits(
-      seconds
-    )}`;
-  }
 
   function findQuestionsLabels(quests) {
     //console.log("quests:")
@@ -1016,132 +960,12 @@ export default function Submission() {
 
   return (
     <div>
-      <div>
-        {userReportToLoad ? (
-          <div>
-            <h5>Currently Viewing:</h5>
-            <h5>
-              {userReportLocation.substring(
-                userReportLocation.indexOf("/") + 1
-              )}
-            </h5>
-          </div>
-        ) : null}
-        {!userReportToLoad ? (
-          <div>
-            <label className="form-label" htmlFor="customFile">
-              <h4>
-                Please upload an audio or video recording for transcription
-              </h4>
-              <p>
-                Accepted AUDIO file types: .mp3, .m4a, .aac, .oga, .ogg, .flac,
-                .wav, .wv, .aiff
-              </p>
-              <p>
-                Accepted VIDEO file types: .webm, .MTS, .M2TS, .TS, .mov, .mp2,
-                .mp4, .m4v, .mxf
-              </p>
-            </label>
-            <input
-              type="file"
-              className="form-control"
-              id="customFile"
-              onChange={handleFileChange}
-            />
-          </div>
-        ) : null}
-        {isAudio ? (
-          <div>
-            <p>Click "Submit" to begin file analysis</p>
-            <audio controls id="audio-player">
-              <source
-                src={URL.createObjectURL(selectedFile)}
-                type={selectedFile.type}
-              />
-            </audio>
-            {isAnalyzing ? (
-              <div>
-                <Spinner
-                  className="spinner"
-                  animation="border"
-                  role="status"
-                ></Spinner>
-                <p>Analysis in progress...</p>
-                <p>
-                  Please do not refresh or exit this screen during this time
-                </p>
-              </div>
-            ) : null}
-          </div>
-        ) : (
-          <p></p>
-        )}
-        {isVideo ? (
-          <div>
-            <p>Click "Submit" to begin file analysis</p>
-            <video controls id="video-player">
-              <source
-                src={URL.createObjectURL(selectedFile)}
-                type={selectedFile.type}
-              />
-            </video>
-            {isAnalyzing ? (
-              <div>
-                <Spinner
-                  className="spinner"
-                  animation="border"
-                  role="status"
-                ></Spinner>
-                <p>Analysis in progress...</p>
-                <p>
-                  Please do not refresh or exit this screen during this time
-                </p>
-              </div>
-            ) : null}
-          </div>
-        ) : (
-          <p></p>
-        )}
-        {isNeither ? (
-          <div>
-            <p>Click "Submit" to begin file analysis</p>
-            {isAnalyzing ? (
-              <div>
-                <Spinner
-                  className="spinner"
-                  animation="border"
-                  role="status"
-                ></Spinner>
-                <p>Analysis in progress...</p>
-                <p>
-                  Please do not refresh or exit this screen during this time
-                </p>
-              </div>
-            ) : null}
-          </div>
-        ) : (
-          <p></p>
-        )}
-        {!isAnalyzing && !sentences ? (
-          <button
-            type="button"
-            className="btn btn-primary"
-            id="submission-main"
-            onClick={() => handleSubmission({ selectedFile })}
-          >
-            Analyze Recording
-          </button>
-        ) : isAnalyzing ? (
-          <button
-            type="button"
-            className="btn btn-primary"
-            id="submission-main"
-            onClick={() => window.location.reload()}
-          >
-            Cancel
-          </button>
-        ) : null}
-      </div>
+      <UploadRecording 
+        userReportToLoad={userReportToLoad}
+        userReportLocation={userReportLocation}
+        sentences={sentences}
+        setSentences={setSentences}
+      />
       {sentences && (
         <div>
           <Tabs id="controlled-tab-example">
@@ -1418,36 +1242,21 @@ export default function Submission() {
 
             <Tab eventKey="barChartKey" title="Talking Distribution">
                 <TalkingDistribution 
-                  convertMsToTime={convertMsToTime}
                   series={buildTalkingDistributionSeries()}
                 />
             </Tab>
 
             <Tab eventKey="timeChartGraphKey" title="Teacher Question Timeline">
-              <div className="card-deck mb-3 text-center">
-                <table>
-                  <tbody>
-                    <tr>
-                      <td id="timeChartContainer">
-                        <Chart
-                          options={getTimeChartProps(sentences).options}
-                          series={getTimeChartProps(sentences).series}
-                          type="rangeBar"
-                          height={600}
-                          width={1400}
-                        />
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+              <TeacherQuestionTimeline 
+                options={getTimeChartProps(sentences).options}
+                series={getTimeChartProps(sentences).series}
+              />
             </Tab>
 
             <Tab eventKey="timeLineKey" title="Collapsed Timeline">
               <CollapsedTimeline 
                 sentences={sentences}
                 labelColors={labelColors}
-                convertMsToTime={convertMsToTime}
               />
             </Tab>
 
