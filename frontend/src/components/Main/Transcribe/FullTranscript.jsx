@@ -159,6 +159,7 @@ export default function FullTranscript({ sentences, setSentences, speakers, teac
                           {!isRelabelingSpeaker ? (
                             <div>
                               <Dropdown.Item
+                                key={`add-question-${sentence.start}`}
                                 onClick={(event) => {
                                   handleAddQuestion(sentence, event);
                                   handleToggle(null);
@@ -167,21 +168,25 @@ export default function FullTranscript({ sentences, setSentences, speakers, teac
                                 Add as a question
                               </Dropdown.Item>
                               <Dropdown.Item
+                                 key={`relabel-speaker-${sentence.start}`}
                                 onClick={() => setIsRelabelingSpeaker(true)}
                               >
                                 Relabel speaker
                               </Dropdown.Item>
                               <Dropdown.Item
+                                key={`edit-sentence-${sentence.start}`}
                                 onClick={() => setEditing(sentence.start)}
                               >
                                 Edit sentence
                               </Dropdown.Item>
                               <Dropdown.Item
+                                key={`remove-sentence-${sentence.start}`}
                                 onClick={() => removeSentence(sentence)}
                               >
                                 Remove sentence
                               </Dropdown.Item>
                               <Dropdown.Item
+                                key={`add-new-sentence-${sentence.start}`}
                                 onClick={() => handleAddNewSentence(sentence)}
                               >
                                 Insert sentence after
@@ -192,6 +197,7 @@ export default function FullTranscript({ sentences, setSentences, speakers, teac
                               {Array.from(new Set(speakers.sort())).map(
                                 (speaker) => (
                                   <Dropdown.Item
+                                    key={`handle-speaker-click-${sentence.start}-${speaker}`}
                                     onClick={() =>
                                       handleItemClick(sentence, speaker)
                                     }
@@ -200,10 +206,11 @@ export default function FullTranscript({ sentences, setSentences, speakers, teac
                                   </Dropdown.Item>
                                 )
                               )}{" "}
-                              <div
+                              <div>
+                                <Dropdown.Item
+                                key={`label-new-speaker-${sentence.start}`}
                                 onClick={() => handleAddNewSpeaker(sentence)}
-                              >
-                                <Dropdown.Item>
+                                >
                                   Label as new speaker
                                 </Dropdown.Item>
                               </div>
