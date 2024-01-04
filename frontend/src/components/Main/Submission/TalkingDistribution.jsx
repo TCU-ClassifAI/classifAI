@@ -1,6 +1,7 @@
 import Chart from "react-apexcharts";
+import { convertMsToTime } from "../../../utils/convertMsToTime";
 
-export default function TalkingDistribution({ convertMsToTime, series }) {
+export default function TalkingDistribution({ series }) {
   const pieChartProps = {
     options: {
       title: {

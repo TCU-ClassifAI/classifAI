@@ -1,9 +1,9 @@
 import Chart from "react-apexcharts";
+import { convertMsToTime } from "../../../utils/convertMsToTime";
 
 export default function CollapsedTimeline({
   sentences,
   labelColors,
-  convertMsToTime,
 }) {
   function setTimeLineData() {
     if (sentences) {
