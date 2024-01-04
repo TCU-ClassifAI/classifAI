@@ -46,7 +46,6 @@ export default function Transcribe() {
   const [teacher, setTeacher] = useState();
   const [show, setShow] = useState(false);
 
-
   let navigate = useNavigate();
 
   const location = useLocation();
@@ -64,7 +63,7 @@ export default function Transcribe() {
 
   useEffect(() => {
     checkLoadReport();
-  }, []);
+  }, [userReportToLoad]);
 
   useEffect(() => {
     if (sentences) {
@@ -91,7 +90,6 @@ export default function Transcribe() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-  
 
   function findSpeakers() {
     const speakersSet = new Set(speakers);
@@ -108,12 +106,6 @@ export default function Transcribe() {
     }
   }
 
-
-
-
-  
-
-
   function createTranscript() {
     let transcript = "";
     if (sentences) {
@@ -124,8 +116,6 @@ export default function Transcribe() {
       setTeacher(getMaxSpeaker());
     }
   }
-
-  
 
   function findQuestions() {
     let qs = [];
@@ -216,8 +206,6 @@ export default function Transcribe() {
     }
   }
 
-
-
   function findQuestionsLabels(quests) {
     //console.log("quests:")
     //console.log(quests)
@@ -232,11 +220,10 @@ export default function Transcribe() {
     };
 
     if (userReportToLoad) {
-      labeled = userReportToLoad.filter(function (sentence) {
-        if (sentence.label !== "non-question") {
-          return sentence.label;
-        }
-      });
+      labeled = userReportToLoad
+            .filter((sentence) => sentence.label !== "non-question")
+            .map((sentence) => sentence.label);
+
       setLabeledQuestions(labeled);
     } else {
       const sanitizeWord = (word) =>
@@ -255,11 +242,8 @@ export default function Transcribe() {
             sentence.label !== ""
         )
       ) {
-        labeled = quests.map((quest) => {
-          if (quest.label !== "non-question") {
-            return quest.label;
-          }
-        });
+        labeled = quests.filter((quest) => quest.label !== "non-question").map((quest) => quest.label);
+
       } else {
         labeled = quests.map((quest) => {
           const words = quest.words.map((wordObj) =>
@@ -291,10 +275,6 @@ export default function Transcribe() {
     }
   }
 
-
-
-
-
   function getMaxSpeaker() {
     let speakTimeList1 = totalSpeakers();
     let maxSpeakerName = "";
@@ -312,8 +292,6 @@ export default function Transcribe() {
       return maxSpeakerName;
     }
   }
-
-  
 
   function setTimeChartData() {
     if (sentences) {
@@ -366,11 +344,9 @@ export default function Transcribe() {
     return [
       getSpeakingTime(getMaxSpeaker()),
       sumSpeakingTime() - getSpeakingTime(getMaxSpeaker()),
-      getNonSpeakingTime(sentences)
-    ]
+      getNonSpeakingTime(sentences),
+    ];
   }
-
- 
 
   function getTimeChartProps(sentences) {
     return {
@@ -453,8 +429,6 @@ export default function Transcribe() {
     };
   }
 
-
-
   function getNonSpeakingTime(sentences) {
     if (sentences)
       return (
@@ -475,8 +449,6 @@ export default function Transcribe() {
     }
     return speakingTime;
   }
-
- 
 
   function sumSpeakingTime() {
     if (sentences) {
@@ -500,16 +472,11 @@ export default function Transcribe() {
     }
   }
 
- 
   const handleClickOutside = (event) => {
     if (!event.target.closest(".dropdown")) {
       setShow(null);
     }
   };
-
-  
-
-  
 
   function reloadPage() {
     navigate("/home/transcribe");
@@ -574,7 +541,7 @@ export default function Transcribe() {
 
   return (
     <div>
-      <UploadRecording 
+      <UploadRecording
         userReportToLoad={userReportToLoad}
         userReportLocation={userReportLocation}
         sentences={sentences}
@@ -584,7 +551,7 @@ export default function Transcribe() {
         <div>
           <Tabs id="controlled-tab-example">
             <Tab eventKey="TranscriptKey" title="Full Transcript">
-              <FullTranscript 
+              <FullTranscript
                 sentences={sentences}
                 setSentences={setSentences}
                 speakers={speakers}
@@ -594,14 +561,14 @@ export default function Transcribe() {
               />
             </Tab>
             <Tab eventKey="QuestionsKey" title="Questions">
-              <Questions 
-                  sentences={sentences}
-                  questions={questions}
-                  setQuestions={setQuestions}
-                  questioningTime={questioningTime}
-                  labeledQuestions={labeledQuestions}
-                  times={times}
-                  respTime={respTime}
+              <Questions
+                sentences={sentences}
+                questions={questions}
+                setQuestions={setQuestions}
+                questioningTime={questioningTime}
+                labeledQuestions={labeledQuestions}
+                times={times}
+                respTime={respTime}
               />
             </Tab>
 
@@ -609,24 +576,24 @@ export default function Transcribe() {
               eventKey="questionCategoryKey"
               title="Question Category Distribution"
             >
-              <QuestionCategoryDistribution labeledQuestions={labeledQuestions} />
+              <QuestionCategoryDistribution
+                labeledQuestions={labeledQuestions}
+              />
             </Tab>
 
             <Tab eventKey="barChartKey" title="Talking Distribution">
-                <TalkingDistribution 
-                  series={buildTalkingDistributionSeries()}
-                />
+              <TalkingDistribution series={buildTalkingDistributionSeries()} />
             </Tab>
 
             <Tab eventKey="timeChartGraphKey" title="Teacher Question Timeline">
-              <TeacherQuestionTimeline 
+              <TeacherQuestionTimeline
                 options={getTimeChartProps(sentences).options}
                 series={getTimeChartProps(sentences).series}
               />
             </Tab>
 
             <Tab eventKey="timeLineKey" title="Collapsed Timeline">
-              <CollapsedTimeline 
+              <CollapsedTimeline
                 sentences={sentences}
                 labelColors={labelColors}
               />
@@ -654,20 +621,20 @@ export default function Transcribe() {
             </Tab>
           </Tabs>
 
-          <ReportName 
-              badReportName={badReportName}
-              setReportName={setReportName}
-              userReportToLoad={userReportToLoad}
+          <ReportName
+            badReportName={badReportName}
+            setReportName={setReportName}
+            userReportToLoad={userReportToLoad}
           />
 
-          <CsvOptions 
+          <CsvOptions
             sentences={sentences}
             reportName={reportName}
             setReportName={setReportName}
           />
           <div>
             {successfullUpload ? <h6>File Save Success!!!</h6> : null}
-            <PdfOptions 
+            <PdfOptions
               sentences={sentences}
               transcript={transcript}
               questions={questions}
