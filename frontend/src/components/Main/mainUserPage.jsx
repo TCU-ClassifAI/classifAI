@@ -1,7 +1,7 @@
 import React from "react";
 import { Routes, Route, Outlet } from "react-router-dom";
 import SideMenu from "./SideMenu";
-import Submission from "./Submission/submission";
+import Submission from "./Submission/Submission";
 import AllFiles from "./AllFiles/AllFiles" ; // hypothetical component
 import Account from "../Account/accountPage";
 import "./MainPage.css";
