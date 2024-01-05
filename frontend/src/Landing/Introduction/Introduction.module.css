@@ -1,0 +1,66 @@
+/* ImageDescriptionComponent.module.css */
+
+.imageDescriptionContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 50px;
+  padding-top: 130px;
+}
+
+.description {
+  width: 100%; /* Set a fixed width (adjust as needed) */
+  padding-right: 20px;
+  font-family: 'Roboto', sans-serif; /* Apply the custom font */
+
+  p{
+    font-style: italic;
+  }
+
+  h2 {
+    font-weight: bold;
+    color: orange;
+  }
+}
+
+.image img {
+  max-width: 100%;
+  height: auto;
+  width: 100%; /* Set a fixed width (adjust as needed) */
+}
+
+/* Media Query for Responsive Design */
+@media (max-width: 768px) {
+  .imageDescriptionContainer {
+    flex-direction: column; /* Stack items vertically on smaller screens */
+  }
+
+  .description,
+  .image img {
+    width: 100%; /* Reset the width for full width on smaller screens */
+    padding-right: 0;
+    margin-bottom: 20px; /* Add margin between description and image */
+  }
+}
+
+.strong {
+  color: orange;
+}
+
+.button {
+  display: inline-block;
+  padding: 15px 20px;
+  font-size: 18px;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 10px; /* Set border-radius for a bubbled look */
+  background-color: #09283D; /* Set background color */
+  color: #ffffff; /* Set text color */
+  margin-right: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: orange;
+}

@@ -1,0 +1,41 @@
+site_name: ClassifAI Documentation
+site_url: https://classifai.github.io/classifai/
+nav:
+  - Home: index.md
+  - About: about.md
+  - 'Getting Started': getting_started.md
+  - 'Contribution':
+    - Edit the Docs: contribution/editing_docs.md
+    - Contribute Code: contribution/contributing.md
+    - 'Style Guide': contribution/style_guide.md
+  - 'Project Structure': structure.md
+  - 'Installation': installation.md
+  
+  
+theme:
+  name: material
+  palette:
+    - scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+    - scheme: default
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+  font:
+    code: Roboto Mono
+  logo: images/logo.png
+  favicon: images/logo.png
+extra:
+  generator: false
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/TCU-Instructional-AI/classifAI
+copyright: Copyright &copy; 2023 ClassifAI
+repo_url: https://github.com/TCU-Instructional-AI/classifAI
+repo_name: ClassifAI
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
