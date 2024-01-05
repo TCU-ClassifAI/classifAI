@@ -1,0 +1,67 @@
+import React from "react"
+import {Outlet, Link} from "react-router-dom";
+import C2Image from '../../images/frogv2.png'
+import { Auth } from "aws-amplify";
+import { useNavigate } from "react-router-dom";
+
+export default function NavbarHome() {
+    let navigate = useNavigate();
+    const [isAuthenticated, setIsAuthenticated] = React.useState(false);
+
+    React.useEffect(() => {
+        checkUser();
+    }, []);
+
+    async function checkUser() {
+        try {
+            await Auth.currentAuthenticatedUser();
+            setIsAuthenticated(true);
+        } catch (error) {
+            setIsAuthenticated(false);
+        }
+    }
+
+    async function signOut(event) {
+        event.preventDefault();
+        try {
+            await Auth.signOut();
+            console.log("Sign out successfully");
+            navigate("/");
+        } catch (error) {
+            console.log('error signing out: ', error);
+        }
+    }
+    
+    return (
+        <>
+            <nav className="navbar navbar-expand-lg" id="main-nav">
+                <a className="navbar-brand" href="#home">
+                        <img
+                            src={C2Image}
+                            className="tcu-image"
+                            alt="" />
+                    <span style={{ color: 'white', justifyContent: 'center', fontWeight: 'bold' }}>ClassifAI</span>
+
+                </a>
+
+                <div className="collapse navbar-collapse justify-content-end" id="navbarCollapse">
+                    <ul className="navbar-nav">
+                        {/* It is ingonering if the user logged in or not for now */}
+                            <>
+                                {/* menu when user is signed in */}
+                                <li className="nav-item">
+                                    <Link to="account" className="nav-link text-light"> Account</Link>
+                                </li>
+                                <li className="nav-item">
+                                    <a href="#home" className="nav-link text-light" onClick={(e) => signOut(e)} id='sign-out'>Sign Out</a>
+                                </li>
+                            </>
+                    </ul>
+                </div>
+            </nav>
+            <Outlet />
+        </>
+    );
+}
+
+
