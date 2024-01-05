@@ -10,10 +10,19 @@
     "faker": "^5.5.3",
     "FormData": "^0.10.1",
     "fs": "^0.0.1-security",
+    "jest": "^29.7.0",
     "mongoose": "^8.0.0",
     "multer": "^1.4.5-lts.1",
     "passport": "^0.6.0",
     "passport-google-oauth2": "^0.2.0",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "supertest": "^6.3.3"
+  },
+  "devDependencies": {
+    "@jest-mock/express": "^2.0.2"
+  },
+  "scripts": {
+    "test": "jest"
   }
+  
 }

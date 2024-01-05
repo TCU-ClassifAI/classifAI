@@ -12,7 +12,11 @@ def start_transcription():
     print(report_id)
     
     # Just test if the audio is recieved properly
-    folder_path = os.path.join(os.getcwd(), "audios")
+
+    script_dir = os.path.dirname(__file__)
+
+    # Folder for storing audios relative to the script directory
+    folder_path = os.path.join(script_dir, "audios")
 
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)

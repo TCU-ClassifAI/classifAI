@@ -37,50 +37,59 @@ const upload = multer({
 //////////// Upload endpoint: Stores file in the web server, uploads info to MongoDB, sends to Workstation
 ////// supports other optional attributes like subject, grade level, and is_premium
 router.post("/", upload.single('file'), async (req, res) => {  // Ignore route, our server.js will serve this on /upload
-  try {
-    const { userId, reportID: providedReportID } = req.body;
-
-    if (!userId || !req.file) {
-      return res.status(400).json({ success: false, message: "No userId or file uploaded" });
-    }
-
-    let reportID;
-    let newDir;
-
-    // Check if reportID is provided
-    if (providedReportID) {
-        reportID = providedReportID;
-        newDir = path.join('./uploads', userId, String(reportID)); // Place in uploads/userId/reportID/....... folder
-    } 
-    else {
-        // Create a new report if no reportID is provided
-        const newReport = await dbconnect.createReport(req.body);
-        reportID = newReport.reportID;
-        newDir = path.join('./uploads', userId, String(reportID));
-    }
-        
+    let response = {
+        uploadStatus: 'pending',
+        transferStatus: 'pending',
+        message: '',
+        id: null,
+    };
     
-    fsPromises.mkdir(newDir, { recursive: true });
+    try {
+        const { userId, reportID: providedReportID } = req.body;
+        if (!userId || !req.file) {
+            response.message = "No userId or file uploaded";
+            return res.status(400).json(response);    
+        }
 
-    const allowedAudioTypes = ['audio/mpeg', 'audio/wav', 'audio/aac', 'audio/ogg', 'audio/webm'];
-    const fileType = req.file.mimetype;
+        const allowedTypes = ['application/json', 'text/csv', 'application/pdf', 'audio/mpeg', 'audio/wav', 'audio/aac', 'audio/ogg', 'audio/webm'];
+        const audioTypes =['audio/mpeg', 'audio/wav', 'audio/aac', 'audio/ogg', 'audio/webm']
+        const fileType = req.file.mimetype;
+        if (!allowedTypes.includes(fileType)) {
+            await fsPromises.unlink(req.file.path); 
+            response.message = 'Invalid file type provided';
+            return res.status(400).json(response);    
+        }
 
-    let newPath;
-    if (['application/json', 'text/csv', 'application/pdf'].includes(fileType) || allowedAudioTypes.includes(fileType)) {
-      newPath = await handleFileUpload(req, fileType, reportID, newDir);
-    } 
-    else {
-      return res.status(400).json({ success: false, id: reportID, message: 'Invalid file type provided' });
+        let reportID = providedReportID || (await dbconnect.createReport(req.body)).reportID;
+        const newDir = path.join('./uploads', userId, String(reportID)); // Place in uploads/userId/reportID/....... folder
+        await fsPromises.mkdir(newDir, { recursive: true });
+        let newPath = await handleFileUpload(req, fileType, reportID, newDir);
+        response.success = true;
+        response.id = reportID;
+        response.uploadStatus = 'successful';
+        response.message = 'File uploaded and database entry successfully created';
+
+        if (!audioTypes.includes(fileType)) {
+            response.transferStatus = null;
+            res.status(200).json(response);
+        }
+        else {
+            await handleFileTransfer(process.env.WORKSTATION_URL, newPath, reportID);
+            response.transferStatus = 'successful';
+            response.message = 'File uploaded, database entry sucessfully created, and file transferred successfully';
+            res.status(200).json(response);
+        }
+
     }
-
-    res.status(200).json({ success: true, id: reportID, message: 'File uploaded and Database entry created successfully' });
-    handleFileTransfer(process.env.WORKSTATION_URL, newPath, reportID);
-
-  } 
-  catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: "An error occurred" });
-  }
+    catch (error) {
+        console.error(error);
+        response.message = "An error occurred";
+        response.uploadStatus = response.uploadStatus === 'pending' ? 'failed' : response.uploadStatus;
+        response.transferStatus = (response.uploadStatus === 'successful' && response.transferStatus === 'pending') ? 'failed' : response.transferStatus;
+        if (!res.headersSent) {
+            res.status(500).json(response);
+        }
+    }
 });
 
 
@@ -90,7 +99,6 @@ const handleFileUpload = async (req, fileType, reportID, newDir) => {
     const newPath = path.join(newDir, `${fileSuffix}_${req.file.filename}`);
     const oldPath = req.file.path;
 
-
     try {
         await fsPromises.rename(oldPath, newPath);
     } catch (error) {
@@ -98,12 +106,8 @@ const handleFileUpload = async (req, fileType, reportID, newDir) => {
         throw new Error("Failed to process file upload.");
     }
 
-
-
     // Update to audioField if audio
     const updateField = fileType.startsWith('audio/') ? 'audioPath' : `${fileSuffix}Path`;
-
-    //console.log("Updating database with path:", newPath);
     await dbconnect.updateReport(reportID, { [updateField]: newPath });
     return newPath;
 };
@@ -115,7 +119,12 @@ const handleFileTransfer = async (workstation, newPath, reportID) => {
     formData.append('file', fs.createReadStream(newPath));
     formData.append('reportID', String(reportID));
 
-    await axios.post(workstation, formData, { headers: formData.getHeaders() });
+    try {
+        await axios.post(workstation, formData, { headers: formData.getHeaders() });
+    } catch (error) {
+        console.error("Error in file transfer:", error);
+        throw new Error("Failed to transfer file. Possible Workstation connection error.");
+    }
 };
 //////////// 
 
