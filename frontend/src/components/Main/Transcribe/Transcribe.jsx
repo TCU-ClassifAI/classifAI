@@ -62,7 +62,9 @@ export default function Transcribe() {
   };
 
   useEffect(() => {
-    checkLoadReport();
+    if (userReportToLoad) {
+      setSentences(userReportToLoad);
+    }
   }, [userReportToLoad]);
 
   useEffect(() => {
@@ -98,12 +100,6 @@ export default function Transcribe() {
       speakersSet.add(sentence.speaker);
     });
     setSpeakers(speakersSet);
-  }
-
-  function checkLoadReport() {
-    if (userReportToLoad) {
-      setSentences(userReportToLoad);
-    }
   }
 
   function createTranscript() {
@@ -221,8 +217,8 @@ export default function Transcribe() {
 
     if (userReportToLoad) {
       labeled = userReportToLoad
-            .filter((sentence) => sentence.label !== "non-question")
-            .map((sentence) => sentence.label);
+        .filter((sentence) => sentence.label !== "non-question")
+        .map((sentence) => sentence.label);
 
       setLabeledQuestions(labeled);
     } else {
@@ -242,8 +238,9 @@ export default function Transcribe() {
             sentence.label !== ""
         )
       ) {
-        labeled = quests.filter((quest) => quest.label !== "non-question").map((quest) => quest.label);
-
+        labeled = quests
+          .filter((quest) => quest.label !== "non-question")
+          .map((quest) => quest.label);
       } else {
         labeled = quests.map((quest) => {
           const words = quest.words.map((wordObj) =>
@@ -403,12 +400,7 @@ export default function Transcribe() {
             //because 6 init entries
             let tooltipIndex = dataPointIndex - 6;
             let questionList = sentences.filter((item) => item.isQuestion);
-            //console.log("copy of sentences: ")
-            //console.log(sentences)
             let question = questionList[tooltipIndex];
-            //console.log("GOT HERE")
-            //console.log("data point index: " + tooltipIndex)
-            //console.log(questionList)
             return (
               '<div class="arrow_box">' +
               "<span><strong>Speaker " +
