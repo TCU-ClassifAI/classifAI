@@ -22,10 +22,10 @@ import "./transcript.scss";
 import WordCloud from "./WordCloud";
 
 import { Tab, Tabs } from "react-bootstrap";
-/* TODO Fix Saving Reports to S3 and reloading into page
+// TODO Fix Saving Reports to S3 and reloading into page
 import { Auth } from "aws-amplify";
 import AWS from "aws-sdk";
-*/
+
 import { useLocation, useNavigate } from "react-router-dom";
 import ParentSize from "@visx/responsive/lib/components/ParentSize";
 
@@ -475,15 +475,15 @@ export default function Transcribe() {
     window.location.reload();
   }
 
-  /* 
-  * TODO add task to make use of this function
+  
+ // * TODO add task to make use of this function
   async function saveUserObject() {
     AWS.config.update({
       region: "us-east-2",
       apiVersion: "latest",
       credentials: {
-        accessKeyId: process.env.REACT_APP_ACCESS_KEY_ID,
-        secretAccessKey: process.env.REACT_APP_SECRET_ID,
+        accessKeyId:import.meta.env.VITE_APP_ACCESS_KEY_ID,
+        secretAccessKey:import.meta.env.VITE_APP_SECRET_ID,
       },
     });
 
@@ -529,7 +529,7 @@ export default function Transcribe() {
       }
     }
   }
-*/
+
 
   return (
     <div>
@@ -637,6 +637,10 @@ export default function Transcribe() {
               id="bottom-button2"
             >
               Upload New Recording
+            </button>
+
+            <button onClick={() => saveUserObject()} className='btn btn-primary' id="bottom-button2">
+              SAVE REPORT
             </button>
           </div>
         </div>

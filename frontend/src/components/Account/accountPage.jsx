@@ -4,6 +4,7 @@ import { Auth } from "aws-amplify";
 import AWS from "aws-sdk";
 import { Link } from "react-router-dom";
 
+
 export default function Account(){
     const[isEditing, setIsEditing] = useState(false);
     const[userAttributes, setUserAttributes] = useState({});
@@ -92,8 +93,8 @@ export default function Account(){
             region: 'us-east-2',
             apiVersion: 'latest',
             credentials: {
-              accessKeyId: process.env.REACT_APP_ACCESS_KEY_ID,
-              secretAccessKey: process.env.REACT_APP_SECRET_ID,
+              accessKeyId:import.meta.env.VITE_APP_ACCESS_KEY_ID,
+              secretAccessKey:import.meta.env.VITE_APP_SECRET_ID,
             } 
           });
           const user = await Auth.currentAuthenticatedUser();
