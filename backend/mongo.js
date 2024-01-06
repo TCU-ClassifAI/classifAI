@@ -92,9 +92,10 @@ async function deleteUser(id) {
 // Create Report - this function assumes that an userID will always be passed when creating a new report
 async function createReport(data) {
   // generate a reportID for this entry, assign it to the report
-  const newRID = generateUniqueReportID(data.userID);
+  const newRID = await generateUniqueReportID(data.userID);
+  data.reportID = newRID; // Set the reportID in the data
 
-  const report = new Report(data, { reportID: newRID });
+  const report = new Report(data);
   await report.save();
 
   // return the report to the caller
