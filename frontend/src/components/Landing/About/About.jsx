@@ -37,7 +37,7 @@ export default function About() {
             imageUrl: LiranMa,
         },
         {
-            name: 'John Henry Meija',
+            name: 'John Henry Mejía',
             role: 'Developer',
             description: `An Honors senior computer science student with a double minor in mathematics and general business. Developed the classifAI engine using flask and WhisperX.`,
             imageUrl: LiranMa,
