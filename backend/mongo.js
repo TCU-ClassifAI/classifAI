@@ -16,11 +16,21 @@ mongo.once('open', function() {
 
 // Define a schema and a model for storing audio files in MongoDB
 const reportSchema = new mongoose.Schema({                           
-    // Report ID: MongoDB automatically generates a unique id assigns it to the _id field
-    csvPath: String,
-    jsonPath: String,
-    pdfPath: String,
-    audioPath: String,
+    // csvPath: String,
+    // jsonPath: String,
+    // pdfPath: String,
+    // audioPath: String,
+    // fileName: String, //added 1/22
+    
+    files: [{   //added 1/23
+      fileName: String,
+      filePath: String,
+      fileType: String, // csv, json, pdf, audio, etc
+        // this would be the perfect place to put the transcript for an audio file; keeps all past data, and corrected data
+        // summary too, maybe even subject, topics, gradeLevel; any attributes relating to files
+    }],
+
+    
     reportID: String,
     userID: String,
     isPremium: Boolean,
@@ -92,9 +102,10 @@ async function deleteUser(id) {
 // Create Report - this function assumes that an userID will always be passed when creating a new report
 async function createReport(data) {
   // generate a reportID for this entry, assign it to the report
-  const newRID = generateUniqueReportID(data.userID);
+  const newRID = await generateUniqueReportID(data.userID);
+  data.reportID = newRID; // Set the reportID in the data
 
-  const report = new Report(data, { reportID: newRID });
+  const report = new Report(data);
   await report.save();
 
   // return the report to the caller

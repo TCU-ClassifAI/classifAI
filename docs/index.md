@@ -30,7 +30,10 @@
 
 * [Home](index.md)
 * [About](about.md)
-* [Getting Started](getting_started.md)
+- Getting Started >
+    - [Express Backend Setup](getting_started/express.md)
+    - [Webserver Backend APIs](getting_started/express_api.md)
+    - [Express API to React Guide](getting_started/express_api_react.md)
 * [Installation](installation.md)
 - Contribution > 
     - [Contribution Overview](contribution/contributing.md)
