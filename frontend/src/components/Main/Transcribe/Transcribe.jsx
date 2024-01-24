@@ -45,6 +45,7 @@ export default function Transcribe() {
   const [badReportName, setBadReportName] = useState(false);
   const [teacher, setTeacher] = useState();
   const [show, setShow] = useState(false);
+  const [uploadRecordingVisible, setUploadRecordingVisible] = useState(true);
 
   let navigate = useNavigate();
 
@@ -92,6 +93,10 @@ export default function Transcribe() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  function handleHideUploadRecording() {
+    setUploadRecordingVisible(false);
+  };
 
   function findSpeakers() {
     const speakersSet = new Set(speakers);
@@ -533,12 +538,15 @@ export default function Transcribe() {
 
   return (
     <div>
-      <UploadRecording
-        userReportToLoad={userReportToLoad}
-        userReportLocation={userReportLocation}
-        sentences={sentences}
-        setSentences={setSentences}
-      />
+      {uploadRecordingVisible && (
+        <UploadRecording
+          userReportToLoad={userReportToLoad}
+          userReportLocation={userReportLocation}
+          sentences={sentences}
+          setSentences={setSentences}
+          onHideUploadRecording={handleHideUploadRecording}  // Pass the function to hide the component
+        />
+      )}
       {sentences && (
         <div>
           <Tabs id="controlled-tab-example">
