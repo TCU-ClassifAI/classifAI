@@ -1,6 +1,7 @@
 node_modules
 .env
 backend/old.index.js
+backend/routes/wipTranscriptRoutes.js
 uploads
 
 resources/*
@@ -11,7 +12,7 @@ resources/*
 temporary_uploads
 __tests__
 unit_testing
-backend/Workstation_Testing/audios
+backend/Testing/Workstation_Testing/audios
 /resources/mongo-data/
 mongo-data
 mongosh

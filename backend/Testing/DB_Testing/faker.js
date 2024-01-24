@@ -1,6 +1,6 @@
 require('dotenv').config();
 const faker = require('faker');
-const dbconnect = require('../mongo.js');
+const dbconnect = require('../../mongo.js');
 
 async function generateData() {
     for (let i = 0; i < 10; i++) {

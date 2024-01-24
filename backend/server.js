@@ -7,7 +7,6 @@ const transcriptionRoutes = require('./routes/transcriptionRoutes.js'); // Adjus
 
 
 //Idea bank:
-  // Look into PQueue; improve the performance by processing multiple files concurrently (specified by the concurrency option)
   // What if in another js file we auto compress audio files when they've been uploaded?
 //
 
