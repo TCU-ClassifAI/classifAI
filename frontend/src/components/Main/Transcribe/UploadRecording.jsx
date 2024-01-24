@@ -7,6 +7,7 @@ export default function UploadRecording({
   userReportLocation,
   sentences,
   setSentences,
+  onHideUploadRecording, 
 }) {
   const [isAudio, setIsAudio] = useState(false);
   const [isVideo, setIsVideo] = useState(false);
@@ -14,6 +15,7 @@ export default function UploadRecording({
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [selectedFile, setSelectedFile] = useState("");
   const [fileContent, setFileContent] = useState();
+  const [isFileSelected, setIsFileSelected] = useState(false);
 
   async function handleSubmission() {
     setIsAnalyzing(true);
@@ -21,6 +23,7 @@ export default function UploadRecording({
     const transcriptionResult = await transcribeFile(audioUrl);
     setSentences(transcriptionResult);
     setIsAnalyzing(false);
+    onHideUploadRecording();
   }
 
   function handleFileChange(event) {
@@ -31,7 +34,7 @@ export default function UploadRecording({
     reader.onloadend = (event) => {
       setFileContent(event.target.result);
     };
-
+    
     const type = file.type;
     if (type.includes("audio")) {
       setIsAudio(true);
@@ -44,6 +47,7 @@ export default function UploadRecording({
       setIsVideo(false);
       setIsNeither(true);
     }
+    setIsFileSelected(!fileContent);
   }
 
   const renderMediaElement = (tag) => (
@@ -98,6 +102,7 @@ export default function UploadRecording({
           className="form-control"
           id="customFile"
           onChange={handleFileChange}
+          disabled={isAnalyzing}
         />
       </div>
     </div>
@@ -124,6 +129,7 @@ export default function UploadRecording({
           className="btn btn-primary"
           id="submission-main"
           onClick={() => handleSubmission({ selectedFile })}
+          disabled={!isFileSelected}
         >
           Analyze Recording
         </button>
