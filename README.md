@@ -195,18 +195,16 @@ Check out the  [documentation](https://tcu-classifai.github.io/classifAI/) for m
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/TCU-Instructional-AI/classifAI.svg?style=for-the-badge
-[contributors-url]: https://github.com/TCU-Instructional-AI/classifAI/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/TCU-Instructional-AI/classifAI.svg?style=for-the-badge
-[forks-url]: https://github.com/TCU-Instructional-AI/classifAI/network/members
-[stars-shield]: https://img.shields.io/github/stars/TCU-Instructional-AI/classifAI.svg?style=for-the-badge
-[stars-url]: https://github.com/TCU-Instructional-AI/classifAI/stargazers
-[issues-shield]: https://img.shields.io/github/issues/TCU-Instructional-AI/classifAI.svg?style=for-the-badge
-[issues-url]: https://github.com/TCU-Instructional-AI/classifAI/issues
-[license-shield]: https://img.shields.io/github/license/TCU-Instructional-AI/classifAI.svg?style=for-the-badge
-[license-url]: https://github.com/TCU-Instructional-AI/classifAI/blob/master/LICENSE.txt
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/linkedin_username
+[contributors-shield]: https://img.shields.io/github/contributors/TCU-ClassifAI/classifAI.svg?style=for-the-badge
+[contributors-url]: https://github.com/TCU-ClassifAI/classifAI/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/TCU-ClassifAI/classifAI.svg?style=for-the-badge
+[forks-url]: https://github.com/TCU-ClassifAI/classifAI/network/members
+[stars-shield]: https://img.shields.io/github/stars/TCU-ClassifAI/classifAI.svg?style=for-the-badge
+[stars-url]: https://github.com/TCU-ClassifAI/classifAI/stargazers
+[issues-shield]: https://img.shields.io/github/issues/TCU-ClassifAI/classifAI.svg?style=for-the-badge
+[issues-url]: https://github.com/TCU-ClassifAI/classifAI/issues
+[license-shield]: https://img.shields.io/github/license/TCU-ClassifAI/classifAI.svg?style=for-the-badge
+[license-url]: https://github.com/TCU-ClassifAI/classifAI/blob/master/LICENSE.txt
 [product-screenshot]: images/screenshot.png
 [Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
 [Next-url]: https://nextjs.org/
