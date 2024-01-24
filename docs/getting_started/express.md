@@ -78,3 +78,21 @@ Once connected, you can browse collections, view documents, and query the data u
 
 
 
+# New Commands as of 1/23 (Need to update above)
+```
+In Terminal 1:
+	# assuming you're in parent directory
+	docker-compose -f ./resources/docker-compose.yml up
+
+In Terminal 2:	
+	# assuming you're in parent directory
+	cd backend
+	# ensure .env file for backend is here
+	npm install
+	node ./server.js
+	
+In Terminal 3:	
+	# assuming you're in parent directory
+	python  ./backend/Testing/Workstation_Testing/testWorkstation.py
+
+```
