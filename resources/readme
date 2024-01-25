@@ -1,0 +1,9 @@
+# to load local database (also applicable on the production server)
+docker-compose up -d --build
+docker exec -it ae0e547be17d mongosh
+# where "ae0e547be17d" is the container name, given by "docker ps" command
+
+# then, inside mongosh, execute the following to create the classifai database
+use classifai;
+
+# creates a database with no access control - for the time being this should be fine since outside connections to the container are blocked
