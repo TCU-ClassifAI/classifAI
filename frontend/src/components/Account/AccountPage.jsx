@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import './Account.css'
 import { Auth } from "aws-amplify";
-import AWS from "aws-sdk";
 import { Link } from "react-router-dom";
 
 
@@ -32,7 +31,6 @@ export default function Account(){
 
     useEffect(() => {
         retrieveUserInfo();
-        retrieveReports();
     }, []);
 
 
@@ -88,81 +86,6 @@ export default function Account(){
         });
     }
 
-    async function retrieveReports(){
-        AWS.config.update({ 
-            region: 'us-east-2',
-            apiVersion: 'latest',
-            credentials: {
-              accessKeyId:import.meta.env.VITE_APP_ACCESS_KEY_ID,
-              secretAccessKey:import.meta.env.VITE_APP_SECRET_ID,
-            } 
-          });
-          const user = await Auth.currentAuthenticatedUser();
-          const s3 = new AWS.S3();
-          let params = {
-            Bucket: 'c2ai-storage-e5d3ddbc163336-staging',
-            Delimiter: '',
-            Prefix: user.username + "/"
-          }
-
-          s3.listObjectsV2(params, function (err, data){
-            if(err){
-                console.log(err)
-            }else{
-                setListFiles(data.Contents)
-                console.log(data.Contents);
-            }
-          })
-    }
-
-    async function loadUserReport(key, event){
-        event.preventDefault();
-        const s3 = new AWS.S3();
-        await Auth.currentAuthenticatedUser();
-        setLocation(key)
-
-        let params = {
-            Bucket: 'c2ai-storage-e5d3ddbc163336-staging',
-            Key: key,
-            ResponseContentType: 'application/json'
-        }
-
-       s3.getObject(params, function (err, data){
-            if(err){
-                console.log(err)
-                setReport(null);
-            }else{
-                console.log(data)
-                console.log(data.Body)
-                console.log(JSON.parse(data.Body))
-                setReport(JSON.parse(data.Body));
-            }
-        })
-        setReportLoaded(true);
-    }
-
-    async function deleteUserReport(key, event){
-        
-        event.preventDefault();
-        setShow(false)
-        const s3 = new AWS.S3();
-        await Auth.currentAuthenticatedUser();
-        console.log("DELETING REPORT:")
-        console.log(key)
-        let params = {
-            Bucket: 'c2ai-storage-e5d3ddbc163336-staging',
-            Key: key,
-        }
-
-       s3.deleteObject(params, function (err, data){
-            if(err){
-                console.log(err)
-            }else{
-                window.location.reload()
-                console.log(data)
-            }
-        })
-    }
 
     return(
         <div className="container">
@@ -189,9 +112,9 @@ export default function Account(){
                             {listFiles && 
                                 listFiles.map((name, index) => (
                                     <li className='list-group-item' key={index}>
-                                        <button className="btn btn-primary" onClick={(e) => loadUserReport(name.Key, e)}>{name.Key.substring(name.Key.indexOf("/") + 1)}</button>   
+                                        <button className="btn btn-primary">{name.Key.substring(name.Key.indexOf("/") + 1)}</button>   
                                         {/*<button className="btn btn-danger" type="button" onClick={handleShow}>Delete</button>*/}
-                                        <button variant="primary" className="btn btn-danger" id="delete-button" onClick={(e) => deleteUserReport(name.Key, e)}>
+                                        <button variant="primary" className="btn btn-danger" id="delete-button">
                                             Delete Report
                                         </button>
                                         {/*
