@@ -20,7 +20,6 @@
     "@visx/wordcloud": "^3.3.0",
     "apexcharts": "^3.36.3",
     "aws-amplify": "^5.0.23",
-    "aws-sdk": "^2.1348.0",
     "axios": "^1.1.3",
     "bootstrap": "^5.2.3",
     "file-saver": "^2.0.5",

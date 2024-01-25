@@ -22,10 +22,6 @@ import "./transcript.scss";
 import WordCloud from "./WordCloud";
 
 import { Tab, Tabs } from "react-bootstrap";
-// TODO Fix Saving Reports to S3 and reloading into page
-import { Auth } from "aws-amplify";
-import AWS from "aws-sdk";
-
 import { useLocation, useNavigate } from "react-router-dom";
 import ParentSize from "@visx/responsive/lib/components/ParentSize";
 
@@ -480,62 +476,6 @@ export default function Transcribe() {
     window.location.reload();
   }
 
-  
- // * TODO add task to make use of this function
-  async function saveUserObject() {
-    AWS.config.update({
-      region: "us-east-2",
-      apiVersion: "latest",
-      credentials: {
-        accessKeyId:import.meta.env.VITE_APP_ACCESS_KEY_ID,
-        secretAccessKey:import.meta.env.VITE_APP_SECRET_ID,
-      },
-    });
-
-    const s3 = new AWS.S3();
-    if (userReportToLoad) {
-      var data = {
-        Bucket: "c2ai-storage-e5d3ddbc163336-staging",
-        Key: userReportLocation,
-        Body: JSON.stringify(sentences),
-        ContentEncoding: "base64",
-        ContentType: "application/json",
-        ACL: "public-read",
-      };
-
-      s3.putObject(data, function (err, data) {
-        if (err) {
-        } else {
-          setSuccessfullUpload(true);
-        }
-      });
-    } else {
-      const user = await Auth.currentAuthenticatedUser();
-      const folderName = user.username;
-      const location = folderName + "/" + reportName;
-      if (reportName === "") {
-        setBadReportName(true);
-      } else {
-        setBadReportName(false);
-        var data = {
-          Bucket: "c2ai-storage-e5d3ddbc163336-staging",
-          Key: location,
-          Body: JSON.stringify(sentences),
-          ContentEncoding: "base64",
-          ContentType: "application/json",
-          ACL: "public-read",
-        };
-        s3.putObject(data, function (err, data) {
-          if (err) {
-          } else {
-            setSuccessfullUpload(true);
-          }
-        });
-      }
-    }
-  }
-
-
   return (
     <div>
       {uploadRecordingVisible && (
@@ -647,7 +587,7 @@ export default function Transcribe() {
               Upload New Recording
             </button>
 
-            <button onClick={() => saveUserObject()} className='btn btn-primary' id="bottom-button2">
+            <button className='btn btn-primary' id="bottom-button2">
               SAVE REPORT
             </button>
           </div>
