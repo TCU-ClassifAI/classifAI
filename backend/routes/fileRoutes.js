@@ -1,6 +1,10 @@
 const express = require("express");
 const dbconnect = require('../mongo.js');
 const router = express.Router();
+const fsPromises = require('fs').promises;
+const path = require('path');
+
+////////// Create operations (uses /upload in uploadRoute.js)
 
 
 
@@ -38,27 +42,37 @@ router.get('/:reportID/:fileName', checkReportExists, (req, res) => {
 ///////// Update Operations
 
 // (Update) PUT - Modifying an Existing File in a Report
-router.put('/update/:reportID/:fileName', checkReportExists, (req, res) => {
-    const { fileName } = req.params;
+router.put('/update/:reportID/:fileName', checkReportExists, async (req, res) => {
+    const { reportID, fileName } = req.params;
     const newData = req.body;
 
-    if (typeof newData !== 'object' || newData === null) {
-        return res.status(400).json({ success: false, message: 'Invalid request body.' });
-    }
+    // Ensure newFileName is provided and is not empty
+    if (!newData.fileName || typeof newData.fileName !== 'string' || newData.fileName.trim() === '') {
+      return res.status(400).json({ success: false, message: 'New file name not provided or is invalid.' });
+  }
     
     const file = req.report.files.find(f => f.fileName === fileName);
     if (!file) {
         return res.status(404).json({ success: false, message: 'File not found.' });
     }
 
-    Object.assign(file, newData);
+    try {
+      // Rename file on the server
+      const oldPath = file.filePath;
+      const newFileName = newData.fileName + path.extname(oldPath);
+      const newPath = path.join(path.dirname(oldPath), newFileName);
+      await fsPromises.rename(oldPath, newPath);
 
-    req.report.save().then(() => {
-        res.json({ success: true, message: 'File updated successfully.', files: req.report.files });
-    }).catch(error => {
+      // Update file details in the database
+      Object.assign(file, { fileName: newFileName, filePath: newPath });
+      await req.report.save();
+
+      res.json({ success: true, message: 'File updated and renamed successfully.', file: file });
+    } 
+    catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: "An error occurred during the update" });
-    });
+    };
 });
 
 ///////////////////////////
