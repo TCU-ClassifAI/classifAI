@@ -4,15 +4,19 @@ const cors = require("cors");
 
 const uploadRoute = require('./routes/uploadRoute.js');
 const transcriptionRoutes = require('./routes/transcriptionRoutes.js'); // Adjust the path as necessary
+const reportRoutes = require('./routes/reportRoutes.js');
+const fileRoutes = require('./routes/fileRoutes.js');
+
 
 
 //Idea bank:
   // What if in another js file we auto compress audio files when they've been uploaded?
 //
 
-const PORT = 5000;
+const PORT = 5000; // env
 const app = express();
 app.use(cors());
+app.use(express.json());
 
 
 
@@ -29,6 +33,9 @@ app.use('/upload', uploadRoute);  // uploadRoute is in routes/uploadRoute.js
 
 app.use('/transcript', transcriptionRoutes); // transcriptionRoutes is in routes/transcriptionRoutes.js
 
+app.use('/reports',reportRoutes); //WIP
+
+app.use('/files',fileRoutes); //WIP
 
 
 

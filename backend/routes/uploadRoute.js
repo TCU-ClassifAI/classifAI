@@ -45,6 +45,9 @@ const upload = multer({
 //////////// Upload endpoint: Stores file in the web server, uploads info to MongoDB, sends to Workstation
 ////// supports other optional attributes like subject, grade level, and is_premium
 router.post("/", upload.single('file'), async (req, res) => {  // Ignore route, our server.js will serve this on /upload
+    
+    
+    // 1/24 TODO: grab date of file upload, send to database
     let response = {
         uploadStatus: 'pending',
         transferStatus: 'pending',
@@ -108,21 +111,28 @@ router.post("/", upload.single('file'), async (req, res) => {  // Ignore route, 
 // Function to handle file upload and update report
 const handleFileUpload = async (req, fileType, reportID, providedFileName, newDir) => {
     const originalExtension = path.extname(req.file.originalname);
-    const fileSuffix = fileType.split('/').pop();
-    let fileName = providedFileName ? `${fileSuffix}_${providedFileName}${originalExtension}` : `${fileSuffix}_${req.file.filename}`;
-    let newPath = path.join(newDir, fileName);
+    let fileName = providedFileName ? providedFileName : path.basename(req.file.filename, originalExtension);
+    let newPath = path.join(newDir, fileName + originalExtension);
     const oldPath = req.file.path;
 
     try {
         await fsPromises.rename(oldPath, newPath);
         const report = await dbconnect.getReport(reportID);
         let files = report.files || [];
-        let file = files.find(f => f.fileName === fileName);
+        let existingFileIndex = files.findIndex(f => f.fileName === fileName);        
 
-        if (file) {
-            file.filePath = newPath;
+        if (existingFileIndex !== -1) {
+            files[existingFileIndex] = {
+                fileName: fileName,
+                filePath: newPath,
+                fileType: req.file.mimetype.split('/').pop()
+            };
         } else {
-            files.push({ fileName: fileName, filePath: newPath, fileType: fileSuffix });
+            files.push({
+                fileName: fileName,
+                filePath: newPath,
+                fileType: req.file.mimetype.split('/').pop()
+            });        
         }
 
         await dbconnect.updateReport(reportID, { files: files });
@@ -142,11 +152,6 @@ const handleFileTransfer = async (workstation, newPath, reportID) => {
 
     try {
         await axios.post(workstation, formData, { headers: formData.getHeaders() });
-            // Assuming the job_id is returned in the response body under a key 'job_id'
-            // const response = await axios.post(workstation, formData, { headers: formData.getHeaders() });
-            // job_id = response.data.job_id;
-            // await dbconnect.updateReport(reportID, { job_id: job_id });
-            // return job_id;
     } catch (error) {
         console.error("Error in file transfer:", error);
         throw new Error("Failed to transfer file. Possible Workstation connection error.");
