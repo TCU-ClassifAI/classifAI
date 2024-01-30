@@ -1,0 +1,1 @@
+[OAD(./docs/swagger.yaml)] <> # Path: docs/swagger.yaml. Auto-generated from OpenAPI spec via https://www.neoteroi.dev/mkdocs-plugins/web/oad/

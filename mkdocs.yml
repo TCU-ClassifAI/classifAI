@@ -3,7 +3,7 @@ site_url: https://classifai.github.io/classifai/
 nav:
   - Home: index.md
   - About: about.md
-  - 'Getting Started': 
+  - 'Backend Installation': 
     - Express Backend Setup: getting_started/express.md
     - Webserver Backend APIs: getting_started/express_api.md
     - Express API to React Guide: getting_started/express_api_react.md
@@ -13,19 +13,23 @@ nav:
     - 'Style Guide': contribution/style_guide.md
   - 'Project Structure': structure.md
   - 'Installation': installation.md
-  
-  
+  - 'API Reference': api.md
 theme:
   name: material
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
   palette:
-    - scheme: slate
-      toggle:
-        icon: material/weather-sunny
-        name: Switch to light mode
     - scheme: default
+      primary: deep purple
       toggle:
         icon: material/weather-night
         name: Switch to dark mode
+    - scheme: slate
+      primary: deep purple
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
   font:
     code: Roboto Mono
   logo: images/logo.png
@@ -35,10 +39,16 @@ extra:
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/TCU-Instructional-AI/classifAI
-copyright: Copyright &copy; 2023 ClassifAI
+copyright: Copyright &copy; 2024 ClassifAI
 repo_url: https://github.com/TCU-Instructional-AI/classifAI
 repo_name: ClassifAI
 markdown_extensions:
   - admonition
   - pymdownx.details
   - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+plugins:
+- search
+- neoteroi.mkdocsoad:
+      use_pymdownx: true
