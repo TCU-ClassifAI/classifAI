@@ -4,8 +4,8 @@
     description: |-
       ClassifAI API 
     contact:
-      name: ClassifAI Team
-      url: https://tcu-classifai.github.io/classifAI/
+      name: ClassifAI
+      url: https://classifai.tcu.edu/
     version: 1.0.0
   servers:
     # Update when it is deployed to Production
@@ -20,6 +20,10 @@
   
     - name: user
       description: All user operations are handled by AWS Cognito
+      
+    - name: sentences
+      description: legacy code operations to support assembly AI model get and save reports
+      
   paths:
   
   # Reports CRUD
@@ -38,7 +42,7 @@
                 schema:
                   type: array
                   items:
-                    $ref: '#/components/schemas/SuperFrog'
+                    $ref: '#/components/schemas/Report'
           '400':
             description: Invalid status value
           '404':
@@ -97,7 +101,7 @@
                 schema:
                   type: array
                   items:
-                    $ref: '#/components/schemas/SuperFrog'
+                    $ref: '#/components/schemas/Report'
           '400':
             description: Invalid status value
           '404':
@@ -124,32 +128,33 @@
             schema:
               type: string
         requestBody:
-          description: SuperFrog object that needs to be added
+          description: Report object that needs to be added
           required: true
           content:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/SuperFrog'
+                  - $ref: '#/components/schemas/Report'
                 example:
-                  firstName: "SuperFrog"
-                  lastName: "example"
-                  email: "aej@gmail.com"
-                  password: "password"
-                  active: true
+                  usesrId: "johnnguyen"
+                  reportId: "senior design"
+                  file: "senior_design_lecture.mp4"
+                  gradeLevel: "12"
+                  subject: "computer science"
+                  fileName: "senior_design_lecture"
         responses:
           200:
-            description: SuperFrog created 
+            description: Report created 
             content:
               application/json:
                 schema:
-                  $ref: '#/components/schemas/ApiResponseAddSuperfrog'
+                  $ref: '#/components/schemas/ApiResponseAddReport'
           400:
             description: Bad request
             content:
                 application/json:
                     schema:
-                      $ref: '#/components/schemas/ApiResponseSuperfrogBadRequest'
+                      $ref: '#/components/schemas/ApiResponseBadRequest'
  
       put:
         tags:
@@ -170,6 +175,17 @@
             required: true
             schema:
               type: string
+        requestBody:
+          description: Report object that will be modified
+          required: true
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Report'
+                example:
+                  file: "os_lecture.mp4"
+                  fileName: "os_lecture"
         responses:
           '200':
             description: successful operation
@@ -178,7 +194,7 @@
                 schema:
                   type: array
                   items:
-                    $ref: '#/components/schemas/SuperFrog'
+                    $ref: '#/components/schemas/Report'
           '400':
             description: Invalid status value
           '404':
@@ -224,7 +240,7 @@
                 schema:
                   type: array
                   items:
-                    $ref: '#/components/schemas/SuperFrog'
+                    $ref: '#/components/schemas/Report'
           '400':
             description: Invalid status value
           '404':
@@ -252,7 +268,7 @@
                 schema:
                   type: array
                   items:
-                    $ref: '#/components/schemas/SuperFrog'
+                    $ref: '#/components/schemas/Report'
           '400':
             description: Invalid status value
           '404':
@@ -279,32 +295,30 @@
             schema:
               type: string
         requestBody:
-          description: SuperFrog object that needs to be added
+          description: Export Data file object to be added
           required: true
           content:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/SuperFrog'
+                  - $ref: '#/components/schemas/File'
                 example:
-                  firstName: "SuperFrog"
-                  lastName: "example"
-                  email: "aej@gmail.com"
-                  password: "password"
-                  active: true
+                  reportId: "seniorDesignReport"
+                  userId: "johnnguyen"
+                  file: "transcript.csv"
         responses:
           200:
-            description: SuperFrog created 
+            description: File created 
             content:
               application/json:
                 schema:
-                  $ref: '#/components/schemas/ApiResponseAddSuperfrog'
+                  $ref: '#/components/schemas/ApiResponseAddReport'
           400:
             description: Bad request
             content:
                 application/json:
                     schema:
-                      $ref: '#/components/schemas/ApiResponseSuperfrogBadRequest'
+                      $ref: '#/components/schemas/ApiResponseBadRequest'
       put:
         tags:
           - files
@@ -332,7 +346,7 @@
                 schema:
                   type: array
                   items:
-                    $ref: '#/components/schemas/SuperFrog'
+                    $ref: '#/components/schemas/Report'
           '400':
             description: Invalid status value
           '404':
@@ -364,142 +378,77 @@
             
   components:
     schemas:
-      SuperFrog:
+      Report:
         type: object
         properties:
-          id:
-            type: integer
-            format: int64
-            example: 1
-          firstName:
+          userId:
             type: string
-            example: "John"
-          lastName:
+            example: "johnnguyen"
+          reportId:
             type: string
-            example: "Mejyen"
-          email:
+            example: "myReport"
+          file:
             type: string
-            format: email
-            example: "example@gmail.com"
-          password:
+            example: "all.csv"
+          gradeLevel:
             type: string
-            format: password
-            example: "password"
-          active:
-            type: boolean
-            example: true
+            example: "12"
+          subject:
+            type: string
+            example: "music"
+          fileName:
+            type: string
+            example: "transcript"
         required: 
-          - firstName
-          - lastName
-          - email
-          - password
+          - userId
+          - reportId
+          - file
   
-      Request:
+      File:
         type: object
         properties:
-          id:
-            type: integer
-            format: int64
-          superfrogID:
-            type: integer
-            format: int64
-          status:
+          userId:
             type: string
-          eventDescription:
+            example: "johnnguyen"
+          reportId:
             type: string
-          created:
+            example: "myReport"
+          file:
             type: string
-            format: date-time
-          updated:
+            example: "all.csv"
+          fileName:
             type: string
-            format: date-time
-          contactFirstName:
-            type: string
-          contactLastName:
-            type: string
-          phoneNumber:
-            type: string
-          email:
-            type: string
-            format: email
-          eventTitle: 
-            type: string
-          nameOfOrganization:
-            type: string
-          addressOfAppearance:
-            type: string
-          specialInstructions:
-            type: string
-          outsideOrganizations:
-            type: string
-          expensesBenefits:
-            type: string
-          scheduleDate:
-            type: string
-          startTime:
-            type: string
-          endTime: 
-            type: string
-          eventType:
-            type: string
-          totalCost:
-            type: number
-            format: double   
-      User:
-        type: object
-        properties:
-          id:
-            type: integer
-            format: int64
-          username:
-            type: string
-          firstName:
-            type: string
-          lastName:
-            type: string
-          email:
-            type: string
-          password:
-            type: string
-            format: password
-          phone:
-            type: string
-          userStatus:
-            type: integer
-            format: int32
-            description: User Status
-        required:
-          - firstName
-          - lastName
-          - email
-          - password
-          - phone
-          - userStatus
-      SuperFrogList:
+            example: "transcript"
+        required: 
+          - userId
+          - reportId
+          - file
+        
+      ReportList:
         type: array
         items:
-          $ref: '#/components/schemas/SuperFrog'
+          $ref: '#/components/schemas/Report'
         example:
-          - id: 1
-            firstName: "John"
-            lastName: "Mejyen"
-            email: "example@gmail.com"
-            password: "password"
-            active: true
-          - id: 2
-            firstName: "Joey"
-            lastName: "Quinn"
-            email: "iamacat@gmail.com"
-            password: "password2"
-            active: true
-          - id: 3
-            firstName: "Ethan"
-            lastName: "Edinboro"
-            email: "jo@gmail.com"
-            password: "password3"
-            active: false
+          - usesrId: "johnnguyen"
+            reportId: "senior design"
+            file: "senior_design_lecture.mp4"
+            gradeLevel: "12"
+            subject: "computer science"
+            fileName: "senior_design_lecture"
+          - usesrId: "johnnguyen"
+            reportId: "operating_systems"
+            file: "OS_lecture.mp4"
+            gradeLevel: "12"
+            subject: "computer science"
+            fileName: "senior_design_lecture"
+          - usesrId: "johnnguyen"
+            reportId: "DeepLearning"
+            file: "senior_design_lecture.mp4"
+            gradeLevel: "12"
+            subject: "computer science"
+            fileName: "deep_learning_lecture"
       ApiResponseFindAllReportsByUser:
-        title: API response for findAllsuperfrogstudents
+        title: API response for findAll Reports By user
         type: object
         properties:
           flag:
@@ -514,9 +463,9 @@
             description: Message to indicate if the request was successful
             example: "Find All Success"
           data:
-            $ref: '#/components/schemas/SuperFrogList'
-      ApiResponseAddSuperfrog:
-        title: API response for addSuperFrog
+            $ref: '#/components/schemas/ReportList'
+      ApiResponseAddReport:
+        title: API response for addReport
         type: object
         properties:
           flag:
@@ -532,17 +481,16 @@
             example: "Add Success"
           data:
             allOf:
-              - $ref: '#/components/schemas/SuperFrog'
+              - $ref: '#/components/schemas/Report'
             example:
-              id: 1
-              username: "superfrog1"
-              firstName: "John"
-              lastName: "Mejyen"
-              email: "asaifd@gmail.com"
-              password: "password"
-              active: true
-      ApiResponseFindSuperfrogById: 
-        title: API response for findSuperFrogById
+              usesrId: "johnnguyen"
+              reportId: "DeepLearning"
+              file: "senior_design_lecture.mp4"
+              gradeLevel: "12"
+              subject: "computer science"
+              fileName: "deep_learning_lecture"
+      ApiResponseFindReportById: 
+        title: API response for findReportById
         type: object
         properties:
           flag:
@@ -558,17 +506,16 @@
             example: "Find By Id Success"
           data:
             allOf:
-              - $ref: '#/components/schemas/SuperFrog'
+              - $ref: '#/components/schemas/Report'
             example:
-              id: 1
-              username: "superfrog1"
-              firstName: "John"
-              lastName: "Mejyen"
-              email: "meow@gmail.com"
-              password: "password"
-              active: true
-      ApiResponseUpdateSuperfrog:
-        title: API response for updateSuperfrog
+              usesrId: "johnnguyen"
+              reportId: "DeepLearning"
+              file: "senior_design_lecture.mp4"
+              gradeLevel: "12"
+              subject: "computer science"
+              fileName: "deep_learning_lecture"
+      ApiResponseUpdateReport:
+        title: API response for update report
         type: object
         properties:
           flag:
@@ -584,15 +531,15 @@
             example: "Update Success"
           data:
             allOf:
-              - $ref: '#/components/schemas/SuperFrog'
+              - $ref: '#/components/schemas/Report'
             example:
-              id: 1
-              firstName: "John"
-              lastName: "Mejyen"
-              email: "misty@gmail.com"
-              password: "password"
-              active: true
-      ApiResponseSuperfrogBadRequest:
+              usesrId: "johnnguyen"
+              reportId: "DeepLearning"
+              file: "changed_lecture.mp4"
+              gradeLevel: "12"
+              subject: "computer science"
+              fileName: "changed_lecture"
+      ApiResponseBadRequest:
         title: API response for bad request error
         description: The schema for bad request error
         type: object
@@ -616,32 +563,27 @@
             example: Provided arguments are invalid, see data for details.
             readOnly: true
           data:
-            $ref: '#/components/schemas/SuperfrogBadRequest'
-      SuperfrogBadRequest:
+            $ref: '#/components/schemas/ReportFileBadRequest'
+      ReportFileBadRequest:
         title: Superfrog bad request
         description: Messages describing a bad request error
         type: object
         properties:
-          firstName:
-            title: First name
-            description: First name error message
+          reportId:
+            title: reportId
+            description: reportId is required
             type: string
-            example: first name is required
-          lastName:
-            title: Last name
-            description: Last name error message
+            example: reportId is required
+          userId:
+            title: userId
+            description: userId is required
             type: string
-            example: last name is required
-          email:
-            title: Email
-            description: Email error message
+            example: userId is required
+          file:
+            title: file
+            description: file is required
             type: string
-            example: email is required
-          password:
-            title: Password
-            description: Password error message
-            type: string
-            example: password is required
+            example: file is required
         
       
     securitySchemes:
