@@ -12,7 +12,6 @@ nav:
     - Contribute Code: contribution/contributing.md
     - 'Style Guide': contribution/style_guide.md
   - 'Project Structure': structure.md
-  - 'Installation': installation.md
   - 'API Reference': api.md
 theme:
   name: material
