@@ -13,7 +13,7 @@ const router = express.Router();
 const upload = multer({
   storage: multer.diskStorage({
     destination: async (req, file, cb) => {
-      const userID = req.body.userID;
+      const userID = req.params.userID;
       if (!userID) {
         return cb(new Error("No userID provided"), false);
       }
@@ -30,12 +30,12 @@ const upload = multer({
       }
     },
     filename: (req, file, cb) => {
-      cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+      cb(null, file.originalname);//file.fieldname + '-' + Date.now() + path.extname(file.originalname));
     }
   }),
   limits: { fileSize: 5 * 1024 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
-    cb(null, !!req.body.userID);
+    cb(null, !!req.params.userID);
   }
 });
 //////////// 
@@ -43,26 +43,40 @@ const upload = multer({
 
 
 //////////// Upload endpoint: Stores file in the web server, uploads info to MongoDB, sends to Workstation
-////// supports other optional attributes like subject, grade level, and is_premium
-router.post("/", upload.single('file'), async (req, res) => {  // Ignore route, our server.js will serve this on /upload
+////// supports other optional attributes like subject, gradeLevel, and is_premium
+router.post("/reports/:reportID/users/:userID", upload.single('file'), async (req, res) => {//"/", upload.single('file'), async (req, res) => {  // Ignore route, our server.js will serve this on /upload
     
     
     // 1/24 TODO: grab date of file upload, send to database
+
+    // Initialize the response structure
     let response = {
-        uploadStatus: 'pending',
-        transferStatus: 'pending',
+        flag: false,
+        code: 500,
         message: '',
-        id: null,
+        data: {}
     };
+
     
     try {
-        const { userID, reportID: providedReportID, fileName: providedFileName } = req.body; //file name added 1/22
-            //let job_id = null; // Variable for workstation Job_id
+        const reportID = req.params.reportID;
+        const userID = req.params.userID;
+        const providedFileName = req.body.fileName;
 
-        if (!userID || !req.file) {
-            response.message = "No userID or file uploaded";
-            return res.status(400).json(response);    
+        if (!req.file) {
+            response.message = "File is required";
+            return res.status(400).json(response);
         }
+        if (!reportID){
+            response.message = "reportID is required";
+            return res.status(400).json(response);
+        }
+        if (!userID){
+            response.message = "userID is required";
+            return res.status(400).json(response);
+        }
+
+
 
         const allowedTypes = ['application/json', 'text/csv', 'application/pdf', 'audio/mpeg', 'audio/wav', 'audio/aac', 'audio/ogg', 'audio/webm'];
         const audioTypes =['audio/mpeg', 'audio/wav', 'audio/aac', 'audio/ogg', 'audio/webm']
@@ -73,17 +87,37 @@ router.post("/", upload.single('file'), async (req, res) => {  // Ignore route, 
             return res.status(400).json(response);    
         }
 
-        let reportID = providedReportID || (await dbconnect.createReport(req.body)).reportID;
+        let report = await dbconnect.getReport(reportID);
+        if (!report) {
+            const reportData = {
+                reportID: reportID,
+                userID: userID,
+                ...req.body, // includes other body data
+            };    
+            report = await dbconnect.createReport(reportData);
+
+        }
+
+        //let reportID = providedReportID || (await dbconnect.createReport(req.body)).reportID;
         const newDir = path.join('./uploads', userID, String(reportID)); // Place in uploads/userId/reportID/....... folder
         await fsPromises.mkdir(newDir, { recursive: true });
         let newPath = await handleFileUpload(req, fileType, reportID, providedFileName, newDir);
-        response.success = true;
-        response.id = reportID;
-        response.uploadStatus = 'successful';
-        response.message = 'File uploaded and database entry successfully created';
+        
+        // Set response for successful upload
+        response.flag = true;
+        response.code = 200;
+        response.message = "File uploaded and database entry successfully created";
+        response.data = {
+            userId: userID,
+            reportId: reportID,
+            file: req.file.originalname,
+            fileName: providedFileName || path.basename(newPath),
+            gradeLevel: req.body.gradeLevel,
+            subject: req.body.subject
+        };
 
         if (!audioTypes.includes(fileType)) {
-            response.transferStatus = null;
+            //response.transferStatus = null;
             res.status(200).json(response);
         }
         else {
@@ -118,6 +152,10 @@ const handleFileUpload = async (req, fileType, reportID, providedFileName, newDi
     try {
         await fsPromises.rename(oldPath, newPath);
         const report = await dbconnect.getReport(reportID);
+         // Check if the report is not null
+         if (!report) {
+            throw new Error(`No report found with ID ${reportID}`);
+        }
         let files = report.files || [];
         let existingFileIndex = files.findIndex(f => f.fileName === fileName);        
 
