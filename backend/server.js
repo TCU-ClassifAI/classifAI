@@ -29,13 +29,13 @@ app.listen(PORT, () => {
 });
 
 // Testing: audio upload works as expected on newest refactor 12/28, uploaded files given reportID are put into the same folder
-//app.use('/upload', uploadRoute);  // uploadRoute is in routes/uploadRoute.js
+app.use('/upload', uploadRoute);  // uploadRoute is in routes/uploadRoute.js
 
 app.use('/transcript', transcriptionRoutes); // transcriptionRoutes is in routes/transcriptionRoutes.js
 
 app.use('/reports',reportRoutes); //WIP
 
-app.use('/users',fileRoutes, uploadRoute); //WIP
+app.use('/files',fileRoutes);//, uploadRoute); //WIP
 
 
 

@@ -44,7 +44,7 @@ const upload = multer({
 
 //////////// Upload endpoint: Stores file in the web server, uploads info to MongoDB, sends to Workstation
 ////// supports other optional attributes like subject, grade level, and is_premium
-router.post("/:userID/files", upload.single('file'), async (req, res) => {  //TODO: Fix file upload, have userID param broke original way
+router.post("/", upload.single('file'), async (req, res) => {  // Ignore route, our server.js will serve this on /upload
     
     
     // 1/24 TODO: grab date of file upload, send to database
@@ -56,15 +56,11 @@ router.post("/:userID/files", upload.single('file'), async (req, res) => {  //TO
     };
     
     try {
-        console.log(req.params.userID)
-        const userID = req.params.userID;
-        console.log(userID);
-    
-        const { reportID: providedReportID, fileName: providedFileName } = req.body; //file name added 1/22
+        const { userID, reportID: providedReportID, fileName: providedFileName } = req.body; //file name added 1/22
             //let job_id = null; // Variable for workstation Job_id
 
-        if (!req.file) {
-            response.message = "No  file uploaded";
+        if (!userID || !req.file) {
+            response.message = "No userID or file uploaded";
             return res.status(400).json(response);    
         }
 
