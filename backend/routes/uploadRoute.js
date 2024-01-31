@@ -13,11 +13,11 @@ const router = express.Router();
 const upload = multer({
   storage: multer.diskStorage({
     destination: async (req, file, cb) => {
-      const userId = req.body.userId;
-      if (!userId) {
-        return cb(new Error("No userId provided"), false);
+      const userID = req.body.userID;
+      if (!userID) {
+        return cb(new Error("No userID provided"), false);
       }
-      const dir = path.join(__dirname, '..','uploads','.temporary_uploads', userId); //specify actual upload directory later
+      const dir = path.join(__dirname, '..','uploads','.temporary_uploads', userID); //specify actual upload directory later
       try {
         if (!fs.existsSync(dir)) {
           await fsPromises.mkdir(dir, { recursive: true });
@@ -35,7 +35,7 @@ const upload = multer({
   }),
   limits: { fileSize: 5 * 1024 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
-    cb(null, !!req.body.userId);
+    cb(null, !!req.body.userID);
   }
 });
 //////////// 
@@ -44,7 +44,7 @@ const upload = multer({
 
 //////////// Upload endpoint: Stores file in the web server, uploads info to MongoDB, sends to Workstation
 ////// supports other optional attributes like subject, grade level, and is_premium
-router.post("/", upload.single('file'), async (req, res) => {  // Ignore route, our server.js will serve this on /upload
+router.post("/:userID/files", upload.single('file'), async (req, res) => {  //TODO: Fix file upload, have userID param broke original way
     
     
     // 1/24 TODO: grab date of file upload, send to database
@@ -56,11 +56,15 @@ router.post("/", upload.single('file'), async (req, res) => {  // Ignore route, 
     };
     
     try {
-        const { userId, reportID: providedReportID, fileName: providedFileName } = req.body; //file name added 1/22
+        console.log(req.params.userID)
+        const userID = req.params.userID;
+        console.log(userID);
+    
+        const { reportID: providedReportID, fileName: providedFileName } = req.body; //file name added 1/22
             //let job_id = null; // Variable for workstation Job_id
 
-        if (!userId || !req.file) {
-            response.message = "No userId or file uploaded";
+        if (!req.file) {
+            response.message = "No  file uploaded";
             return res.status(400).json(response);    
         }
 
@@ -74,7 +78,7 @@ router.post("/", upload.single('file'), async (req, res) => {  // Ignore route, 
         }
 
         let reportID = providedReportID || (await dbconnect.createReport(req.body)).reportID;
-        const newDir = path.join('./uploads', userId, String(reportID)); // Place in uploads/userId/reportID/....... folder
+        const newDir = path.join('./uploads', userID, String(reportID)); // Place in uploads/userId/reportID/....... folder
         await fsPromises.mkdir(newDir, { recursive: true });
         let newPath = await handleFileUpload(req, fileType, reportID, providedFileName, newDir);
         response.success = true;
@@ -125,13 +129,13 @@ const handleFileUpload = async (req, fileType, reportID, providedFileName, newDi
             files[existingFileIndex] = {
                 fileName: fileName,
                 filePath: newPath,
-                fileType: req.file.mimetype.split('/').pop()
+                fileType: req.file.mimetype
             };
         } else {
             files.push({
                 fileName: fileName,
                 filePath: newPath,
-                fileType: req.file.mimetype.split('/').pop()
+                fileType: req.file.mimetype
             });        
         }
 

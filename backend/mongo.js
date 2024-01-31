@@ -123,6 +123,11 @@ async function getReportWhere(query) {
   return await Report.findOne(query);
 }
 
+// Get All Reports by UserID
+async function getAllReportsWhere(query) {
+  return await Report.find(query);
+}
+
 // Update Report
 async function updateReport(id, data) {
   return await Report.findOneAndUpdate({ reportID: id }, data, { new: true });
@@ -192,6 +197,7 @@ module.exports = {
   createReport,
   getReport,
   getReportWhere,
+  getAllReportsWhere,
   updateReport,
   deleteReport,
 
