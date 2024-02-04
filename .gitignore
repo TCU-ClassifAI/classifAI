@@ -11,6 +11,7 @@ resources/*
 
 temporary_uploads
 oldFileRoute.js
+oldtranscriptionRoutes.js
 __tests__
 unit_testing
 backend/Testing/Workstation_Testing/audios

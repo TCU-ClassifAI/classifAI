@@ -31,8 +31,8 @@ const reportSchema = new mongoose.Schema({
     }],
 
     
-    reportID: String,
-    userID: String,
+    reportId: String,
+    userId: String,
     isPremium: Boolean,
     summary: String,
     gradeLevel: String,
@@ -45,7 +45,7 @@ const reportSchema = new mongoose.Schema({
 
 // Define a schema and a model for storing users in MongoDB
 const userSchema = new mongoose.Schema({                           
-    userID: String,
+    userId: String,
     school: String,
     email: String,
     reportCount: String,
@@ -58,7 +58,7 @@ const userSchema = new mongoose.Schema({
 
 // Define a schema and a model for storing admin accounts in MongoDB
 const adminSchema = new mongoose.Schema({                           
-  userID: String,
+  userId: String,
   email: String,
   name: String
 });
@@ -78,7 +78,7 @@ async function createUser(data) {
 
 // Read User
 async function getUser(id) {
-  return await User.findOne({ userID: id });
+  return await User.findOne({ userId: id });
 }
 
 // Get User Where - search by query
@@ -89,12 +89,12 @@ async function getUserWhere(query) {
 
 // Update User
 async function updateUser(id, data) {
-  return await User.findOneAndUpdate({ userID: id }, data, { new: true });
+  return await User.findOneAndUpdate({ userId: id }, data, { new: true });
 }
 
 // Delete User
 async function deleteUser(id) {
-  return await User.findOneAndDelete({ userID: id });
+  return await User.findOneAndDelete({ userId: id });
 }
 
 // reportSchema ------------------------------------------
@@ -102,11 +102,11 @@ async function deleteUser(id) {
 // Create Report - this function assumes that an userID will always be passed when creating a new report
 async function createReport(data) {
   
-  // Check if reportID is already provided in the data
-  if (!data.reportID) {
+  // Check if reportId is already provided in the data
+  if (!data.reportId) {
     // generate a reportID for this entry, assign it to the report
-    const newRID = await generateUniqueReportID(data.userID);
-    data.reportID = newRID; // Set the reportID in the data
+    const newRID = await generateUniqueReportID(data.userId);
+    data.reportId = newRID; // Set the reportID in the data
   }
   
   const report = new Report(data);
@@ -118,7 +118,7 @@ async function createReport(data) {
 
 // Read Report
 async function getReport(id) {
-  return await Report.findOne({ reportID: id });
+  return await Report.findOne({ reportId: id });
 }
 
 // Get Report  - search by query
@@ -132,14 +132,19 @@ async function getAllReportsWhere(query) {
   return await Report.find(query);
 }
 
-// Update Report
-async function updateReport(id, data) {
-  return await Report.findOneAndUpdate({ reportID: id }, data, { new: true });
+// Update to ensure operations are based on both userId and reportId
+async function updateReport(query, data) {
+  return await Report.findOneAndUpdate(query, data, { new: true });
 }
+
+// // Update Report
+// async function updateReport(id, data) {
+//   return await Report.findOneAndUpdate({ reportId: id }, data, { new: true });
+// }
 
 // Delete Report
 async function deleteReport(id) {
-  return await Report.findOneAndDelete({ reportID: id });
+  return await Report.findOneAndDelete({ reportId: id });
 }
 
 // adminSchema ---------------------------------------------
@@ -152,38 +157,38 @@ async function createAdmin(data) {
 
 // Read Admin
 async function getAdmin(id) {
-  return await Admin.findOne({ userID: id });
+  return await Admin.findOne({ userId: id });
 }
 
 // Update Admin
 async function updateAdmin(id, data) {
-  return await Admin.findOneAndUpdate({ userID: id }, data, { new: true });
+  return await Admin.findOneAndUpdate({ userId: id }, data, { new: true });
 }
 
 // Delete Admin
 async function deleteAdmin(id) {
-  return await Admin.findOneAndDelete({ userID: id });
+  return await Admin.findOneAndDelete({ userId: id });
 }
 
 // Util Functions
 
 // Generate new reportID
-async function generateUniqueReportID(userID) {
+async function generateUniqueReportID(userId) {
   let isUnique = false;
-  let reportID;
+  let reportId;
 
   while (!isUnique) {
     // Generate a random 4-digit number
-    reportID = Math.floor(1000 + Math.random() * 9000);
+    reportId = Math.floor(1000 + Math.random() * 9000);
 
     // Check if this reportID already exists for the given userID
-    const existingReport = await Report.findOne({ reportID: reportID, userID: userID });
+    const existingReport = await Report.findOne({ reportId: reportId, userId: userId });
     if (!existingReport) {
       isUnique = true;
     }
   }
 
-  return reportID;
+  return reportId;
 }
 
 
