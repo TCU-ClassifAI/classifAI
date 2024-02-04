@@ -319,6 +319,7 @@
                 application/json:
                     schema:
                       $ref: '#/components/schemas/ApiResponseBadRequest'
+    /files/{fileName}/reports/{reportId}/users/{userId}:  
       put:
         tags:
           - files
@@ -334,7 +335,13 @@
               type: string
           - name: userId
             in: path
-            description: id of report
+            description: id of user
+            required: true
+            schema:
+              type: string
+          - name: fileName
+            in: path
+            description: name of File
             required: true
             schema:
               type: string
@@ -367,6 +374,12 @@
           - name: userId
             in: path
             description: id of report
+            required: true
+            schema:
+              type: string
+          - name: fileName
+            in: path
+            description: name of File
             required: true
             schema:
               type: string
