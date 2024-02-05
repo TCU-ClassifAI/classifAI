@@ -161,7 +161,6 @@ router.get('/reports/:reportId/users/:userId', async (req, res) => {   //   (/fi
 router.get('/:fileName/reports/:reportId/users/:userId', async (req, res) => {
   try {
     const { fileName, reportId, userId } = req.params;
-    console.log(fileName);
 
     // Fetch the report for the specified user and reportId
     const report = await dbconnect.getReportWhere({ reportId: reportId, userId: userId });
@@ -226,8 +225,8 @@ router.put('/:fileName/reports/:reportId/users/:userId', checkReportExists, asyn
   try {
     // Rename file on the server
     const oldPath = file.filePath;
-    const newFileName = newData.fileName + path.extname(oldPath);
-    const newPath = path.join(path.dirname(oldPath), newFileName);
+    const newFileName = newData.fileName;// + path.extname(oldPath);
+    const newPath = path.join(path.dirname(oldPath), newFileName + path.extname(oldPath));
     await fsPromises.rename(oldPath, newPath);
 
     // Update file details in the database
