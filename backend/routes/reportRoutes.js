@@ -9,24 +9,42 @@ const path = require('path');
 //////////////// GET
 
 // GET all reports
+// TODO: fileType query
 router.get('/', async (req, res) => { // (/files)
   try {
     let fileTypes = req.query.fileType;
-
-    // Optional file type query (e.g., 'csv', 'pdf', etc.)
     if (fileTypes && !Array.isArray(fileTypes)) {
       fileTypes = [fileTypes];
     }
-    
-    // Fetch reports from all users
-    const reports = await dbconnect.getAllReportsWhere({}); // Empty query to get all
 
+    const reports = await dbconnect.getAllReportsWhere({});
     if (!reports || reports.length === 0) {
       return res.status(404).send('No reports found.');
     }
 
-  // Send the response
-  res.json({ success: true, reports: reports });
+    let filesResponse = [];
+    reports.forEach(report => {
+      const filteredFiles = report.files.filter(file => 
+        fileTypes ? fileTypes.some(fileType => file.fileType.includes(fileType)) : true
+      );
+
+      if (filteredFiles.length > 0) {
+        filesResponse.push({
+          userId: report.userId,
+          reportId: report.reportId,
+          file: filteredFiles.map(file => file.filePath),
+          gradeLevel: report.gradeLevel,
+          subject: report.subject,
+          fileName: filteredFiles.map(file => file.fileName)
+        });
+      }
+    });
+
+    if (filesResponse.length === 0) {
+      return res.status(404).send('No files found matching the specified types.');
+    }
+
+    res.status(200).json(filesResponse);
 } catch (error) {
   res.status(500).send(`Error fetching files: ${error.message}`);
 }
@@ -34,12 +52,42 @@ router.get('/', async (req, res) => { // (/files)
 
 
 // GET all reports from a specific user
+// TODO: fileType query
 router.get('/users/:userId', async (req, res) => {
   try {
+
+    let fileTypes = req.query.fileType;
+    if (fileTypes && !Array.isArray(fileTypes)) {
+      fileTypes = [fileTypes];
+    }
+
     const query = {userId: req.params.userId};
     const reports = await findAllReports(query, res); // Pass the userId directly
     if (!reports) return; 
-    res.json({ success: true, reports: reports });
+
+    let filesResponse = [];
+    reports.forEach(report => {
+      const filteredFiles = report.files.filter(file => 
+        fileTypes ? fileTypes.some(fileType => file.fileType.includes(fileType)) : true
+      );
+
+      if (filteredFiles.length > 0) {
+        filesResponse.push({
+          userId: report.userId,
+          reportId: report.reportId,
+          file: filteredFiles.map(file => file.filePath),
+          gradeLevel: report.gradeLevel,
+          subject: report.subject,
+          fileName: filteredFiles.map(file => file.fileName)
+        });
+      }
+    });
+
+    if (filesResponse.length === 0) {
+      return res.status(404).send('No files found matching the specified types.');
+    }
+
+    res.status(200).json(filesResponse);
   } catch (error) {
     if (!res.headersSent) {
       res.status(500).json({ success: false, message: "An unexpected error occurred" });
