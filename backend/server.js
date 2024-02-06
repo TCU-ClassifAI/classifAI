@@ -3,7 +3,7 @@ const express = require("express");
 const cors = require("cors");
 
 const fileUploadRoute = require('./routes/fileUploadRoute.js');
-const transcriptionRoutes = require('./routes/oldtranscriptionRoutes.js'); // Adjust the path as necessary
+//const transcriptionRoutes = require('./routes/transcriptionRoutes.js'); // Adjust the path as necessary
 const reportRoutes = require('./routes/reportRoutes.js');
 const fileRoutes = require('./routes/fileRoutes.js');
 const reportUploadRoute = require('./routes/reportUploadRoute.js');

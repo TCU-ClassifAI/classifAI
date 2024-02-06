@@ -35,7 +35,8 @@ router.get('/', async (req, res) => { // (/files)
           file: filteredFiles.map(file => file.filePath),
           gradeLevel: report.gradeLevel,
           subject: report.subject,
-          fileName: filteredFiles.map(file => file.fileName)
+          fileName: filteredFiles.map(file => file.fileName),
+          transcription: report.transcription //added 2/5
         });
       }
     });
@@ -78,7 +79,8 @@ router.get('/users/:userId', async (req, res) => {
           file: filteredFiles.map(file => file.filePath),
           gradeLevel: report.gradeLevel,
           subject: report.subject,
-          fileName: filteredFiles.map(file => file.fileName)
+          fileName: filteredFiles.map(file => file.fileName),
+          transcription: report.transcription //added 2/5
         });
       }
     });
@@ -138,6 +140,7 @@ router.get('/:reportId', async (req, res) => {
 
 //////////////// PUT
 
+//TODO: check if transcript update
 // Update a specific report for a specific user
 router.put('/:reportId/users/:userId', async (req, res) => {
   const { reportId, userId } = req.params; // Extract reportId and userId from URL parameters
