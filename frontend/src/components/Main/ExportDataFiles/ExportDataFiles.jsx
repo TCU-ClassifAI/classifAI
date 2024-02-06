@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Auth } from "aws-amplify";
-import styles from './AllFiles.module.css'; // Import CSS module for styling
+import styles from './ExportDataFiles.module.css'; // Import CSS module for styling
 
-export default function AllFiles() {
+export default function ExportDataFiles() {
   const [files, setFiles] = useState([]);
   const [userId, setUserId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(5); // Number of items to display per page
-
+  const [itemsPerPage] = useState(10); // Number of items to display per page
   const [oldFileNameEditing, setOldFileNameEditing] = useState("");
 
   useEffect(() => {
@@ -28,21 +27,33 @@ export default function AllFiles() {
   }, []);
 
   useEffect(() => {
-    const fetchUserFiles = async () => {
-      try {
-        if (userId) {
-          const response = await axios.get(`http://localhost:443/files/users/${userId}?fileType=csv&fileType=pdf`);
-          setFiles(response.data);
-        }
-      } catch (error) {
-        console.error('Error fetching user files:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchUserFiles();
+    if (userId) {
+      fetchUserFiles();
+    }
   }, [userId]);
+
+  const fetchUserFiles = async () => {
+    try {
+      const response = await axios.get(`http://localhost:443/files/users/${userId}?fileType=csv&fileType=pdf`);
+      // Flatten the data structure to ensure each row contains one file
+      const flattenedData = response.data.reduce((acc, obj) => {
+        obj.file.forEach((file, index) => {
+          acc.push({
+            userId: obj.userId,
+            reportId: obj.reportId,
+            file: file,
+            fileName: obj.fileName[index]
+          });
+        });
+        return acc;
+      }, []);
+      setFiles(flattenedData);
+    } catch (error) {
+      console.error('Error fetching user files:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleFileNameChange = (event, index) => {
     const updatedFiles = [...files];
@@ -83,19 +94,6 @@ export default function AllFiles() {
     }
   };
 
-  const fetchUserFiles = async () => {
-    try {
-      if (userId) {
-        const response = await axios.get(`http://localhost:443/files/users/${userId}?fileType=csv&fileType=pdf`);
-        setFiles(response.data);
-      }
-    } catch (error) {
-      console.error('Error fetching user files:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   // Logic for pagination
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -130,6 +128,7 @@ export default function AllFiles() {
             <th>Report ID</th>
             <th>Filename</th>
             <th>File</th>
+            <th>Edit</th>
           </tr>
         </thead>
         <tbody>
@@ -150,9 +149,17 @@ export default function AllFiles() {
               <td>{file.file}</td>
               <td>
                 {file.isEditing ? (
-                  <button onClick={() => handleSaveClick(index)}>Save</button>
+                  <>
+                    <button className={styles.saveButton} onClick={() => handleSaveClick(index)}>Save</button>
+                    <button className={styles.cancelButton} onClick={() => {
+                      const updatedFiles = [...files];
+                      updatedFiles[index].isEditing = false;
+                      updatedFiles[index].fileName = oldFileNameEditing; // Revert back to old value
+                      setFiles(updatedFiles);
+                    }}>Cancel</button>
+                  </>
                 ) : (
-                  <button onClick={() => handleEditClick(index)}>Edit</button>
+                  <button className={styles.editButton} onClick={() => handleEditClick(index)}>Edit</button>
                 )}
               </td>
             </tr>

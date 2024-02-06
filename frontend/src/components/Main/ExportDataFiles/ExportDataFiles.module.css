@@ -50,3 +50,34 @@
     border: 1px solid #ccc; /* Example border color */
     cursor: pointer;
   }
+
+  .editButton {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+  }
+  
+  .saveButton {
+    background-color: #008CBA; /* Blue */
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+  }
+  
+  .cancelButton {
+    margin-left: 5px;
+    background-color: #f44336; /* Red */
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+  }
