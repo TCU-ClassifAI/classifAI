@@ -1,0 +1,66 @@
+/* TeamComponent.css */
+
+.developerContainer {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  margin: 20px;
+  padding-left: 50px;
+  padding-right: 50px;
+}
+
+.researcherContainer {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin: 20px;
+  padding-left: 50px;
+  padding-right: 50px;
+}
+
+.teamMember {
+  text-align: center;
+  h3 {
+    padding-top: 10px;
+    color: #09283D;
+
+  }
+}
+
+.circularImage {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  clip-path: circle(50% at 50% 50%);
+}
+
+.description {
+  font-style: italic;
+  color: #555;
+}
+
+.titleContainer {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.title {
+  font-family: 'Roboto', sans-serif; /* Apply the custom font */
+  font-weight: bold;
+  color: orange;
+  padding-top: 100px;
+}
+
+@media screen and (max-width: 600px) {
+  .teamContainer {
+    grid-template-columns: repeat(1, 1fr); /* Display 1 column on smaller screens */
+  }
+
+  .title-container {
+    padding: 5px; /* Reduce padding on smaller screens */
+  }
+}
+
+.role {
+  font-weight: bold;
+}

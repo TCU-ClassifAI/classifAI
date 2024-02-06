@@ -1,6 +1,22 @@
 db = db.getSiblingDB('ClassifAI');
 db.auth('user', 'secret');
 
+/*
+db.createUser(
+  {
+      user: "user",
+      pwd: "secret",
+      roles: [
+          {
+              role: "readWrite",
+              db: "classifai"
+          }
+      ]
+  }
+);
+*/
+
+
 // Inserting example user with specific fields
 db.user.insertMany([
   {
