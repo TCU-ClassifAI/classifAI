@@ -21,14 +21,15 @@ async function generateData() {
         // Generate non-transcription files data
         const fileTypes = ['csv', 'json', 'pdf'];
         fileTypes.forEach(type => {
-            // Use directoryPath to get a directory, then append a file name and extension
             const directoryPath = faker.system.directoryPath();
-            const fileName = `${faker.system.fileName().split('.')[0]}.${type}`;
-            const filePath = `${directoryPath}/${fileName}`;
+            // fileName now generated without extension
+            const fileNameWithoutExtension = faker.system.fileName().replace(/\..+$/, '');
+            // filePath includes the fileName with the appropriate extension
+            const filePath = `${directoryPath}/${fileNameWithoutExtension}.${type}`;
             
             files.push({
-                fileName: fileName,
-                filePath: filePath,
+                fileName: fileNameWithoutExtension, // Now correctly does not include the extension
+                filePath: filePath, // Path includes the file extension
                 fileType: type,
             });
         });
@@ -36,13 +37,13 @@ async function generateData() {
         let transcription = '';
         // Generate transcription data if status is 'completed'
         if (status === 'completed') {
-            let lastEndTime = 0; // Initialize the last end time to 0
+            let lastEndTime = 0;
             let transcriptionContent = [];
             for (let j = 0; j < 5; j++) {
-                const startTime = lastEndTime; // Start time for current segment is the end time of the last segment
-                const segmentDuration = faker.datatype.number({ min: 1, max: 30 }); // Duration of this segment
-                const endTime = startTime + segmentDuration; // End time for this segment
-                lastEndTime = endTime; // Update lastEndTime for the next iteration
+                const startTime = lastEndTime;
+                const segmentDuration = faker.datatype.number({ min: 1, max: 30 });
+                const endTime = startTime + segmentDuration;
+                lastEndTime = endTime;
 
                 transcriptionContent.push({
                     start_time: startTime,
@@ -51,25 +52,22 @@ async function generateData() {
                     transcript: faker.lorem.sentence()
                 });
             }
-
-            // Serialize the transcription content array to a JSON string
             transcription = JSON.stringify(transcriptionContent);
         }
 
         const reportData = {
             files: files,
-            reportId: reportIdCounter.toString(), // Use a simple, unique number for reportId
+            reportId: reportIdCounter.toString(),
             userId: userId,
             isPremium: faker.datatype.boolean(),
             summary: faker.lorem.sentence(),
             gradeLevel: gradeLevel,
             subject: faker.random.word(),
             topics: faker.random.words(),
-            transcription: transcription, // Assign generated transcription data here
+            transcription: transcription,
             status: status
         };
 
-        // Create report in database
         await dbconnect.createReport(reportData);
         reportIdCounter++; // Increment for the next ID
     }
