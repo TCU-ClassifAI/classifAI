@@ -2,17 +2,22 @@ require('dotenv').config();
 const express = require("express");
 const cors = require("cors");
 
-const uploadRoute = require('./routes/uploadRoute.js');
-const transcriptionRoutes = require('./routes/transcriptionRoutes.js'); // Adjust the path as necessary
+const fileUploadRoute = require('./routes/fileUploadRoute.js');
+//const transcriptionRoutes = require('./routes/transcriptionRoutes.js'); // Adjust the path as necessary
+const reportRoutes = require('./routes/reportRoutes.js');
+const fileRoutes = require('./routes/fileRoutes.js');
+const reportUploadRoute = require('./routes/reportUploadRoute.js');
+
 
 
 //Idea bank:
   // What if in another js file we auto compress audio files when they've been uploaded?
 //
 
-const PORT = 5000;
+const PORT = 5000; // env
 const app = express();
 app.use(cors());
+app.use(express.json());
 
 
 
@@ -24,11 +29,15 @@ app.listen(PORT, () => {
   console.log("Server Running sucessfully.");
 });
 
-// Testing: audio upload works as expected on newest refactor 12/28, uploaded files given reportID are put into the same folder
-app.use('/upload', uploadRoute);  // uploadRoute is in routes/uploadRoute.js
 
-app.use('/transcript', transcriptionRoutes); // transcriptionRoutes is in routes/transcriptionRoutes.js
+// TODO transcription routes?
+//app.use('/transcript', transcriptionRoutes); // transcriptionRoutes is in routes/transcriptionRoutes.js
 
+app.use('/reports',reportRoutes);
+app.use('/reports',reportUploadRoute); //WIP
+
+app.use('/files',fileRoutes);
+app.use('/files',fileUploadRoute);//, uploadRoute); //WIP
 
 
 

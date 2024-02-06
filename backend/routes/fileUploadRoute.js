@@ -13,7 +13,7 @@ const router = express.Router();
 const upload = multer({
   storage: multer.diskStorage({
     destination: async (req, file, cb) => {
-      const userId = req.body.userId;
+      const userId = req.params.userId;
       if (!userId) {
         return cb(new Error("No userId provided"), false);
       }
@@ -30,12 +30,12 @@ const upload = multer({
       }
     },
     filename: (req, file, cb) => {
-      cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+      cb(null, file.originalname);//file.fieldname + '-' + Date.now() + path.extname(file.originalname));
     }
   }),
   limits: { fileSize: 5 * 1024 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
-    cb(null, !!req.body.userId);
+    cb(null, !!req.params.userId);
   }
 });
 //////////// 
@@ -43,23 +43,43 @@ const upload = multer({
 
 
 //////////// Upload endpoint: Stores file in the web server, uploads info to MongoDB, sends to Workstation
-////// supports other optional attributes like subject, grade level, and is_premium
-router.post("/", upload.single('file'), async (req, res) => {  // Ignore route, our server.js will serve this on /upload
+///////// served on /files/......
+////// supports other optional attributes like subject, gradeLevel, and is_premium
+router.post("/reports/:reportId/users/:userId", upload.single('file'), async (req, res) => { 
+    
+    // 1/24 TODO: grab date of file upload, send to database
+
+    // Initialize the response structure
     let response = {
-        uploadStatus: 'pending',
-        transferStatus: 'pending',
+        flag: false,
+        code: 500,
         message: '',
-        id: null,
+        data: {}
     };
+
     
     try {
-        const { userId, reportID: providedReportID, fileName: providedFileName } = req.body; //file name added 1/22
-            //let job_id = null; // Variable for workstation Job_id
+        const { reportId, userId } = req.params;
+        const providedFileName = req.body.fileName;
 
-        if (!userId || !req.file) {
-            response.message = "No userId or file uploaded";
-            return res.status(400).json(response);    
+
+
+        if (!req.file) {
+            response.message = "File is required";
+            response.code = 400;
+            return res.status(400).json(response);
         }
+        if (!reportId){
+            response.message = "reportId is required";
+            response.code = 400;
+            return res.status(400).json(response);
+        }
+        if (!userId){
+            response.message = "userId is required";
+            response.code = 400;
+            return res.status(400).json(response);
+        }
+
 
         const allowedTypes = ['application/json', 'text/csv', 'application/pdf', 'audio/mpeg', 'audio/wav', 'audio/aac', 'audio/ogg', 'audio/webm'];
         const audioTypes =['audio/mpeg', 'audio/wav', 'audio/aac', 'audio/ogg', 'audio/webm']
@@ -70,21 +90,44 @@ router.post("/", upload.single('file'), async (req, res) => {  // Ignore route, 
             return res.status(400).json(response);    
         }
 
-        let reportID = providedReportID || (await dbconnect.createReport(req.body)).reportID;
-        const newDir = path.join('./uploads', userId, String(reportID)); // Place in uploads/userId/reportID/....... folder
+
+        //let report = await dbconnect.getReport(reportId); 
+        let report = await dbconnect.getReportWhere({userId:userId, reportId: reportId}); //get userId's report from reportId
+        if (!report) {
+            const reportData = {
+                reportId:reportId,
+                userId:userId,
+                ...req.body, // includes other body data
+            };    
+            report = await dbconnect.createReport(reportData);
+
+        }
+
+        //let reportID = providedReportID || (await dbconnect.createReport(req.body)).reportID;
+        const newDir = path.join('./uploads', userId, String(reportId)); // Place in uploads/userId/reportID/....... folder
         await fsPromises.mkdir(newDir, { recursive: true });
-        let newPath = await handleFileUpload(req, fileType, reportID, providedFileName, newDir);
-        response.success = true;
-        response.id = reportID;
-        response.uploadStatus = 'successful';
-        response.message = 'File uploaded and database entry successfully created';
+        let newPath = await handleFileUpload(req, fileType, userId, reportId, providedFileName, newDir);
+
+        
+        // Set response for successful upload
+        response.flag = true;
+        response.code = 200;
+        response.message = "File uploaded and database entry successfully created";
+        response.data = {
+            userId: userId,
+            reportId: reportId,
+            file: req.file.originalname,
+            fileName: providedFileName || path.basename(newPath),
+            gradeLevel: req.body.gradeLevel,
+            subject: req.body.subject
+        };
 
         if (!audioTypes.includes(fileType)) {
-            response.transferStatus = null;
+            //response.transferStatus = null;
             res.status(200).json(response);
         }
         else {
-            await handleFileTransfer(process.env.WORKSTATION_URL, newPath, reportID);
+            await handleFileTransfer(process.env.WORKSTATION_URL, newPath, reportId);
                 // 1/22 job_id = await handleFileTransfer(process.env.WORKSTATION_URL, newPath, reportID);
             response.transferStatus = 'successful';
             response.message = 'File uploaded, database entry sucessfully created, and file transferred successfully';
@@ -105,27 +148,42 @@ router.post("/", upload.single('file'), async (req, res) => {  // Ignore route, 
 });
 
 
+
+
+
 // Function to handle file upload and update report
-const handleFileUpload = async (req, fileType, reportID, providedFileName, newDir) => {
+const handleFileUpload = async (req, fileType, userId, reportId, providedFileName, newDir) => {
     const originalExtension = path.extname(req.file.originalname);
-    const fileSuffix = fileType.split('/').pop();
-    let fileName = providedFileName ? `${fileSuffix}_${providedFileName}${originalExtension}` : `${fileSuffix}_${req.file.filename}`;
-    let newPath = path.join(newDir, fileName);
+    let fileName = providedFileName ? providedFileName : path.basename(req.file.filename, originalExtension);
+    let newPath = path.join(newDir, fileName + originalExtension);
     const oldPath = req.file.path;
 
     try {
         await fsPromises.rename(oldPath, newPath);
-        const report = await dbconnect.getReport(reportID);
+        const report = await dbconnect.getReportWhere({userId:userId, reportId: reportId});
+         // Check if the report is not null
+         if (!report) {
+            throw new Error(`No report found with ID ${reportId}`);
+        }
         let files = report.files || [];
-        let file = files.find(f => f.fileName === fileName);
+        let existingFileIndex = files.findIndex(f => f.fileName === fileName);        
 
-        if (file) {
-            file.filePath = newPath;
+        if (existingFileIndex !== -1) {
+            files[existingFileIndex] = {
+                fileName: fileName,
+                filePath: newPath,
+                fileType: req.file.mimetype
+            };
+
         } else {
-            files.push({ fileName: fileName, filePath: newPath, fileType: fileSuffix });
+            files.push({
+                fileName: fileName,
+                filePath: newPath,
+                fileType: req.file.mimetype
+            }); 
         }
 
-        await dbconnect.updateReport(reportID, { files: files });
+        await dbconnect.updateReport({userId: userId, reportId: reportId}, { files: files });
         return newPath;
     } catch (error) {
         console.error("Error in moving file:", error);
@@ -135,18 +193,13 @@ const handleFileUpload = async (req, fileType, reportID, providedFileName, newDi
 
 
 // Function to handle file transfer to flask backend
-const handleFileTransfer = async (workstation, newPath, reportID) => {
+const handleFileTransfer = async (workstation, newPath, reportId) => {
     const formData = new FormData();
     formData.append('file', fs.createReadStream(newPath));
-    formData.append('reportID', String(reportID));
+    formData.append('reportId', String(reportId));
 
     try {
         await axios.post(workstation, formData, { headers: formData.getHeaders() });
-            // Assuming the job_id is returned in the response body under a key 'job_id'
-            // const response = await axios.post(workstation, formData, { headers: formData.getHeaders() });
-            // job_id = response.data.job_id;
-            // await dbconnect.updateReport(reportID, { job_id: job_id });
-            // return job_id;
     } catch (error) {
         console.error("Error in file transfer:", error);
         throw new Error("Failed to transfer file. Possible Workstation connection error.");

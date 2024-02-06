@@ -3,47 +3,77 @@ const faker = require('faker');
 const dbconnect = require('../../mongo.js');
 
 async function generateData() {
-    for (let i = 0; i < 10; i++) {
-        // Sample data
-        const userId = faker.datatype.uuid();
-        const status = faker.random.arrayElement(['in progress', 'error', 'completed']);
-        const gradeLevel = faker.datatype.number({ min: 1, max: 12 });
-        let transcriptions = [];
+    let generatedUserIds = new Set(); // Keep track of generated user IDs to ensure uniqueness
+    let reportIdCounter = 1000; // Start counter for reportId from 1000 for simplicity
 
+    for (let i = 0; i < 10; i++) {
+        let userId;
+        do {
+            // Generate a simple, human-readable user ID
+            userId = `User${faker.datatype.number({ min: 1, max: 100 })}${faker.random.word().charAt(0).toUpperCase()}`;
+        } while (generatedUserIds.has(userId)); // Ensure the userId is not already used
+        generatedUserIds.add(userId); // Add the new userId to the set of generated IDs
+
+        const status = faker.random.arrayElement(['in progress', 'error', 'completed']);
+        const gradeLevel = faker.datatype.number({ min: 1, max: 12 }).toString(); // Ensure gradeLevel is a string
+        let files = [];
+
+        // Generate non-transcription files data
+        const fileTypes = ['csv', 'json', 'pdf'];
+        fileTypes.forEach(type => {
+            const directoryPath = faker.system.directoryPath();
+            // fileName now generated without extension
+            const fileNameWithoutExtension = faker.system.fileName().replace(/\..+$/, '');
+            // filePath includes the fileName with the appropriate extension
+            const filePath = `${directoryPath}/${fileNameWithoutExtension}.${type}`;
+            
+            files.push({
+                fileName: fileNameWithoutExtension, // Now correctly does not include the extension
+                filePath: filePath, // Path includes the file extension
+                fileType: type,
+            });
+        });
+
+        let transcription = '';
+        // Generate transcription data if status is 'completed'
         if (status === 'completed') {
-            for (let j = 0; j < 5; j++) { // Generate 5 transcript segments
-                const startTime = faker.datatype.number({min: 0, max: 300, precision: 1}); // e.g., 0 to 300 seconds
-                const endTime = startTime + faker.datatype.number({min: 1, max: 30, precision: 1}); // e.g., 1 to 30 seconds more
-                transcriptions.push({
+            let lastEndTime = 0;
+            let transcriptionContent = [];
+            for (let j = 0; j < 5; j++) {
+                const startTime = lastEndTime;
+                const segmentDuration = faker.datatype.number({ min: 1, max: 30 });
+                const endTime = startTime + segmentDuration;
+                lastEndTime = endTime;
+
+                transcriptionContent.push({
                     start_time: startTime,
                     end_time: endTime,
-                    speaker_label: `spk_${faker.datatype.number({min: 1, max: 3})}`,
+                    speaker_label: `spk_${faker.datatype.number({ min: 1, max: 3 })}`,
                     transcript: faker.lorem.sentence()
                 });
             }
+            transcription = JSON.stringify(transcriptionContent);
         }
 
-        // Create a report with random data
         const reportData = {
-            csvPath: faker.system.filePath(),
-            jsonPath: faker.system.filePath(),
-            pdfPath: faker.system.filePath(),
-            audioPath: faker.system.filePath(),
-            reportID: faker.datatype.uuid(),
-            userID: userId,
+            files: files,
+            reportId: reportIdCounter.toString(),
+            userId: userId,
             isPremium: faker.datatype.boolean(),
             summary: faker.lorem.sentence(),
             gradeLevel: gradeLevel,
             subject: faker.random.word(),
             topics: faker.random.words(),
-            path: faker.system.filePath(),
-            transcription: JSON.stringify(transcriptions), // Store transcription as a JSON string
+            transcription: transcription,
             status: status
         };
 
-        // Create report
         await dbconnect.createReport(reportData);
+        reportIdCounter++; // Increment for the next ID
     }
+
+    console.log('Sample data generated');
+    process.exit(); // Quit the program after generating data
 }
 
-generateData().then(() => console.log('Sample data generated'));
+generateData();
