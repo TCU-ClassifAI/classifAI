@@ -91,6 +91,24 @@ export default function ExportDataFiles() {
     }
   };
 
+  const handleDeleteClick = async (key) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this file?");
+    if (confirmDelete) {
+      const fileToDelete = files.find(file => file.key === key);
+      const { fileName: fileNameToDelete, reportId } = fileToDelete;
+
+      try {
+        await axios.delete(`http://localhost:5001/files/${fileNameToDelete}/reports/${reportId}/users/${userId}`);
+        
+        const updatedFiles = files.filter(file => file.key !== key);
+        setFiles(updatedFiles);
+        console.log('Delete Success');
+      } catch (error) {
+        console.error('Error deleting file:', error);
+      }
+  }
+  };
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = files.slice(indexOfFirstItem, indexOfLastItem);
@@ -107,6 +125,7 @@ export default function ExportDataFiles() {
               <th>Report ID</th>
               <th>Filename</th>
               <th>File</th>
+              <th>Edit</th>
             </tr>
           </thead>
         </table>
@@ -125,6 +144,7 @@ export default function ExportDataFiles() {
             <th>Filename</th>
             <th>File</th>
             <th>Edit</th>
+            <th>Delete</th>
           </tr>
         </thead>
         <tbody>
@@ -143,7 +163,7 @@ export default function ExportDataFiles() {
                 )}
               </td>
               <td>{file.file}</td>
-              <td>
+              <td className={styles.csvButton}>
                 {file.isEditing ? (
                   <>
                     <button className={styles.saveButton} onClick={() => handleSaveClick(file.key)}>Save</button>
@@ -157,6 +177,9 @@ export default function ExportDataFiles() {
                 ) : (
                   <button className={styles.editButton} onClick={() => handleEditClick(file.key)}>Edit</button>
                 )}
+              </td>
+              <td>
+                <button className={styles.deleteButton} onClick={() => handleDeleteClick(file.key)}>Delete</button>
               </td>
             </tr>
           ))}

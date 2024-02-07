@@ -51,33 +51,41 @@
     cursor: pointer;
   }
 
-  .editButton {
-    background-color: #4CAF50; /* Green */
-    border: none;
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-  }
   
-  .saveButton {
-    background-color: #008CBA; /* Blue */
-    border: none;
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-  }
-  
-  .cancelButton {
-    margin-left: 5px;
-    background-color: #f44336; /* Red */
-    border: none;
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-  }
+.editButton,
+.saveButton,
+.cancelButton,
+.deleteButton {
+  color: white;
+  padding: 8px 16px;
+  margin-right: 5px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.editButton:hover,
+.saveButton:hover,
+.deleteButton:hover,
+.cancelButton:hover {
+  filter: brightness(80%);
+}
+
+.editButton {
+  background-color: #3498db; /* Blue color */
+}
+
+.saveButton {
+  background-color: #f39c12; /* Orange color */
+
+}
+
+.cancelButton {
+  background-color: #45a049; /* Purple color */
+}
+
+.deleteButton {
+  background-color: #e74c3c; /* Red color */
+
+}
