@@ -34,7 +34,7 @@ export default function ExportDataFiles() {
 
   const fetchUserFiles = async () => {
     try {
-      const response = await axios.get(`http://localhost:443/files/users/${userId}?fileType=csv&fileType=pdf`);
+      const response = await axios.get(`http://localhost:5001/files/users/${userId}?fileType=csv&fileType=pdf`);
       // Flatten the data structure to ensure each row contains one file
       const flattenedData = response.data.reduce((acc, obj) => {
         obj.file.forEach((file, index) => {
@@ -76,7 +76,7 @@ export default function ExportDataFiles() {
 
     try {
       // Make a PUT request to update the file name
-      await axios.put(`http://localhost:443/files/${oldFileName}/reports/${reportId}/users/${userId}`, {
+      await axios.put(`http://localhost:5001/files/${oldFileName}/reports/${reportId}/users/${userId}`, {
         fileName:newFileName, // Put the new file name in the request body
       });
 
