@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Auth } from "aws-amplify";
-import styles from './ExportDataFiles.module.css'; // Import CSS module for styling
+import styles from './ExportDataFiles.module.css';
 
 export default function ExportDataFiles() {
   const [files, setFiles] = useState([]);
   const [userId, setUserId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10); // Number of items to display per page
+  const [itemsPerPage] = useState(10);
   const [oldFileNameEditing, setOldFileNameEditing] = useState("");
 
   useEffect(() => {
@@ -17,7 +17,6 @@ export default function ExportDataFiles() {
         const user = await Auth.currentAuthenticatedUser();
         const { attributes } = user;
         setUserId(attributes.email);
-        console.log(attributes.email); // Ensure userId is set correctly
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
@@ -35,14 +34,15 @@ export default function ExportDataFiles() {
   const fetchUserFiles = async () => {
     try {
       const response = await axios.get(`http://localhost:5001/files/users/${userId}?fileType=csv&fileType=pdf`);
-      // Flatten the data structure to ensure each row contains one file
       const flattenedData = response.data.reduce((acc, obj) => {
         obj.file.forEach((file, index) => {
           acc.push({
+            key: `${obj.reportId}_${index}`, // Use reportId and index as a key
             userId: obj.userId,
             reportId: obj.reportId,
             file: file,
-            fileName: obj.fileName[index]
+            fileName: obj.fileName[index],
+            isEditing: false, // Initialize isEditing to false
           });
         });
         return acc;
@@ -55,46 +55,42 @@ export default function ExportDataFiles() {
     }
   };
 
-  const handleFileNameChange = (event, index) => {
-    const updatedFiles = [...files];
-    updatedFiles[index].fileName = event.target.value;
+  const handleFileNameChange = (event, key) => {
+    const updatedFiles = files.map(file =>
+      file.key === key ? { ...file, fileName: event.target.value } : file
+    );
     setFiles(updatedFiles);
   };
 
-  const handleEditClick = (index) => {
-    const updatedFiles = [...files];
-    updatedFiles[index].isEditing = true;
-    setOldFileNameEditing(updatedFiles[index].fileName); // Save the current value to oldFileNameEditing
+  const handleEditClick = (key) => {
+    const updatedFiles = files.map(file =>
+      file.key === key ? { ...file, isEditing: true } : file
+    );
+    setOldFileNameEditing(files.find(file => file.key === key).fileName);
     setFiles(updatedFiles);
   };
 
-  const handleSaveClick = async (index) => {
-    const updatedFiles = [...files];
-    const fileToUpdate = updatedFiles[index];
+  const handleSaveClick = async (key) => {
+    const updatedFiles = files.map(file =>
+      file.key === key ? { ...file, isEditing: false } : file
+    );
+    const fileToUpdate = files.find(file => file.key === key);
     const { fileName: newFileName, reportId } = fileToUpdate;
-    const oldFileName = oldFileNameEditing || newFileName; // Use oldFileNameEditing if available, otherwise use the current file name
+    const oldFileName = oldFileNameEditing || newFileName;
 
     try {
-      // Make a PUT request to update the file name
       await axios.put(`http://localhost:5001/files/${oldFileName}/reports/${reportId}/users/${userId}`, {
-        fileName:newFileName, // Put the new file name in the request body
+        fileName: newFileName,
       });
 
-      // Update the file name in the state
-      fileToUpdate.fileName = newFileName;
-      fileToUpdate.isEditing = false;
       setFiles(updatedFiles);
       console.log('Update Success');
-      
-      // Refetch user files after save
-      fetchUserFiles(); // Now fetchUserFiles is accessible here
+      fetchUserFiles();
     } catch (error) {
       console.error('Error updating file name:', error);
-      // Optionally handle error here
     }
   };
 
-  // Logic for pagination
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = files.slice(indexOfFirstItem, indexOfLastItem);
@@ -133,14 +129,14 @@ export default function ExportDataFiles() {
         </thead>
         <tbody>
           {currentItems.map((file, index) => (
-            <tr key={index}>
+            <tr key={file.key}>
               <td>{file.reportId}</td>
               <td>
                 {file.isEditing ? (
                   <input
                     type="text"
                     value={file.fileName}
-                    onChange={(event) => handleFileNameChange(event, index)}
+                    onChange={(event) => handleFileNameChange(event, file.key)}
                   />
                 ) : (
                   file.fileName
@@ -150,23 +146,22 @@ export default function ExportDataFiles() {
               <td>
                 {file.isEditing ? (
                   <>
-                    <button className={styles.saveButton} onClick={() => handleSaveClick(index)}>Save</button>
+                    <button className={styles.saveButton} onClick={() => handleSaveClick(file.key)}>Save</button>
                     <button className={styles.cancelButton} onClick={() => {
-                      const updatedFiles = [...files];
-                      updatedFiles[index].isEditing = false;
-                      updatedFiles[index].fileName = oldFileNameEditing; // Revert back to old value
+                      const updatedFiles = files.map(f =>
+                        f.key === file.key ? { ...f, isEditing: false, fileName: oldFileNameEditing } : f
+                      );
                       setFiles(updatedFiles);
                     }}>Cancel</button>
                   </>
                 ) : (
-                  <button className={styles.editButton} onClick={() => handleEditClick(index)}>Edit</button>
+                  <button className={styles.editButton} onClick={() => handleEditClick(file.key)}>Edit</button>
                 )}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      {/* Pagination */}
       <ul className="pagination">
         {Array.from({ length: Math.ceil(files.length / itemsPerPage) }, (_, i) => (
           <li key={i} className="page-item">
