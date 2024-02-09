@@ -213,7 +213,6 @@ router.get('/:fileName/reports/:reportId/users/:userId', async (req, res) => {
       // File not found on the filesystem
       return res.status(404).send('File not found on the server.');
     }
-    console.error('Error fetching file:', error);
     res.status(500).send(`Error fetching file: ${error.message}`);
   }
 });
