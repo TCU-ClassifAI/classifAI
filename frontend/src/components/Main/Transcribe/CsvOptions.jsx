@@ -107,10 +107,11 @@ export default function CsvOptions({ sentences, reportName, setReportName, userI
     let day = date.getDate();
     let month = date.getMonth() + 1;
     let year = date.getFullYear();
+    let hour = date.getHours();
     let min = date.getMinutes();
     let sec = date.getSeconds()
 
-    let currentDate = `${month}_${day}_${year}_${min}_${sec}`;
+    let currentDate = `${month}_${day}_${year}__${hour}_${min}_${sec}`;
     return currentDate.concat("Transcript");
   }
 
