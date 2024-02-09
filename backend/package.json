@@ -11,6 +11,7 @@
     "FormData": "^0.10.1",
     "fs": "^0.0.1-security",
     "jest": "^29.7.0",
+    "mime-types": "^2.1.35",
     "mongoose": "^8.0.0",
     "multer": "^1.4.5-lts.1",
     "passport": "^0.6.0",
@@ -24,5 +25,4 @@
   "scripts": {
     "test": "jest"
   }
-  
 }
