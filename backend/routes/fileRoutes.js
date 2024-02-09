@@ -3,7 +3,6 @@ const dbconnect = require('../mongo.js');
 const router = express.Router();
 const fsPromises = require('fs').promises;
 const path = require('path');
-const fs = require('fs'); // Use the fs module for reading file content
 const mime = require('mime-types');
 
 
