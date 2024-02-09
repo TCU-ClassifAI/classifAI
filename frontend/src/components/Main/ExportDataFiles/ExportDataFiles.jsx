@@ -33,7 +33,7 @@ export default function ExportDataFiles() {
 
   const fetchUserFiles = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/files/users/${userId}?fileType=csv&fileType=pdf`);
+      const response = await axios.get(`http://localhost:5001/files/users/${userId}?fileType=csv&fileType=pdf`);
       const flattenedData = response.data.reduce((acc, obj) => {
         obj.file.forEach((file, index) => {
           acc.push({
@@ -79,7 +79,7 @@ export default function ExportDataFiles() {
     const oldFileName = oldFileNameEditing || newFileName;
 
     try {
-      await axios.put(`http://localhost:5000/files/${oldFileName}/reports/${reportId}/users/${userId}`, {
+      await axios.put(`http://localhost:5001/files/${oldFileName}/reports/${reportId}/users/${userId}`, {
         fileName: newFileName,
       });
 
@@ -98,7 +98,7 @@ export default function ExportDataFiles() {
       const { fileName: fileNameToDelete, reportId } = fileToDelete;
 
       try {
-        await axios.delete(`http://localhost:5000/files/${fileNameToDelete}/reports/${reportId}/users/${userId}`);
+        await axios.delete(`http://localhost:5001/files/${fileNameToDelete}/reports/${reportId}/users/${userId}`);
         
         const updatedFiles = files.filter(file => file.key !== key);
         setFiles(updatedFiles);
