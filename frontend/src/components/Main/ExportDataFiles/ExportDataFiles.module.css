@@ -70,7 +70,7 @@
 .saveButton:hover,
 .deleteButton:hover,
 .cancelButton:hover,
-.downloadButton {
+.downloadButton:hover {
   filter: brightness(80%);
 }
 
