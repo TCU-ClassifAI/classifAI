@@ -3,6 +3,7 @@ const dbconnect = require('../mongo.js');
 const router = express.Router();
 const fsPromises = require('fs').promises;
 const path = require('path');
+const mime = require('mime-types');
 
 
 // /files/ prepended
@@ -161,6 +162,7 @@ router.get('/reports/:reportId/users/:userId', async (req, res) => {   //   (/fi
 router.get('/:fileName/reports/:reportId/users/:userId', async (req, res) => {
   try {
     const { fileName, reportId, userId } = req.params;
+    const { download } = req.query; // Extract the download query parameter
 
     // Fetch the report for the specified user and reportId
     const report = await dbconnect.getReportWhere({ reportId: reportId, userId: userId });
@@ -170,27 +172,52 @@ router.get('/:fileName/reports/:reportId/users/:userId', async (req, res) => {
     }
 
     // If fileName is specified, filter files by fileName, otherwise include all files
-    const filesToInclude = report.files.filter(file => !fileName || file.fileName === fileName);
+    //const filesToInclude = report.files.filter(file => !fileName || file.fileName === fileName);
 
-    if (filesToInclude.length === 0) {
+    const fileToInclude = report.files.find(file => file.fileName === fileName);
+
+    if (!fileToInclude) {
       return res.status(404).send('No files found matching the specified name for this user.');
     }
 
-    const filesResponse = {
-      userId: report.userId,
-      reportId: report.reportId,
-      files: filesToInclude.map(file => ({
-        filePath: file.filePath,
-        fileName: file.fileName,
-        fileType: file.fileType 
-      })),
-      gradeLevel: report.gradeLevel,
-      subject: report.subject
-    };
+    // Decide action based on the download query parameter
+    if (download === 'true') {
+      // Code block to initiate file download
+      const fileData = await fsPromises.readFile(fileToInclude.filePath);
+      const contentType = mime.lookup(fileToInclude.fileName) || 'application/octet-stream';
+      res.setHeader('Content-Type', contentType);
 
-    res.status(200).json(filesResponse);
+      // Override for MP3 files to ensure .mp3 extension is used
+      let fileExtension = mime.extension(fileToInclude.fileType);
+      if (fileToInclude.fileType === 'audio/mpeg') {
+        fileExtension = 'mp3';
+      }
+
+      const downloadFileName = `${fileToInclude.fileName}.${fileExtension}`;
+      res.setHeader('Content-Disposition', `attachment; filename="${downloadFileName}"`);
+
+      res.send(fileData);
+    } else {
+      // Original JSON response
+      const filesResponse = {
+        userId: report.userId,
+        reportId: report.reportId,
+        files: [{
+          filePath: fileToInclude.filePath,
+          fileName: fileToInclude.fileName,
+          fileType: fileToInclude.fileType 
+        }],
+        gradeLevel: report.gradeLevel,
+        subject: report.subject
+      };
+      res.status(200).json(filesResponse);
+    }
   } catch (error) {
-    res.status(500).send(`Error fetching files: ${error.message}`);
+    if (error.code === 'ENOENT') {
+      // File not found on the filesystem
+      return res.status(404).send('File not found on the server.');
+    }
+    res.status(500).send(`Error fetching file: ${error.message}`);
   }
 });
 
