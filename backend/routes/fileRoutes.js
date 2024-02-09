@@ -187,8 +187,12 @@ router.get('/:fileName/reports/:reportId/users/:userId', async (req, res) => {
       const contentType = mime.lookup(fileToInclude.fileName) || 'application/octet-stream';
       res.setHeader('Content-Type', contentType);
 
-      // Dynamically generate the download file name with the correct extension
-      const fileExtension = mime.extension(fileToInclude.fileType) || '';
+      // Override for MP3 files to ensure .mp3 extension is used
+      let fileExtension = mime.extension(fileToInclude.fileType);
+      if (fileToInclude.fileType === 'audio/mpeg') {
+        fileExtension = 'mp3';
+      }
+
       const downloadFileName = `${fileToInclude.fileName}.${fileExtension}`;
       res.setHeader('Content-Disposition', `attachment; filename="${downloadFileName}"`);
 
