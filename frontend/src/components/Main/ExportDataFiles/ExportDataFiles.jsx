@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Auth } from "aws-amplify";
 import styles from './ExportDataFiles.module.css';
+import ReactPaginate from 'react-paginate';
 
 export default function ExportDataFiles() {
   const [files, setFiles] = useState([]);
   const [userId, setUserId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0); // Changed initial page to 0
   const [itemsPerPage] = useState(10);
   const [oldFileNameEditing, setOldFileNameEditing] = useState("");
 
@@ -145,11 +146,13 @@ export default function ExportDataFiles() {
   };
   
 
-  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfLastItem = (currentPage + 1) * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = files.slice(indexOfFirstItem, indexOfLastItem);
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const handlePageClick = ({ selected }) => {
+    setCurrentPage(selected);
+  };
 
   if (isLoading) {
     return (
@@ -227,15 +230,14 @@ export default function ExportDataFiles() {
           ))}
         </tbody>
       </table>
-      <ul className="pagination">
-        {Array.from({ length: Math.ceil(files.length / itemsPerPage) }, (_, i) => (
-          <li key={i} className="page-item">
-            <button onClick={() => paginate(i + 1)} className="page-link">
-              {i + 1}
-            </button>
-          </li>
-        ))}
-      </ul>
+      <ReactPaginate
+        previousLabel={"Previous"}
+        nextLabel={"Next"}
+        pageCount={Math.ceil(files.length / itemsPerPage)}
+        onPageChange={handlePageClick}
+        containerClassName={`${styles.pagination}`}
+        activeClassName={`${styles.active}`}
+      />
     </div>
   );
 }

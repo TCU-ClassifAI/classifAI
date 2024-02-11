@@ -35,21 +35,53 @@
   
   .pagination {
     display: flex;
-    justify-content: center;
     list-style: none;
     padding: 0;
   }
   
-  .pagination li {
-    margin: 0 5px; /* Adjust spacing between page numbers */
+  .pagination {
+    padding-top: 10px;
+    display: flex;
+    justify-content: center;
+    list-style: none;
   }
   
-  .pagination button {
-    padding: 5px 10px; /* Adjust padding for better appearance */
-    background-color: #f0f0f0; /* Example background color */
-    border: 1px solid #ccc; /* Example border color */
-    cursor: pointer;
+  .pagination li {
+    display: inline-block;
+    margin-right: 5px;
+    color: #fff;
+
   }
+  
+  .pagination li a {
+    color: #fff;
+    padding: 5px 10px;
+    text-decoration: none;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    border-radius: 4px;
+    background-color: #09283D;
+  }
+
+  .pagination li.active a {
+    background-color: orange;
+    color: #fff;
+  }
+  
+  
+  .pagination li a:hover {
+    background-color: orange;
+    color: #fff;
+    border: 1px solid orange;
+  }
+  
+  .active {
+    color: #fff;
+    border: 1px solid orange;
+    background-color: orange;
+
+  }
+  
 
   
 .editButton,
