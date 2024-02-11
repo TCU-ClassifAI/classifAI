@@ -6,6 +6,8 @@ import { analyzeArray } from "../../../expertArrays/analyze";
 import { evaluateArray } from "../../../expertArrays/evaluate";
 import { createArray } from "../../../expertArrays/create";
 import { convertMsToTime } from "../../../utils/convertMsToTime";
+import { Auth } from "aws-amplify";
+import Modal from 'react-modal';
 import CsvOptions from "./CsvOptions";
 import QuestionCategoryDistribution from "./QuestionCategoryDistribution";
 import TalkingDistribution from "./TalkingDistribution";
@@ -42,6 +44,7 @@ export default function Transcribe() {
   const [teacher, setTeacher] = useState();
   const [show, setShow] = useState(false);
   const [uploadRecordingVisible, setUploadRecordingVisible] = useState(true);
+  const [userId, setUserId] = useState("");
 
   let navigate = useNavigate();
 
@@ -88,6 +91,21 @@ export default function Transcribe() {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
+  }, []);
+
+  useEffect(() => {
+    async function retrieveUserInfo() {
+      try {
+        const user = await Auth.currentAuthenticatedUser();
+        const { attributes } = user;
+        setUserId(attributes.email);
+        console.log(attributes.email); // Ensure userId is set correctly
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    }
+
+    retrieveUserInfo();
   }, []);
 
   function handleHideUploadRecording() {
@@ -571,6 +589,7 @@ export default function Transcribe() {
             sentences={sentences}
             reportName={reportName}
             setReportName={setReportName}
+            userId={userId}
           />
           <div>
             {successfullUpload ? <h6>File Save Success!!!</h6> : null}
