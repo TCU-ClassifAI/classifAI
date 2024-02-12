@@ -87,7 +87,8 @@
 .editButton,
 .saveButton,
 .cancelButton,
-.deleteButton {
+.deleteButton,
+.downloadButton {
   color: white;
   padding: 8px 16px;
   margin-right: 5px;
@@ -100,7 +101,8 @@
 .editButton:hover,
 .saveButton:hover,
 .deleteButton:hover,
-.cancelButton:hover {
+.cancelButton:hover,
+.downloadButton:hover {
   filter: brightness(80%);
 }
 
@@ -119,5 +121,9 @@
 
 .deleteButton {
   background-color: #e74c3c; /* Red color */
+}
+
+.downloadButton {
+  background-color: #800080; 
 
 }

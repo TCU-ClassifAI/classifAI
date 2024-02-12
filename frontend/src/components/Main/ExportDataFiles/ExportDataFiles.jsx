@@ -110,6 +110,42 @@ export default function ExportDataFiles() {
     }
   };
 
+  const handleDownloadClick = async (reportId, fileName, filePath) => {
+
+    const fileType = filePath.substring(filePath.lastIndexOf(".") +1);
+    try {
+      const response = await axios.get(`http://localhost:5001/files/${fileName}/reports/${reportId}/users/${userId}?download=true`, {
+        responseType: 'blob', // Set response type to blob
+      });
+  
+      // Create a blob object from the response data
+      const blob = new Blob([response.data], { type: response.headers['content-type'] });
+  
+      // Create a temporary URL to the blob
+      const url = window.URL.createObjectURL(blob);
+      const fileExtension = fileType === 'csv' ? '.csv' : '.pdf';
+      const downloadableFileName = `${fileName}${fileExtension}`;
+  
+      // Create a temporary anchor element to trigger the download
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', downloadableFileName); // Set the file name for download
+      document.body.appendChild(link);
+  
+      // Trigger the download
+      link.click();
+  
+      // Clean up
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+  
+      console.log('Download Success');
+    } catch (error) {
+      console.error('Error downloading file:', error);
+    }
+  };
+  
+
   const indexOfLastItem = (currentPage + 1) * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = files.slice(indexOfFirstItem, indexOfLastItem);
@@ -129,6 +165,8 @@ export default function ExportDataFiles() {
               <th>Filename</th>
               <th>File</th>
               <th>Edit</th>
+              <th>Delete</th>
+              <th>Download</th> {/* Added new tab for Download */}
             </tr>
           </thead>
         </table>
@@ -148,6 +186,7 @@ export default function ExportDataFiles() {
             <th>File</th>
             <th>Edit</th>
             <th>Delete</th>
+            <th>Download</th> {/* Added new tab for Download */}
           </tr>
         </thead>
         <tbody>
@@ -183,6 +222,9 @@ export default function ExportDataFiles() {
               </td>
               <td>
                 <button className={styles.deleteButton} onClick={() => handleDeleteClick(file.key)}>Delete</button>
+              </td>
+              <td>
+                <button className={styles.downloadButton} onClick={() => handleDownloadClick(file.reportId, file.fileName, file.file)}>Download</button>
               </td>
             </tr>
           ))}
