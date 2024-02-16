@@ -36,7 +36,17 @@ const reportSchema = new mongoose.Schema({
     topics: String,
     path: String,
     transcription: String,  // if we want to store transcription in DB 
-    status: String
+    status: String,
+
+    transferData: [{
+      duration: Number,
+      end_time: Number,
+      job_id: String,
+      model_type: String,
+      start_time: Number,
+      status: String,
+      // Include any other fields as necessary
+  }]
 });
 
 // Define a schema and a model for storing users in MongoDB

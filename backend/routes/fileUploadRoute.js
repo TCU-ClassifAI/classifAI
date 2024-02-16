@@ -122,23 +122,70 @@ router.post("/reports/:reportId/users/:userId", upload.single('file'), async (re
             subject: req.body.subject
         };
 
-        if (!audioTypes.includes(fileType)) {
-            //response.transferStatus = null;
-            res.status(200).json(response);
-        }
-        else {
-            await handleFileTransfer(process.env.WORKSTATION_URL, newPath, reportId);
-                // 1/22 job_id = await handleFileTransfer(process.env.WORKSTATION_URL, newPath, reportID);
+        if (audioTypes.includes(fileType)) {
+            const transferResponse = await handleFileTransfer(`${process.env.WORKSTATION_URL}/start_transcription`, newPath, reportId);
+            // Implement polling mechanism for job completion
+            //const transferData = transferResponse.data;
+            const job_id = transferResponse.data.job_id; // Return job_id to the client for polling
+
+            let jobStatus = await pollForJobCompletion(process.env.WORKSTATION_URL, job_id);
+            response.flag = true;
+            response.code = 200;
+            response.message = "File uploaded, database entry successfully, and transcription started";
+            // 2/15 only needed if GET endpoint idea: response.job_id = job_id;
+                       
+            if (jobStatus.completed) {
+                const {result, ...transferData} = jobStatus.transcriptionData; // Destructure to exclude 'result'
+                try {
+                    await dbconnect.updateReport(
+                        { userId: userId, reportId: reportId }, 
+                        { 
+                            transcription: jobStatus.transcription,
+                            transferData: transferData, // if we want to add in DB
+                            status: "completed"
+                        }
+                    );
+            
+                    // Prepare the successful response
+                    response.transcription = jobStatus.transcription;
+                    response.transferData = transferData;
+                    response.message = 'File uploaded, database entry created, file transferred, and transcription completed';
+                } catch (error) {
+                    console.error("Error updating report in the database:", error);
+                    // Prepare an error response if updating the database fails
+                    response.flag = false;
+                    response.code = 500;
+                    response.message = "Failed to update the report with transcription data";
+                }
+            } 
+            else {
+                // Handle incomplete job status
+                response.message = 'File processing incomplete';
+            }
             response.transferStatus = 'successful';
-            response.message = 'File uploaded, database entry sucessfully created, and file transferred successfully';
-                // 1/22 response.job_id = job_id; 
-            res.status(200).json(response);
         }
+        res.status(200).json(response);
+
+
+        // if (!audioTypes.includes(fileType)) {
+        //     //response.transferStatus = null;
+        //     res.status(200).json(response);
+        // }
+        // else {
+        //     await handleFileTransfer(process.env.WORKSTATION_URL, newPath, reportId);
+        //     // 1/22 job_id = await handleFileTransfer(process.env.WORKSTATION_URL, newPath, reportID);
+            
+        //     response.transferStatus = 'successful';
+        //     response.message = 'File uploaded, database entry sucessfully created, and file transferred successfully';
+        //         // 1/22 response.job_id = job_id; 
+        //     res.status(200).json(response);
+        // }
 
     }
     catch (error) {
         console.error(error);
-        response.message = "An error occurred";
+        response.message = error.message || "An error occurred";
+
         response.uploadStatus = response.uploadStatus === 'pending' ? 'failed' : response.uploadStatus;  // if pending, change to failed, if not, leave as is
         response.transferStatus = (response.uploadStatus === 'successful' && response.transferStatus === 'pending') ? 'failed' : response.transferStatus;
         if (!res.headersSent) {
@@ -199,12 +246,54 @@ const handleFileTransfer = async (workstation, newPath, reportId) => {
     formData.append('reportId', String(reportId));
 
     try {
-        await axios.post(workstation, formData, { headers: formData.getHeaders() });
+        const response = await axios.post(workstation, formData, { headers: formData.getHeaders() });
+        return response;
     } catch (error) {
         console.error("Error in file transfer:", error);
         throw new Error("Failed to transfer file. Possible Workstation connection error.");
     }
 };
+
+// Unfinished idea? : GET endpoint so that we can continously get the status instead of just waiting for completion in POST
+// GET endpoint for polling transcription status
+// route probably needs to change below
+// router.get("/transcription/:job_id", async (req, res) => {
+//     try {
+//         const { job_id } = req.params;
+//         const workstationUrl = `${process.env.WORKSTATION_URL}/get_transcription_status?job_id=${job_id}`;
+
+//         const statusResponse = await axios.get(workstationUrl);
+//         res.status(200).json(statusResponse.data);
+//     } catch (error) {
+//         console.error("Error polling transcription status:", error);
+//         res.status(500).json({ message: "Failed to poll transcription status" });
+//     }
+// });
+
+// Function to poll the workstation for job completion
+async function pollForJobCompletion(workstationUrl, job_id) {
+    let completed = false;
+    let transcription = null;
+    let transcriptionData = null;
+
+    while (!completed) {
+        // Implement a delay between polls
+        await new Promise(resolve => setTimeout(resolve, 2000)); // 5 seconds delay
+        const response = await axios.get(`${workstationUrl}/get_transcription_status`, {
+            params: {
+                job_id: job_id
+            }
+        });        
+        const status = response.data.status; // Adjust according to actual response structure
+        if (status === 'completed') {
+            completed = true;
+            transcription = response.data.result; // Assuming the transcription is directly accessible
+            transcriptionData = response.data;
+        }
+    }
+    return { completed, transcriptionData, transcription };
+}
+
 //////////// 
 
 module.exports = router;

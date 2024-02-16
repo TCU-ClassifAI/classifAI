@@ -101,7 +101,7 @@ router.post("/:reportId/users/:userId", upload.single('file'), async (req, res) 
             newPath = await handleFileUpload(req, req.file.mimetype, userId, reportId, providedFileName, newDir);
 
             if (['audio/mpeg', 'audio/wav', 'audio/aac', 'audio/ogg', 'audio/webm'].includes(req.file.mimetype)) {
-                await handleFileTransfer(process.env.WORKSTATION_URL, newPath, reportId);
+                await handleFileTransfer(`${process.env.WORKSTATION_URL}/start_transcription`, newPath, reportId);
                 response.transferStatus = 'successful';
             }
         }

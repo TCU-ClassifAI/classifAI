@@ -171,9 +171,6 @@ router.get('/:fileName/reports/:reportId/users/:userId', async (req, res) => {
       return res.status(404).send('No report found for this user with the given report ID.');
     }
 
-    // If fileName is specified, filter files by fileName, otherwise include all files
-    //const filesToInclude = report.files.filter(file => !fileName || file.fileName === fileName);
-
     const fileToInclude = report.files.find(file => file.fileName === fileName);
 
     if (!fileToInclude) {
