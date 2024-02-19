@@ -7,6 +7,7 @@ import threading
 app = Flask(__name__)
 
 job_status = {}
+mock_duration = 6
 
 # Simulates an asynchronous transcription process.
 def mock_transcription_process_async(job_id):
@@ -15,6 +16,7 @@ def mock_transcription_process_async(job_id):
     def transcription_task():
         start_time = time.time()
         mock_duration = 6  # Simulated duration in seconds
+        job_status[job_id].update({'status': 'in progress', 'start_time': start_time, 'duration': mock_duration})
         time.sleep(mock_duration)  # Simulate processing delay
         end_time = start_time + mock_duration
         job_status[job_id].update({'status': 'completed', 'start_time': start_time, 'end_time': end_time})
@@ -26,7 +28,7 @@ def mock_transcription_process_async(job_id):
 
 
 # Testing to see if Backend works properly
-@app.route('/start_transcription', methods=['POST'])
+@app.route('/transcription/start_transcription', methods=['POST'])
 def start_transcription():
     audio_file = request.files.get('file')
     report_id = request.form.get('reportId')
@@ -54,7 +56,7 @@ def start_transcription():
 
 
 # get status, return srt if complete
-@app.route('/get_transcription_status', methods=['GET'])
+@app.route('/transcription/get_transcription_status', methods=['GET'])
 def get_transcription_status():
     job_id = request.args.get('job_id')
     
@@ -77,7 +79,7 @@ def get_transcription_status():
         return jsonify(response), 200
     
     else:
-        return jsonify({'job_id': job_id, 'status': job_info['status'], 'message': 'Transcription is not completed yet.'})
+        return jsonify({'job_id': job_id, 'status': job_info['status'], 'duration': mock_duration, 'message': 'Transcription is not completed yet.'})
 
 
 if __name__ == '__main__':

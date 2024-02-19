@@ -39,12 +39,15 @@ const reportSchema = new mongoose.Schema({
     status: String,
 
     transferData: [{
+      _id: false,
+      fileName: String,
       duration: Number,
       end_time: Number,
       job_id: String,
       model_type: String,
       start_time: Number,
       status: String,
+      result: String,
       // Include any other fields as necessary
   }]
 });

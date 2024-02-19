@@ -3,6 +3,7 @@ const dbconnect = require('../mongo.js');
 const router = express.Router();
 const fsPromises = require('fs').promises; 
 const path = require('path'); 
+const axios = require("axios"); // Import axios for HTTP requests
 
 
 
@@ -102,8 +103,53 @@ router.get('/users/:userId', async (req, res) => {
 router.get('/:reportId/users/:userId', async (req, res) => {
   try {
     const query = {reportId: req.params.reportId, userId: req.params.userId};
-    const reports = await findAllReports(query, res);
+    let reports = await findAllReports(query, res);
+
     if (!reports) return;
+    // New functionality: Query workstation for "in progress" transfers and update
+    reports = await updateTransferDataStatus(reports);
+
+    
+
+
+    res.json({ success: true, reports: reports });
+  } 
+  catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "An error occurred" });
+  }
+});
+
+
+// GET specific report data from a reportId for a specific user at userId for a specific file
+router.get('/:reportId/users/:userId/files/:fileName', async (req, res) => {
+  try {
+    const fileName = req.params.fileName; 
+    const query = {
+      reportId: req.params.reportId,
+      userId: req.params.userId,
+      'files.fileName': fileName 
+    };    
+    
+    let reports = await findAllReports(query, res);
+        
+    if (!reports) return;
+
+    // Filter files and transferData for the specific fileName
+    reports = reports.map(report => {
+      const filteredFiles = report.files.filter(file => file.fileName === fileName); 
+      const filteredTransferData = report.transferData.filter(transfer => transfer.fileName === fileName); 
+
+      return {
+        ...report.toObject(), 
+        files: filteredFiles,
+        transferData: filteredTransferData,
+      };
+    });
+
+    reports = await updateTransferDataStatus(reports);
+
+
     res.json({ success: true, reports: reports });
   } 
   catch (error) {
@@ -218,7 +264,37 @@ async function findAllReports(query, res) {
 }
 
 
+// Helper function to update the status of transferData objects
+async function updateTransferDataStatus(reports) {
+  for (let report of reports) {
+    for (let transfer of report.transferData) {
+      if (transfer.status === "in progress") {
+        try {
+          const response = await axios.get(`${process.env.WORKSTATION_URL}/transcription/get_transcription_status`, {
+            params: {
+              job_id: transfer.job_id
+            }
+          });
+          
+          // Dynamically update transfer object based on response fields
+          const updateFields = ['fileName', 'duration', 'end_time', 'job_id', 'model_type', 'start_time', 'status', 'result'];
+          updateFields.forEach(field => {
+            if (response.data.hasOwnProperty(field)) {
+              transfer[field] = response.data[field];
+            }
+          });
 
+        } catch (error) {
+          console.error("Error querying workstation for job_id:", transfer.job_id, error);
+          // Optionally handle specific actions on failure (e.g., retry logic, logging)
+        }
+      }
+    }
+    // Save updated report to the database
+    await dbconnect.updateReport({ reportId: report.reportId, userId: report.userId }, report);
+  }
+  return reports; // Return updated reports
+}
 
 
 
