@@ -288,9 +288,10 @@ async function updateTransferDataStatus(reports) {
           // Add response.result to the report.transcription field
           if (response.data.result) {
             // Concatenate or update transcription data as needed
-            report.transcription = response.data.result; // Example: appending result
+            report.transcription = response.data.result; 
+            
           }
-          
+
 
 
         } catch (error) {
