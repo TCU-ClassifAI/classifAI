@@ -39,7 +39,7 @@ const reportSchema = new mongoose.Schema({
     transcription: String,  // if we want to store transcription in DB 
     status: String,
 
-    transferData: [{
+    transferData: {
       _id: false,
       fileName: String,
       duration: Number,
@@ -50,7 +50,7 @@ const reportSchema = new mongoose.Schema({
       status: String,
       result: String,
       // Include any other fields as necessary
-  }]
+  }
 });
 
 // Define a schema and a model for storing users in MongoDB

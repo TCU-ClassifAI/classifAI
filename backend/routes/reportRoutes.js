@@ -268,12 +268,12 @@ async function findAllReports(query, res) {
 // Helper function to update the status of transferData objects
 async function updateTransferDataStatus(reports) {
   for (let report of reports) {
-    for (let transfer of report.transferData) {
-      if (transfer.status === "in progress") {
+    //for (let transfer of report.transferData) {
+      if (report.transferData.status === "in progress") {
         try {
           const response = await axios.get(`${process.env.WORKSTATION_URL}/transcription/get_transcription_status`, {
             params: {
-              job_id: transfer.job_id
+              job_id: report.transferData.job_id
             }
           });
           
@@ -281,16 +281,24 @@ async function updateTransferDataStatus(reports) {
           const updateFields = ['fileName', 'duration', 'end_time', 'job_id', 'model_type', 'start_time', 'status', 'result'];
           updateFields.forEach(field => {
             if (response.data.hasOwnProperty(field)) {
-              transfer[field] = response.data[field];
+              report.transferData[field] = response.data[field];
             }
           });
 
+          // Add response.result to the report.transcription field
+          if (response.data.result) {
+            // Concatenate or update transcription data as needed
+            report.transcription = response.data.result; // Example: appending result
+          }
+          
+
+
         } catch (error) {
-          console.error("Error querying workstation for job_id:", transfer.job_id, error);
+          console.error("Error querying workstation for job_id:", report.transferData.job_id, error);
           // Optionally handle specific actions on failure (e.g., retry logic, logging)
         }
       }
-    }
+    //}
     // Save updated report to the database
     await dbconnect.updateReport({ reportId: report.reportId, userId: report.userId }, report);
   }

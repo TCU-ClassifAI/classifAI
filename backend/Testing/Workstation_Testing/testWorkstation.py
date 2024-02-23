@@ -2,6 +2,7 @@ import time
 from flask import Flask, jsonify, request
 import os
 import threading
+import json
 
 
 app = Flask(__name__)
@@ -19,8 +20,15 @@ def mock_transcription_process_async(job_id):
         job_status[job_id].update({'status': 'in progress', 'start_time': start_time, 'duration': mock_duration})
         time.sleep(mock_duration)  # Simulate processing delay
         end_time = start_time + mock_duration
-        job_status[job_id].update({'status': 'completed', 'start_time': start_time, 'end_time': end_time})
-    
+        mock_result = json.dumps([
+            {"speaker": "Speaker 3", "start_time": 60, "end_time": 7458, 
+             "text": "We will hear argument this morning in Case Nineteen, Thirteen, Ninety-Two, Dobbs v. Jackson Women's Health Organization."},
+            {"speaker": "Speaker 3", "start_time": 8219, "end_time": 8759, "text": "General Stewart."},
+            {"speaker": "Speaker 0", "start_time": 9479, "end_time": 9700, "text": "Mr."},
+            {"speaker": "Speaker 0", "start_time": 9720, "end_time": 15583, 
+             "text": "Chief Justice, and may it please the Court, Roe v. Wade and Planned Parenthood v. Casey haunt our country."}
+        ])
+        job_status[job_id].update({'status': 'completed', 'start_time': start_time, 'end_time': end_time, 'result': mock_result})  
     # Start the transcription task in a new thread for non-blocking execution
     thread = threading.Thread(target=transcription_task)
     thread.start()
@@ -65,8 +73,7 @@ def get_transcription_status():
 
     job_info = job_status[job_id]
     if job_info['status'] == 'completed':
-        duration = job_info['end_time'] - job_info['start_time']
-        srt_content = r"\ufeff1\n00:00:00,060 --> 00:00:07,458\nSpeaker 3: We will hear argument this morning in Case Nineteen, Thirteen, Ninety-Two, Dobbs v. Jackson Women's Health Organization.\n\n2\n00:00:08,219 --> 00:00:08,759\nSpeaker 3: General Stewart."
+        duration = job_info['end_time'] - job_info['start_time']      
         response = {
             "job_id": job_id,
             "model_type": job_info['model_type'],
@@ -74,7 +81,7 @@ def get_transcription_status():
             "start_time": job_info['start_time'],
             "end_time": job_info['end_time'],
             "duration": duration,
-            "result": srt_content
+            "result": job_info['result'] 
         }
         return jsonify(response), 200
     
