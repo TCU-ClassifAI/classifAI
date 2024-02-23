@@ -23,8 +23,7 @@ const reportSchema = new mongoose.Schema({
       fileName: String,
       filePath: String,
       fileType: String, // csv, json, pdf, audio, etc
-        // this would be the perfect place to put the transcript for an audio file; keeps all past data, and corrected data
-        // summary too, maybe even subject, topics, gradeLevel; any attributes relating to files
+        
     }],
 
     
