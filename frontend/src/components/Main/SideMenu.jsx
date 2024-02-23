@@ -11,6 +11,7 @@ export default function SideMenu() {
                     Transcribe
                 </NavLink>
             </li>
+            <li><NavLink to="./whisper" className={({ isActive }) => isActive ? "active-link" : ""}>Whisper</NavLink></li>
             <li><NavLink to="./files" className={({ isActive }) => isActive ? "active-link" : ""}>Export Data Files</NavLink></li>
             <li><NavLink to="./account" className={({ isActive }) => isActive ? "active-link" : ""}>Account</NavLink></li>
         </ul>
