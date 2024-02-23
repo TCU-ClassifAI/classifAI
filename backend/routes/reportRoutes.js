@@ -107,6 +107,7 @@ router.get('/:reportId/users/:userId', async (req, res) => {
 
     if (!reports) return;
     // New functionality: Query workstation for "in progress" transfers and update
+    // Returns llm info
     reports = await updateTransferDataStatus(reports);
 
     
@@ -121,42 +122,42 @@ router.get('/:reportId/users/:userId', async (req, res) => {
 });
 
 
-// GET specific report data from a reportId for a specific user at userId for a specific file
-router.get('/:reportId/users/:userId/files/:fileName', async (req, res) => {
-  try {
-    const fileName = req.params.fileName; 
-    const query = {
-      reportId: req.params.reportId,
-      userId: req.params.userId,
-      'files.fileName': fileName 
-    };    
+// // GET specific report data from a reportId for a specific user at userId for a specific file
+// router.get('/:reportId/users/:userId/files/:fileName', async (req, res) => {
+//   try {
+//     const fileName = req.params.fileName; 
+//     const query = {
+//       reportId: req.params.reportId,
+//       userId: req.params.userId,
+//       'files.fileName': fileName 
+//     };    
     
-    let reports = await findAllReports(query, res);
+//     let reports = await findAllReports(query, res);
         
-    if (!reports) return;
+//     if (!reports) return;
 
-    // Filter files and transferData for the specific fileName
-    reports = reports.map(report => {
-      const filteredFiles = report.files.filter(file => file.fileName === fileName); 
-      const filteredTransferData = report.transferData.filter(transfer => transfer.fileName === fileName); 
+//     // Filter files and transferData for the specific fileName
+//     reports = reports.map(report => {
+//       const filteredFiles = report.files.filter(file => file.fileName === fileName); 
+//       const filteredTransferData = report.transferData.filter(transfer => transfer.fileName === fileName); 
 
-      return {
-        ...report.toObject(), 
-        files: filteredFiles,
-        transferData: filteredTransferData,
-      };
-    });
+//       return {
+//         ...report.toObject(), 
+//         files: filteredFiles,
+//         transferData: filteredTransferData,
+//       };
+//     });
 
-    reports = await updateTransferDataStatus(reports);
+//     reports = await updateTransferDataStatus(reports);
 
 
-    res.json({ success: true, reports: reports });
-  } 
-  catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: "An error occurred" });
-  }
-});
+//     res.json({ success: true, reports: reports });
+//   } 
+//   catch (error) {
+//     console.error(error);
+//     res.status(500).json({ success: false, message: "An error occurred" });
+//   }
+// });
 
 
 // GET all reports with a reportId

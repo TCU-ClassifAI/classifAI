@@ -87,44 +87,82 @@ router.post("/:reportId/users/:userId", upload.single('file'), async (req, res) 
         };    
         let report = await dbconnect.createReport(reportData);
 
+        // Update response for successful report processing
+        response.flag = true;
+        response.code = 200;
+        response.message = req.file ? "File uploaded and database entry successfully created" : "Database entry successfully created without file upload";
+        response.data = {
+            userId: userId,
+            reportId: reportId,
+            file: req.file ? req.file.originalname : "No file uploaded",
+            fileName: providedFileName || (newPath ? path.basename(newPath) : "No file uploaded"),
+            gradeLevel: req.body.gradeLevel,
+            subject: req.body.subject
+        };
+
         let newPath;
         if (req.file){
+            response.uploadStatus = 'pending';
             const allowedTypes = ['application/json', 'text/csv', 'application/pdf', 'audio/mpeg', 'audio/wav', 'audio/aac', 'audio/ogg', 'audio/webm'];
             if (!allowedTypes.includes(req.file.mimetype)) {
                 await fsPromises.unlink(req.file.path);
                 response.message = 'Invalid file type provided';
+                response.uploadStatus = 'failed';
                 return res.status(400).json(response);
             }
 
             const newDir = path.join('./uploads', userId, String(reportId));
             await fsPromises.mkdir(newDir, { recursive: true });
             newPath = await handleFileUpload(req, req.file.mimetype, userId, reportId, providedFileName, newDir);
+            response.uploadStatus = 'successful';
+
 
             if (['audio/mpeg', 'audio/wav', 'audio/aac', 'audio/ogg', 'audio/webm'].includes(req.file.mimetype)) {
-                await handleFileTransfer(`${process.env.WORKSTATION_URL}/start_transcription`, newPath, reportId);
-                response.transferStatus = 'successful';
+                
+                try {
+
+                    const transferResponse = await handleFileTransfer(`${process.env.WORKSTATION_URL}/transcription/start_transcription`, newPath, reportId);
+                    response.transferStatus = 'successful';
+                    const job_id = transferResponse.data.job_id; // Return job_id to the client for polling
+                    let job = await getInitialJobReq(process.env.WORKSTATION_URL, job_id);
+                    response.data.job_id = job_id; // Return job_id to the client
+                    response.flag = true;
+                    response.code = 200;
+                    response.message = "File uploaded, database entry successfully, and transcription started";
+                    
+                    const {result, ...transferData} = job.transcriptionData; 
+
+                    response.transferData = {
+                        ...transferData, 
+                        fileName: providedFileName || path.basename(newPath) 
+                    };
+
+                    // Update transferData for newest audioFile transfer
+                    report.transferData= { ...transferData, fileName: providedFileName || path.basename(newPath) };
+                    await dbconnect.updateReport({ userId, reportId }, { transferData: report.transferData, status: job.status, audioFile: providedFileName || path.basename(newPath) });
+            
+                } 
+                catch (error) {
+                    console.error("Error transfering file or updating report in the database:", error);
+                    // Prepare an error response if updating the database fails
+                    //response.flag = false;
+                    //response.code = 500;
+                    response.message = "Failed to transfer file";
+                    response.transferStatus = 'failure';
+
+                }
             }
         }
         
-    // Update response for successful report processing
-    response.flag = true;
-    response.code = 200;
-    response.message = req.file ? "File uploaded and database entry successfully created" : "Database entry successfully created without file upload";
-    response.data = {
-      userId: userId,
-      reportId: reportId,
-      file: req.file ? req.file.originalname : "No file uploaded",
-      fileName: providedFileName || (newPath ? path.basename(newPath) : "No file uploaded"),
-      gradeLevel: req.body.gradeLevel,
-      subject: req.body.subject
-    };
+    
 
     res.status(200).json(response);
 
     }
     catch (error) {
         console.error(error);
-        response.message = "An error occurred";
+        response.message = error.message || "An error occurred";
+
         response.uploadStatus = response.uploadStatus === 'pending' ? 'failed' : response.uploadStatus;  // if pending, change to failed, if not, leave as is
         response.transferStatus = (response.uploadStatus === 'successful' && response.transferStatus === 'pending') ? 'failed' : response.transferStatus;
         if (!res.headersSent) {
@@ -185,12 +223,27 @@ const handleFileTransfer = async (workstation, newPath, reportId) => {
     formData.append('reportId', String(reportId));
 
     try {
-        await axios.post(workstation, formData, { headers: formData.getHeaders() });
+        const response = await axios.post(workstation, formData, { headers: formData.getHeaders() });
+        return response;    
     } catch (error) {
         console.error("Error in file transfer:", error);
         throw new Error("Failed to transfer file. Possible Workstation connection error.");
     }
 };
+
+
+async function getInitialJobReq(workstationUrl, job_id) {
+    let completed = false;
+    let transcriptionData = null;
+
+    const response = await axios.get(`${workstationUrl}/transcription/get_transcription_status`, {
+        params: {
+            job_id: job_id
+        }
+    });        
+    transcriptionData = response.data;
+    return { completed, transcriptionData };
+}
 //////////// 
 
 module.exports = router;

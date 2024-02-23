@@ -17,7 +17,8 @@ mongo.once('open', function() {
 // Define a schema and a model for storing audio files in MongoDB
 const reportSchema = new mongoose.Schema({                           
    
-    
+    audioFile: String,
+
     files: [{   //added 1/23
       fileName: String,
       filePath: String,
@@ -42,10 +43,10 @@ const reportSchema = new mongoose.Schema({
       _id: false,
       fileName: String,
       duration: Number,
-      end_time: Number,
+      end_time: String,
       job_id: String,
       model_type: String,
-      start_time: Number,
+      start_time: String,
       status: String,
       result: String,
       // Include any other fields as necessary

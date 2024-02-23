@@ -129,7 +129,7 @@ router.post("/reports/:reportId/users/:userId", upload.single('file'), async (re
             response.code = 200;
             response.message = "File uploaded, database entry successfully, and transcription started";
             
-            const {result, ...transferData} = job.transcriptionData; // Destructure to exclude 'result'
+            const {result, ...transferData} = job.transcriptionData; 
 
             try {
                 response.transferData = {
@@ -137,14 +137,15 @@ router.post("/reports/:reportId/users/:userId", upload.single('file'), async (re
                     fileName: providedFileName || path.basename(newPath) 
                 };
 
-                // Update or add new transferData based on fileName
-                const existingIndex = report.transferData.findIndex(data => data.fileName === (providedFileName || path.basename(newPath)));
-                if (existingIndex !== -1) {
-                    report.transferData[existingIndex] = { ...transferData, fileName: providedFileName || path.basename(newPath) };
-                } else {
-                    report.transferData.push({ ...transferData, fileName: providedFileName || path.basename(newPath) });
-                }
-                await dbconnect.updateReport({ userId, reportId }, { transferData: report.transferData, status: job.status });
+                // Update transferData for newest audioFile transfer
+                report.transferData= { ...transferData, fileName: providedFileName || path.basename(newPath) };
+
+                //const existingIndex = report.transferData.findIndex(data => data.fileName === (providedFileName || path.basename(newPath)));
+                //if (existingIndex !== -1) {
+                //} else {
+                    //report.transferData.push({ ...transferData, fileName: providedFileName || path.basename(newPath) });
+                //}
+                await dbconnect.updateReport({ userId, reportId }, { transferData: report.transferData, status: job.status, audioFile: providedFileName || path.basename(newPath) });
         
             } 
             catch (error) {
@@ -212,6 +213,7 @@ const handleFileUpload = async (req, fileType, userId, reportId, providedFileNam
             }); 
         }
 
+
         await dbconnect.updateReport({userId: userId, reportId: reportId}, { files: files });
         return newPath;
     } catch (error) {
@@ -246,7 +248,6 @@ async function getInitialJobReq(workstationUrl, job_id) {
             job_id: job_id
         }
     });        
-    //const status = response.data.status; 
     transcriptionData = response.data;
     return { completed, transcriptionData };
 }
