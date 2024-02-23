@@ -1,7 +1,9 @@
-import { useState } from "react";
-import { convertMsToTime } from "../../../utils/convertMsToTime";
+import { useState, useEffect } from "react";
+import { convertMsToTime } from "../../../utils/convertMsToTime"
+import axios from 'axios';
+import { saveAs } from 'file-saver';
 
-export default function CsvOptions({ sentences, reportName, setReportName }) {
+export default function CsvOptions({ sentences, reportName, setReportName, userId }) {
   const [startTimeBox, setStartTimeBox] = useState(false);
   const [endTimeBox, setEndTimeBox] = useState(false);
   const [speakerBox, setSpeakerBox] = useState(false);
@@ -10,6 +12,8 @@ export default function CsvOptions({ sentences, reportName, setReportName }) {
   const [questionsBox, setQuestionsBox] = useState(false);
   const [sentencesBox, setSentencesBox] = useState(false);
   const [allSelected, setAllSelected] = useState(false);
+  const [fileName, setFileName] = useState("");
+
 
   const handleSelectAll = () => {
     setAllSelected(!allSelected);
@@ -30,6 +34,8 @@ export default function CsvOptions({ sentences, reportName, setReportName }) {
     setQuestionTypeBox(false);
     setSentencesBox(false);
   };
+
+
 
   // Helper Function for saveToCSV()
   function buildCSVHeader() {
@@ -96,9 +102,42 @@ export default function CsvOptions({ sentences, reportName, setReportName }) {
     return data;
   }
 
-  function saveToCSV() {
-    const headerRow = buildCSVHeader();
+  function generateDefaultFileName() {
+    const date = new Date();
+    let day = date.getDate();
+    let month = date.getMonth() + 1;
+    let year = date.getFullYear();
+    let hour = date.getHours();
+    let min = date.getMinutes();
+    let sec = date.getSeconds()
 
+    let currentDate = `${month}_${day}_${year}__${hour}_${min}_${sec}`;
+    return currentDate.concat("Transcript");
+  }
+
+  async function uploadCSV(blob, finalFileName) {
+    try {
+      const formData = new FormData();
+      formData.append('file', blob, `${finalFileName}.csv`);
+  
+      // Make a POST request to upload the file
+      await axios.post(`http://localhost:5001/files/reports/${reportName}/users/${userId}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+  
+      console.log('Upload Success');
+      
+      // Refetch user files after save
+    } catch (error) {
+      console.error('Error uploading file', error);
+      // Optionally handle error here
+    }
+  }
+
+  async function saveToCSV() {
+    const headerRow = buildCSVHeader();
     var lines = sentences;
 
     // Only export questions
@@ -120,32 +159,20 @@ export default function CsvOptions({ sentences, reportName, setReportName }) {
 
     // Create a Blob with the CSV content
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8" });
-
-    // Create a data URI for the CSV content
-    const url = window.URL.createObjectURL(blob);
-
-    // Create a temporary anchor element for downloading
-    const a = document.createElement("a");
-    a.href = url;
-    if (reportName.trim() === "") {
-      const date = new Date();
-      let day = date.getDate();
-      let month = date.getMonth() + 1;
-      let year = date.getFullYear();
-
-      // This arrangement can be altered based on how we want the date's format to appear.
-      let currentDate = `${month}_${day}_${year}`;
-      setReportName(currentDate.concat("Transcript"));
+    
+    let finalFileName = fileName;
+    if (finalFileName.trim() === "") {
+      finalFileName = generateDefaultFileName();
     }
-
-    a.download = `${reportName}.csv`;
-
-    // Trigger a click event to download the CSV
-    a.click();
-
-    // Clean up
-    window.URL.revokeObjectURL(url);
+  
+    saveAs(blob, `${finalFileName}.csv`);
+  
+    // Save the file using FileSaver.js
+    await uploadCSV(blob, finalFileName);
   }
+  
+  
+  
 
   return (
     <>
@@ -223,10 +250,21 @@ export default function CsvOptions({ sentences, reportName, setReportName }) {
           <option value="questions">Only Include Questions</option>
         </select>
       </div>
+      <div>
+        <input
+          className="fileNameInput"
+          type="text"
+          id="fileName"
+          value={fileName}
+          placeholder="Enter CSV file name (optional)"
+          onChange={(e) => setFileName(e.target.value)}
+        />
+      </div>
       <button
         onClick={() => saveToCSV()}
         className="btn btn-primary"
         id="bottom-button2"
+        disabled={reportName.trim()===""}
       >
         Download CSV
       </button>
