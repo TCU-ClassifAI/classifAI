@@ -33,6 +33,32 @@ export default function Whisper() {
         retrieveUserInfo();
       }, []);
 
+      useEffect(() => {
+        // Calculate speaking time for each speaker
+        const speakingTime = {};
+        transcription.forEach((sentence) => {
+          const speaker = sentence.speaker;
+          const duration = sentence.end_time - sentence.start_time;
+          speakingTime[speaker] = (speakingTime[speaker] || 0) + duration;
+        });
+    
+        // Find the speaker with the highest speaking time
+        let maxSpeakingTime = 0;
+        let mostSpeakingSpeaker = "";
+        for (const speaker in speakingTime) {
+          if (speakingTime[speaker] > maxSpeakingTime) {
+            maxSpeakingTime = speakingTime[speaker];
+            mostSpeakingSpeaker = speaker;
+          }
+        }
+    
+        // Set the speaker with the highest speaking time as teacher
+        setTeacher(mostSpeakingSpeaker);
+    
+        // Set unique speakers
+        setSpeakers(Object.keys(speakingTime));
+      }, [transcription]);
+
     function generateDefaultReportId() {
         const timestamp = new Date().getTime(); // Get current timestamp
         const randomString = Math.random().toString(36).substring(2, 8); // Generate a random string
@@ -60,6 +86,12 @@ export default function Whisper() {
             <Tab eventKey="TranscriptKey" title="Full Transcript">
                 <FullTranscript
                     transcription={transcription}
+                    setTranscription={setTranscription}
+                    speakers={speakers}
+                    setSpeakers={setSpeakers}
+                    teacher={teacher}
+                    setShow={setShow}
+                    show={show}
                 />
             </Tab>
         </Tabs>
