@@ -60,6 +60,7 @@ export default function UploadRecording({
       );
 
       const status = response.data.reports[0].transferData.status;
+      console.log(response);
 
       setAnalysisStatus(status);
       
