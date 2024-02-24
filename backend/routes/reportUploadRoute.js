@@ -87,6 +87,8 @@ router.post("/:reportId/users/:userId", upload.single('file'), async (req, res) 
         };    
         let report = await dbconnect.createReport(reportData);
 
+        let newPath;
+
         // Update response for successful report processing
         response.flag = true;
         response.code = 200;
@@ -100,7 +102,6 @@ router.post("/:reportId/users/:userId", upload.single('file'), async (req, res) 
             subject: req.body.subject
         };
 
-        let newPath;
         if (req.file){
             response.uploadStatus = 'pending';
             const allowedTypes = ['application/json', 'text/csv', 'application/pdf', 'audio/mpeg', 'audio/wav', 'audio/aac', 'audio/ogg', 'audio/webm'];
