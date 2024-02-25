@@ -33,6 +33,7 @@ router.get("/", async (req, res) => {
       if (filteredFiles.length > 0) {
         filesResponse.push({
           userId: report.userId,
+          reportName: report.reportName,
           reportId: report.reportId,
           file: filteredFiles.map((file) => file.filePath),
           gradeLevel: report.gradeLevel,
@@ -79,6 +80,7 @@ router.get("/users/:userId", async (req, res) => {
       if (filteredFiles.length > 0) {
         filesResponse.push({
           userId: report.userId,
+          reportName: report.reportName,
           reportId: report.reportId,
           file: filteredFiles.map((file) => file.filePath),
           gradeLevel: report.gradeLevel,
