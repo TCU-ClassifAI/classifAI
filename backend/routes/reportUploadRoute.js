@@ -102,6 +102,7 @@ router.post("/:reportId/users/:userId", upload.single('file'), async (req, res) 
         };
 
         if (req.file){
+
             response.uploadStatus = 'pending';
             const allowedTypes = ['application/json', 'text/csv', 'application/pdf', 'audio/mpeg', 'audio/wav', 'audio/aac', 'audio/ogg', 'audio/webm'];
             if (!allowedTypes.includes(req.file.mimetype)) {

@@ -269,29 +269,26 @@ async function findAllReports(query, res) {
 async function updateTransferDataStatus(reports) {
   for (let report of reports) {
     //for (let transfer of report.transferData) {
-      if (report.transferData && report.transferData.status === "in progress") {
+      if (report.transferData.status === 'in progress') {
+        
         try {
           const response = await axios.get(`${process.env.WORKSTATION_URL}/transcription/get_transcription_status`, {
             params: {
               job_id: report.transferData.job_id
             }
           });
-          
+          //console.log(`response:${response},result:${response.data.result}`)
           // Dynamically update transfer object based on response fields
-          const updateFields = ['fileName', 'duration', 'end_time', 'job_id', 'model_type', 'start_time', 'status', 'result'];
+          const updateFields = ['fileName', 'duration', 'end_time', 'job_id', 'model_type', 'start_time', 'status']//, 'result'];
           updateFields.forEach(field => {
             if (response.data.hasOwnProperty(field)) {
               report.transferData[field] = response.data[field];
             }
           });
 
-          // Add response.result to the report.transcription field
-          if (response.data.result) {
-            // Concatenate or update transcription data as needed
-            //report.transcription = response.data.result.map(item => item.text).join(' '); // Concatenate text from each result item
-
-            //report.transcription = response.data.result; 
-            
+      
+          if (response.data.hasOwnProperty('result')) {
+            report.transferData['result'] = response.data['result'];
           }
 
 
