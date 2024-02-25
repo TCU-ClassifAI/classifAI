@@ -17,16 +17,16 @@ mongo.once('open', function() {
 // Define a schema and a model for storing audio files in MongoDB
 const reportSchema = new mongoose.Schema({                           
    
-    
+    audioFile: String,
+
     files: [{   //added 1/23
       fileName: String,
       filePath: String,
       fileType: String, // csv, json, pdf, audio, etc
-        // this would be the perfect place to put the transcript for an audio file; keeps all past data, and corrected data
-        // summary too, maybe even subject, topics, gradeLevel; any attributes relating to files
+        
     }],
 
-    
+    reportName: String,
     reportId: String,
     userId: String,
     isPremium: Boolean,
@@ -36,7 +36,26 @@ const reportSchema = new mongoose.Schema({
     topics: String,
     path: String,
     transcription: String,  // if we want to store transcription in DB 
-    status: String
+    status: String,
+
+    transferData: {
+      _id: false,
+      fileName: String,
+      duration: Number,
+      end_time: String,
+      job_id: String,
+      model_type: String,
+      start_time: String,
+      status: String,
+      result: [{
+        speaker: String,
+        start_time: Number,
+        end_time: Number,
+        text: String,
+        confidence: Number,
+      }]
+      // Include any other fields as necessary
+  }
 });
 
 // Define a schema and a model for storing users in MongoDB
