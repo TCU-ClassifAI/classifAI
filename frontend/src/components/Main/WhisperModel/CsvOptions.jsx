@@ -87,7 +87,7 @@ export default function CsvOptions({ transcription, reportId, setReportId, userI
     let min = date.getMinutes();
     let sec = date.getSeconds()
 
-    let currentDate = `${month}_${day}_${year}__${hour}_${min}_${sec}`;
+    let currentDate = `${month}_${day}_${year}_${hour}_${min}_${sec}`;
     return currentDate.concat("Transcript");
   }
 
@@ -95,6 +95,7 @@ export default function CsvOptions({ transcription, reportId, setReportId, userI
     try {
       const formData = new FormData();
       formData.append('file', blob, `${finalFileName}.csv`);
+      formData.append("fileName", `${finalFileName}`)
   
       // Make a POST request to upload the file
       await axios.post(`http://localhost:5001/files/reports/${reportId}/users/${userId}`, formData, {

@@ -12,7 +12,7 @@ export default function Whisper() {
     const [reportId, setReportId] = useState("");
     const [transcription, setTranscription] = useState([]);
     const [analysisStatus, setAnalysisStatus] = useState("");
-    const [isAnalysisCompleted, setIsAnalysisCompleted] = useState(false);
+    const [reportName, setReportName] = useState("");
     const [teacher, setTeacher] = useState();
     const [show, setShow] = useState(false);
     const [speakers, setSpeakers] = useState();
@@ -80,6 +80,11 @@ export default function Whisper() {
 
     }
 
+    function handleInputChange(event) {
+      event.persist();
+      setReportName(event.target.value);
+    }
+
     return (
         <>
         
@@ -97,6 +102,11 @@ export default function Whisper() {
 
         {analysisStatus === "completed" && (
           <div>
+            <input
+              placeholder="Name this report"
+              onBlur={handleInputChange}
+              id="name-report"
+            ></input>
             <Tabs id="controlled-tab-example">
             <Tab eventKey="TranscriptKey" title="Full Transcript">
                 <FullTranscript
@@ -128,6 +138,7 @@ export default function Whisper() {
             setReportId={setReportId}
             reportId={reportId}
             userId={userId}
+            reportName={reportName}
           />
           </div>
             
