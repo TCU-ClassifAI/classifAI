@@ -6,7 +6,7 @@ import axios from 'axios';
 export default function UploadRecording({
   reportName,
   userId,
-  transcription,
+  reportId,
   setTranscription,
   analysisStatus,
   setAnalysisStatus
@@ -35,9 +35,10 @@ export default function UploadRecording({
 
       const formData = new FormData();
       formData.append("file",selectedFile);
+      formData.append("reportName", reportName);
 
       const response = await axios.post(
-        `http://localhost:5001/reports/${reportName}/users/${userId}`, 
+        `http://localhost:5001/reports/${reportId}/users/${userId}`, 
         formData, // Pass formData directly as data
         {
           headers: {
@@ -56,7 +57,7 @@ export default function UploadRecording({
   async function checkAnalysisStatus() {
     try {
       const response = await axios.get(
-        `http://localhost:5001/reports/${reportName}/users/${userId}/`
+        `http://localhost:5001/reports/${reportId}/users/${userId}/`
       );
 
       const status = response.data.reports[0].transferData.status;

@@ -90,7 +90,8 @@ export default function Whisper() {
         
         {analysisStatus !== "completed" && (
             <UploadRecording
-            reportName={reportId}
+            reportName={reportName}
+            reportId={reportId}
             userId={userId}
             transcription={transcription}
             setTranscription={setTranscription}
