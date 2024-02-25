@@ -66,7 +66,7 @@ export default function UploadRecording({
       
       if (status === "completed") {
         setIsAnalyzing(false); // Stop analysis once completed
-        const transcription = JSON.parse(response.data.reports[0].transferData.result)
+        const transcription = response.data.reports[0].transferData.result;
         setTranscription(transcription)
         console.log(transcription);
       }
