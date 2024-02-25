@@ -63,6 +63,7 @@ router.post(
     try {
       const { reportId, userId } = req.params;
       const providedFileName = req.body.fileName;
+      const providedReportName = req.body.reportName;
 
       if (!reportId) {
         response.message = "reportId is required";
@@ -91,6 +92,7 @@ router.post(
       const reportData = {
         reportId: reportId,
         userId: userId,
+        reportName: providedReportName || '',
         ...req.body, // includes other body data
       };
       let report = await dbconnect.createReport(reportData);
@@ -107,6 +109,7 @@ router.post(
         userId: userId,
         reportId: reportId,
         file: req.file ? req.file.originalname : "No file uploaded",
+        reportName: providedReportName || '',
         gradeLevel: req.body.gradeLevel,
         subject: req.body.subject,
       };

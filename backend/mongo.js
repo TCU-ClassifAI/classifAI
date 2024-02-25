@@ -26,7 +26,7 @@ const reportSchema = new mongoose.Schema({
         
     }],
 
-    
+    reportName: String,
     reportId: String,
     userId: String,
     isPremium: Boolean,
