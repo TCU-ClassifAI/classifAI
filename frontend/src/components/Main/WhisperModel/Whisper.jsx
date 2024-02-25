@@ -133,10 +133,8 @@ export default function Whisper() {
 
           <CsvOptions
             transcription={transcription}
-            setReportId={setReportId}
             reportId={reportId}
             userId={userId}
-            reportName={reportName}
           />
         </div>
       )}
