@@ -1,7 +1,6 @@
 import { Spinner } from "react-bootstrap";
 import { useState, useEffect } from "react";
-import { uploadFile } from "../../../utils/assemblyAPI";
-import axios from 'axios';
+import axios from "axios";
 
 export default function UploadRecording({
   reportName,
@@ -9,7 +8,7 @@ export default function UploadRecording({
   reportId,
   setTranscription,
   analysisStatus,
-  setAnalysisStatus
+  setAnalysisStatus,
 }) {
   const [isAudio, setIsAudio] = useState(false);
   const [isVideo, setIsVideo] = useState(false);
@@ -19,11 +18,10 @@ export default function UploadRecording({
   const [fileContent, setFileContent] = useState();
   const [isFileSelected, setIsFileSelected] = useState(false);
 
-
   useEffect(() => {
     if (isAnalyzing) {
       const intervalId = setInterval(checkAnalysisStatus, 5000); // Check status every 5 seconds
-      console.log("Checked Status")
+      console.log("Checked Status");
 
       return () => clearInterval(intervalId); // Cleanup function to clear interval on component unmount
     }
@@ -32,25 +30,23 @@ export default function UploadRecording({
   async function handleSubmission() {
     setIsAnalyzing(true);
     try {
-
       const formData = new FormData();
-      formData.append("file",selectedFile);
+      formData.append("file", selectedFile);
       formData.append("reportName", reportName);
 
       const response = await axios.post(
-        `http://localhost:5001/reports/${reportId}/users/${userId}`, 
+        `http://localhost:5001/reports/${reportId}/users/${userId}`,
         formData, // Pass formData directly as data
         {
           headers: {
-            'Content-Type': 'multipart/form-data'
-          }
+            "Content-Type": "multipart/form-data",
+          },
         }
       );
-  
-      console.log("Upload and transfer success!")
 
-    }catch (error) {
-      console.log("Error uploading or transferring to engine!")
+      console.log("Upload and transfer success!");
+    } catch (error) {
+      console.log("Error uploading or transferring to engine!");
     }
   }
 
@@ -64,15 +60,13 @@ export default function UploadRecording({
       console.log(response);
 
       setAnalysisStatus(status);
-      
+
       if (status === "completed") {
         setIsAnalyzing(false); // Stop analysis once completed
         const transcription = response.data.reports[0].transferData.result;
-        setTranscription(transcription)
+        setTranscription(transcription);
         console.log(transcription);
       }
-
-   
     } catch (error) {
       console.log("Error checking analysis status!", error);
     }
@@ -86,7 +80,7 @@ export default function UploadRecording({
     reader.onloadend = (event) => {
       setFileContent(event.target.result);
     };
-    
+
     const type = file.type;
     if (type.includes("audio")) {
       setIsAudio(true);
@@ -167,21 +161,20 @@ export default function UploadRecording({
         renderMediaElement(isAudio ? "audio" : isVideo ? "video" : null)}
       {!isAnalyzing && (
         <>
-        <p></p>
-        <button
-          type="button"
-          className="btn btn-primary"
-          id="submission-main"
-          onClick={() => handleSubmission({ selectedFile })}
-          disabled={!isFileSelected}
-        >
-          Analyze Recording
-        </button>
+          <p></p>
+          <button
+            type="button"
+            className="btn btn-primary"
+            id="submission-main"
+            onClick={() => handleSubmission({ selectedFile })}
+            disabled={!isFileSelected}
+          >
+            Analyze Recording
+          </button>
         </>
-        
       )}
       {isAnalyzing && (
-        <button 
+        <button
           type="button"
           className="btn btn-primary"
           id="submission-main"

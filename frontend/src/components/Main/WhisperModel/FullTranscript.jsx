@@ -2,7 +2,15 @@ import { Dropdown } from "react-bootstrap";
 import { convertMsToTime } from "../../../utils/convertMsToTime";
 import { useState, useEffect } from "react";
 
-export default function FullTranscript({ transcription, setTranscription, speakers, setSpeakers, teacher, show, setShow }) {
+export default function FullTranscript({
+  transcription,
+  setTranscription,
+  speakers,
+  setSpeakers,
+  teacher,
+  show,
+  setShow,
+}) {
   const [isRelabelingSpeaker, setIsRelabelingSpeaker] = useState(false);
   const [editing, setEditing] = useState(false);
 
@@ -29,7 +37,9 @@ export default function FullTranscript({ transcription, setTranscription, speake
 
   useEffect(() => {
     // Extract unique speakers from the transcription
-    const uniqueSpeakers = Array.from(new Set(transcription.map(sentence => sentence.speaker)));
+    const uniqueSpeakers = Array.from(
+      new Set(transcription.map((sentence) => sentence.speaker))
+    );
     setSpeakers(uniqueSpeakers);
   }, [transcription]);
 
@@ -107,7 +117,6 @@ export default function FullTranscript({ transcription, setTranscription, speake
     setTranscription(updatedTranscription);
   };
 
-
   const handleAddNewSpeaker = (sentence) => {
     const newSpeaker = String.fromCharCode(
       Array.from(new Set(speakers)).length + 65
@@ -122,9 +131,7 @@ export default function FullTranscript({ transcription, setTranscription, speake
     <>
       <div className="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
         <h1>Full Transcript</h1>
-        <h4>
-          Click on a sentence to make adjustments to "Questions" list
-        </h4>
+        <h4>Click on a sentence to make adjustments to "Questions" list</h4>
         <div className="lead" style={{ backgroundColor: "white" }}>
           <table className="table">
             <thead>
@@ -146,7 +153,8 @@ export default function FullTranscript({ transcription, setTranscription, speake
                         <span
                           className="speaker"
                           style={{
-                            color: speakerColors[speakers.indexOf(sentence.speaker)],
+                            color:
+                              speakerColors[speakers.indexOf(sentence.speaker)],
                           }}
                         >
                           {sentence.speaker}
@@ -177,16 +185,12 @@ export default function FullTranscript({ transcription, setTranscription, speake
                         type="text"
                         value={sentence.text}
                         onBlur={handleBlur}
-                        onChange={(event) =>
-                          handleChangeText(sentence, event)
-                        }
+                        onChange={(event) => handleChangeText(sentence, event)}
                         onKeyDown={(event) => handleKeyPress(event)}
                         autoFocus
                       />
                     ) : (
-                      <div className="transcript-text">
-                        {sentence.text}
-                      </div>
+                      <div className="transcript-text">{sentence.text}</div>
                     )}
                   </td>
                 </tr>

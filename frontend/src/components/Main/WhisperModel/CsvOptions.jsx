@@ -1,16 +1,19 @@
-import { useState, useEffect } from "react";
-import { convertMsToTime } from "../../../utils/convertMsToTime"
-import axios from 'axios';
-import { saveAs } from 'file-saver';
+import { useState } from "react";
+import { convertMsToTime } from "../../../utils/convertMsToTime";
+import axios from "axios";
+import { saveAs } from "file-saver";
 
-export default function CsvOptions({ transcription, reportId, setReportId, userId }) {
+export default function CsvOptions({
+  transcription,
+  reportId,
+  userId,
+}) {
   const [startTimeBox, setStartTimeBox] = useState(false);
   const [endTimeBox, setEndTimeBox] = useState(false);
   const [speakerBox, setSpeakerBox] = useState(false);
   const [textBox, setTextBox] = useState(false);
   const [allSelected, setAllSelected] = useState(false);
   const [fileName, setFileName] = useState("");
-
 
   const handleSelectAll = () => {
     setAllSelected(!allSelected);
@@ -27,8 +30,6 @@ export default function CsvOptions({ transcription, reportId, setReportId, userI
     setSpeakerBox(false);
     setTextBox(false);
   };
-
-
 
   // Helper Function for saveToCSV()
   function buildCSVHeader() {
@@ -47,7 +48,6 @@ export default function CsvOptions({ transcription, reportId, setReportId, userI
     if (speakerBox) {
       csvColumns.push("Speaker");
     }
-
 
     if (textBox) {
       csvColumns.push("Text");
@@ -85,7 +85,7 @@ export default function CsvOptions({ transcription, reportId, setReportId, userI
     let year = date.getFullYear();
     let hour = date.getHours();
     let min = date.getMinutes();
-    let sec = date.getSeconds()
+    let sec = date.getSeconds();
 
     let currentDate = `${month}_${day}_${year}_${hour}_${min}_${sec}`;
     return currentDate.concat("Transcript");
@@ -94,20 +94,24 @@ export default function CsvOptions({ transcription, reportId, setReportId, userI
   async function uploadCSV(blob, finalFileName) {
     try {
       const formData = new FormData();
-      formData.append('file', blob, `${finalFileName}.csv`);
-  
+      formData.append("file", blob, `${finalFileName}.csv`);
+
       // Make a POST request to upload the file
-      await axios.post(`http://localhost:5001/files/reports/${reportId}/users/${userId}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
+      await axios.post(
+        `http://localhost:5001/files/reports/${reportId}/users/${userId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         }
-      });
-  
-      console.log('Upload Success');
-      
+      );
+
+      console.log("Upload Success");
+
       // Refetch user files after save
     } catch (error) {
-      console.error('Error uploading file', error);
+      console.error("Error uploading file", error);
       // Optionally handle error here
     }
   }
@@ -130,20 +134,17 @@ export default function CsvOptions({ transcription, reportId, setReportId, userI
 
     // Create a Blob with the CSV content
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8" });
-    
+
     let finalFileName = fileName;
     if (finalFileName.trim() === "") {
       finalFileName = generateDefaultFileName();
     }
-  
+
     saveAs(blob, `${finalFileName}.csv`);
-  
+
     // Save the file using FileSaver.js
     await uploadCSV(blob, finalFileName);
   }
-  
-  
-  
 
   return (
     <>
@@ -194,9 +195,7 @@ export default function CsvOptions({ transcription, reportId, setReportId, userI
             onChange={() => setTextBox(!textBox)}
           ></input>
         </label>
-        <select
-          className="dropdown"
-        >
+        <select className="dropdown">
           <option value="fullTranscript">Include Full Transcript</option>
         </select>
       </div>
@@ -214,7 +213,7 @@ export default function CsvOptions({ transcription, reportId, setReportId, userI
         onClick={() => saveToCSV()}
         className="btn btn-primary"
         id="bottom-button2"
-        disabled={reportId.trim()===""}
+        disabled={reportId.trim() === ""}
       >
         Download CSV
       </button>
