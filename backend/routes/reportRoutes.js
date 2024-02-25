@@ -269,7 +269,7 @@ async function findAllReports(query, res) {
 async function updateTransferDataStatus(reports) {
   for (let report of reports) {
     //for (let transfer of report.transferData) {
-      if (report.transferData.status === "in progress") {
+      if (report.transferData && report.transferData.status === "in progress") {
         try {
           const response = await axios.get(`${process.env.WORKSTATION_URL}/transcription/get_transcription_status`, {
             params: {
@@ -288,7 +288,9 @@ async function updateTransferDataStatus(reports) {
           // Add response.result to the report.transcription field
           if (response.data.result) {
             // Concatenate or update transcription data as needed
-            report.transcription = response.data.result; 
+            //report.transcription = response.data.result.map(item => item.text).join(' '); // Concatenate text from each result item
+
+            //report.transcription = response.data.result; 
             
           }
 

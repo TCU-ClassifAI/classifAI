@@ -47,7 +47,14 @@ const reportSchema = new mongoose.Schema({
       model_type: String,
       start_time: String,
       status: String,
-      result: String,
+      result: [{
+        _id: false,
+        speaker: String,
+        start_time: Number,
+        end_time: Number,
+        text: String
+      }]
+      //result: String,
       // Include any other fields as necessary
   }
 });
