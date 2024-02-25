@@ -1,5 +1,6 @@
 import UploadRecording from "./UploadRecording";
 import FullTranscript from "./FullTranscript";
+import CsvOptions from "./CsvOptions";
 import { useState, useEffect } from "react";
 import { Auth } from "aws-amplify";
 import { Tab, Tabs } from "react-bootstrap";
@@ -82,6 +83,7 @@ export default function Whisper() {
 
 
         {analysisStatus === "completed" && (
+          <div>
             <Tabs id="controlled-tab-example">
             <Tab eventKey="TranscriptKey" title="Full Transcript">
                 <FullTranscript
@@ -94,7 +96,15 @@ export default function Whisper() {
                     show={show}
                 />
             </Tab>
-        </Tabs>
+          </Tabs>
+          <CsvOptions 
+            transcription={transcription}
+            setReportId={setReportId}
+            reportId={reportId}
+            userId={userId}
+          />
+          </div>
+            
         )}
         </>
     )
