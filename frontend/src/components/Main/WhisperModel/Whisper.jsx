@@ -1,9 +1,11 @@
 import UploadRecording from "./UploadRecording";
 import FullTranscript from "./FullTranscript";
 import CsvOptions from "./CsvOptions";
+import WordCloud from "./WordCloud";
 import { useState, useEffect } from "react";
 import { Auth } from "aws-amplify";
 import { Tab, Tabs } from "react-bootstrap";
+import ParentSize from "@visx/responsive/lib/components/ParentSize";
 
 export default function Whisper() {
     const [userId, setUserId] = useState("");
@@ -67,6 +69,17 @@ export default function Whisper() {
         setReportId(reportId)
     }
 
+    function createSentenceList() {
+      let sentenceListStr = "";
+      if (transcription) {
+        for (let i = 0; i < transcription.length; i++) {
+          sentenceListStr += " " + transcription[i].text;
+        }
+      }
+      return sentenceListStr;
+
+    }
+
     return (
         <>
         
@@ -96,7 +109,20 @@ export default function Whisper() {
                     show={show}
                 />
             </Tab>
+            <Tab eventKey="wordcloud" title="Visualization">
+            <ParentSize>
+                {({ width, height }) => (
+                  <WordCloud
+                    width={width}
+                    height={600}
+                    showControls="true"
+                    transcript={createSentenceList()}
+                  />
+                )}
+              </ParentSize>
+            </Tab>
           </Tabs>
+
           <CsvOptions 
             transcription={transcription}
             setReportId={setReportId}
