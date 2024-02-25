@@ -97,7 +97,6 @@ router.post("/:reportId/users/:userId", upload.single('file'), async (req, res) 
             userId: userId,
             reportId: reportId,
             file: req.file ? req.file.originalname : "No file uploaded",
-            fileName: providedFileName || (newPath ? path.basename(newPath) : "No file uploaded"),
             gradeLevel: req.body.gradeLevel,
             subject: req.body.subject
         };
@@ -117,6 +116,7 @@ router.post("/:reportId/users/:userId", upload.single('file'), async (req, res) 
             newPath = await handleFileUpload(req, req.file.mimetype, userId, reportId, providedFileName, newDir);
             response.uploadStatus = 'successful';
 
+            response.data.fileName= providedFileName || (newPath ? path.basename(newPath) : "No file uploaded");
 
             if (['audio/mpeg', 'audio/wav', 'audio/aac', 'audio/ogg', 'audio/webm'].includes(req.file.mimetype)) {
                 
