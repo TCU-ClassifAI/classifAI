@@ -5,6 +5,7 @@ import Transcribe from "./Transcribe/Transcribe";
 import Whisper from "./WhisperModel/Whisper";
 import ExportDataFiles from "./ExportDataFiles/ExportDataFiles" ; // hypothetical component
 import Account from "../Account/AccountPage";
+import MyReports from "./MyReports/MyReports";
 import "./MainPage.css";
 
 export default function Main() {
@@ -15,6 +16,7 @@ export default function Main() {
                 <Routes>
                     <Route path="transcribe" element={<Transcribe />} /> 
                     <Route path="whisper" element={<Whisper />} /> 
+                    <Route path="myreports" element={<MyReports />} /> 
                     <Route path="files" element={<ExportDataFiles />} /> 
                     <Route path="account" element={<Account />} />
                     {/* other nested routes if needed */}
