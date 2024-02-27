@@ -42,12 +42,15 @@ export default function ExportDataFiles() {
       );
       const flattenedData = response.data.reduce((acc, obj) => {
         obj.file.forEach((file, index) => {
+          const lastDotIndex = file.lastIndexOf('.');
+          const fileExtension = file.substring(lastDotIndex + 1);
           acc.push({
             key: `${obj.reportId}_${index}`, // Use reportId and index as a key
             userId: obj.userId,
             reportId: obj.reportId,
-            file: file,
+            reportName: obj.reportName,
             fileName: obj.fileName[index],
+            fileType: fileExtension,
             isEditing: false, // Initialize isEditing to false
           });
         });
@@ -122,8 +125,7 @@ export default function ExportDataFiles() {
     }
   };
 
-  const handleDownloadClick = async (reportId, fileName, filePath) => {
-    const fileType = filePath.substring(filePath.lastIndexOf(".") + 1);
+  const handleDownloadClick = async (reportId, fileName, fileType) => {
     try {
       const response = await axios.get(
         `http://localhost:5001/files/${fileName}/reports/${reportId}/users/${userId}?download=true`,
@@ -177,7 +179,7 @@ export default function ExportDataFiles() {
           <thead>
             <tr>
               <th>Report ID</th>
-              <th>Filename</th>
+              <th>File Name</th>
               <th>File</th>
               <th>Edit</th>
               <th>Delete</th>
@@ -207,8 +209,9 @@ export default function ExportDataFiles() {
           <thead>
             <tr>
               <th>Report ID</th>
-              <th>Filename</th>
-              <th>File</th>
+              <th>Report Name</th>
+              <th>File Name</th>
+              <th>File Type</th>
               <th>Edit</th>
               <th>Delete</th>
               <th>Download</th> {/* Added new tab for Download */}
@@ -218,6 +221,7 @@ export default function ExportDataFiles() {
             {currentItems.map((file, index) => (
               <tr key={file.key}>
                 <td>{file.reportId}</td>
+                <td>{file.reportName}</td>
                 <td>
                   {file.isEditing ? (
                     <input
@@ -231,7 +235,7 @@ export default function ExportDataFiles() {
                     file.fileName
                   )}
                 </td>
-                <td>{file.file}</td>
+                <td>{file.fileType}</td>
                 <td className={styles.csvButton}>
                   {file.isEditing ? (
                     <>
@@ -283,7 +287,7 @@ export default function ExportDataFiles() {
                       handleDownloadClick(
                         file.reportId,
                         file.fileName,
-                        file.file
+                        file.fileType
                       )
                     }
                   >
