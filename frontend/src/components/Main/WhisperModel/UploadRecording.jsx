@@ -80,6 +80,7 @@ export default function UploadRecording({
       } else if (status === "failed") {
         setProgress(0);
         setShowErrorModal(true); 
+        console.log("Engine failed to transcribe file!")
       }
     } catch (error) {
       console.log("Error checking analysis status!", error);
