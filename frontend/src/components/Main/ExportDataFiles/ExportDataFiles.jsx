@@ -8,7 +8,6 @@ import ErrorModal from "../../Common/ErrorModal";
 export default function ExportDataFiles() {
   const [files, setFiles] = useState([]);
   const [userId, setUserId] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0); // Changed initial page to 0
   const [itemsPerPage] = useState(10);
   const [oldFileNameEditing, setOldFileNameEditing] = useState("");
@@ -63,9 +62,7 @@ export default function ExportDataFiles() {
       console.error("Error fetching user files:", error);
       setErrorModalMsg("Error fetching user files from database! Try again later.");
       setShowErrorModal(true);
-    } finally {
-      setIsLoading(false);
-    }
+    } 
   };
 
   const handleFileNameChange = (event, key) => {
@@ -180,27 +177,6 @@ export default function ExportDataFiles() {
   const handlePageClick = ({ selected }) => {
     setCurrentPage(selected);
   };
-
-  if (isLoading) {
-    return (
-      <div className={styles.tableContainer}>
-        <h2>Exported Data Files</h2>
-        <table className={styles.loadingTable}>
-          <thead>
-            <tr>
-              <th>Report ID</th>
-              <th>File Name</th>
-              <th>File</th>
-              <th>Edit</th>
-              <th>Delete</th>
-              <th>Download</th> {/* Added new tab for Download */}
-            </tr>
-          </thead>
-        </table>
-        <p>Loading...</p>
-      </div>
-    );
-  }
 
   const handleCloseErrorModal = () => {
     setShowErrorModal(false);
