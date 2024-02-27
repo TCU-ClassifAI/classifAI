@@ -16,7 +16,7 @@ export default function CsvOptions({
   const [allSelected, setAllSelected] = useState(false);
   const [fileName, setFileName] = useState("");
   const [showErrorModal, setShowErrorModal] = useState(false);
-
+  const [errorModalMsg, setErrorModalMsg] = useState("");
 
   const handleSelectAll = () => {
     setAllSelected(!allSelected);
@@ -120,6 +120,7 @@ export default function CsvOptions({
     } catch (error) {
       console.error("Error uploading file", error);
       // Optionally handle error here
+      setErrorModalMsg("Error uploading file");
       setShowErrorModal(true);
     }
   }
@@ -157,7 +158,7 @@ export default function CsvOptions({
   return (
     <>
       <ErrorModal 
-        message={"There was an error uploading to the the CSV to the database."}
+        message={errorModalMsg}
         showErrorModal={showErrorModal}
         handleCloseErrorModal={handleCloseErrorModal}
       />

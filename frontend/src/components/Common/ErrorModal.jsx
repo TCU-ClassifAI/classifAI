@@ -10,7 +10,7 @@ export default function ErrorModal({
         <Modal.Title>Error</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        There was an error in the analysis process. Please try again later.
+        {message}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleCloseErrorModal}>

@@ -13,7 +13,7 @@ export default function ExportDataFiles() {
   const [itemsPerPage] = useState(10);
   const [oldFileNameEditing, setOldFileNameEditing] = useState("");
   const [showErrorModal, setShowErrorModal] = useState(false);
-
+  const [errorModalMsg, setErrorModalMsg] = useState("");
 
   useEffect(() => {
     async function retrieveUserInfo() {
@@ -23,6 +23,8 @@ export default function ExportDataFiles() {
         setUserId(attributes.email);
       } catch (error) {
         console.error("Error fetching user data:", error);
+        setErrorModalMsg("Error fetching user data from database! Try again later.");
+        setShowErrorModal(true);
       }
     }
 
@@ -42,7 +44,7 @@ export default function ExportDataFiles() {
       );
       const flattenedData = response.data.reduce((acc, obj) => {
         obj.file.forEach((file, index) => {
-          const lastDotIndex = file.lastIndexOf('.');
+          const lastDotIndex = file.lastIndexOf(".");
           const fileExtension = file.substring(lastDotIndex + 1);
           acc.push({
             key: `${obj.reportId}_${index}`, // Use reportId and index as a key
@@ -59,6 +61,8 @@ export default function ExportDataFiles() {
       setFiles(flattenedData.reverse());
     } catch (error) {
       console.error("Error fetching user files:", error);
+      setErrorModalMsg("Error fetching user files from database! Try again later.");
+      setShowErrorModal(true);
     } finally {
       setIsLoading(false);
     }
@@ -100,6 +104,8 @@ export default function ExportDataFiles() {
       fetchUserFiles();
     } catch (error) {
       console.error("Error updating file name:", error);
+      setErrorModalMsg("Error updating file name");
+      setShowErrorModal(true);
     }
   };
 
@@ -121,6 +127,8 @@ export default function ExportDataFiles() {
         console.log("Delete Success");
       } catch (error) {
         console.error("Error deleting file:", error);
+        setErrorModalMsg("Error fetching user files");
+        setShowErrorModal(true);
       }
     }
   };
@@ -160,6 +168,8 @@ export default function ExportDataFiles() {
       console.log("Download Success");
     } catch (error) {
       console.error("Error downloading file:", error);
+      setErrorModalMsg("Error downloading file");
+      setShowErrorModal(true);
     }
   };
 
@@ -198,8 +208,8 @@ export default function ExportDataFiles() {
 
   return (
     <>
-      <ErrorModal 
-        message={"There was an error fetching user files from the database!"}
+      <ErrorModal
+        message={errorModalMsg}
         showErrorModal={showErrorModal}
         handleCloseErrorModal={handleCloseErrorModal}
       />

@@ -20,6 +20,8 @@ export default function UploadRecording({
   const [isFileSelected, setIsFileSelected] = useState(false);
   const [progress, setProgress] = useState(0);
   const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorModalMsg, setErrorModalMsg] = useState("");
+
 
   useEffect(() => {
     if (isAnalyzing) {
@@ -50,6 +52,7 @@ export default function UploadRecording({
       console.log("Upload and transfer success!");
     } catch (error) {
       console.log("Error uploading or transferring to engine!");
+      setErrorModalMsg("Error uploading or transferring to engine!");
       setShowErrorModal(true); 
     }
   }
@@ -80,10 +83,13 @@ export default function UploadRecording({
       } else if (status === "failed") {
         setProgress(0);
         setShowErrorModal(true); 
-        console.log("Engine failed to transcribe file!")
+        console.log("Engine failed to transcribe file!");
+        setErrorModalMsg("Engine failed to transcribe file!");
+        setShowErrorModal(true); 
       }
     } catch (error) {
       console.log("Error checking analysis status!", error);
+      setErrorModalMsg("Error checkign analysis status!");
       setShowErrorModal(true); 
     }
   }
@@ -177,7 +183,7 @@ export default function UploadRecording({
   return (
     <div>
       <ErrorModal
-        message={"There was an error in the analysis process. Please try again later."}
+        message={errorModalMsg}
         showErrorModal={showErrorModal}
         handleCloseErrorModal={handleCloseErrorModal}
       />

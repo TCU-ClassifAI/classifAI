@@ -8,13 +8,11 @@ import ErrorModal from "../../Common/ErrorModal";
 export default function ExportDataFiles() {
   const [files, setFiles] = useState([]);
   const [userId, setUserId] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0); // Changed initial page to 0
   const [itemsPerPage] = useState(10);
   const [oldFileNameEditing, setOldFileNameEditing] = useState("");
   const [showErrorModal, setShowErrorModal] = useState(false);
-
-
+  const [errorModalMsg, setErrorModalMsg] = useState("");
 
   useEffect(() => {
     async function retrieveUserInfo() {
@@ -24,6 +22,8 @@ export default function ExportDataFiles() {
         setUserId(attributes.email);
       } catch (error) {
         console.error("Error fetching user data:", error);
+        setErrorModalMsg("Error fetching authentication data! Try again later.");
+        setShowErrorModal(true);
       }
     }
 
@@ -39,8 +39,9 @@ export default function ExportDataFiles() {
   const fetchUserFiles = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5001/files/users/${userId}`
+        `http://localhost:5001/reports/users/${userId}`
       );
+      console.log(response);
       const flattenedData = response.data.reduce((acc, obj) => {
         obj.file.forEach((file, index) => {
           const lastDotIndex = file.lastIndexOf('.');
@@ -60,10 +61,10 @@ export default function ExportDataFiles() {
       const filteredFiles = flattenedData.filter(file => file.fileType !== 'pdf' && file.fileType !=='csv');
       setFiles(filteredFiles.reverse());
     } catch (error) {
-      console.error("Error fetching user files:", error);
-    } finally {
-      setIsLoading(false);
-    }
+      console.error("Error fetching user reports:", error);
+      setErrorModalMsg("Error fetching reports from database! Try again later.");
+      setShowErrorModal(true);
+    } 
   };
 
   const handleFileNameChange = (event, key) => {
@@ -109,6 +110,8 @@ export default function ExportDataFiles() {
       fetchUserFiles();
     } catch (error) {
       console.error("Error updating file name:", error);
+      setErrorModalMsg("Error updating file name");
+      setShowErrorModal(true);
     }
 
     try {
@@ -124,6 +127,8 @@ export default function ExportDataFiles() {
       fetchUserFiles();
     } catch (error) {
       console.error("Error updating Report name:", error);
+      setErrorModalMsg("Error updating report name");
+      setShowErrorModal(true);
     }
 
 
@@ -135,11 +140,11 @@ export default function ExportDataFiles() {
     );
     if (confirmDelete) {
       const fileToDelete = files.find((file) => file.key === key);
-      const { fileName: fileNameToDelete, reportId } = fileToDelete;
+      const { reportId } = fileToDelete;
 
       try {
         await axios.delete(
-          `http://localhost:5001/files/${fileNameToDelete}/reports/${reportId}/users/${userId}`
+          `http://localhost:5001/reports/${reportId}/users/${userId}`
         );
 
         const updatedFiles = files.filter((file) => file.key !== key);
@@ -147,6 +152,8 @@ export default function ExportDataFiles() {
         console.log("Delete Success");
       } catch (error) {
         console.error("Error deleting file:", error);
+        setErrorModalMsg("Error deleting file");
+        setShowErrorModal(true);
       }
     }
   };
@@ -186,6 +193,8 @@ export default function ExportDataFiles() {
       console.log("Download Success");
     } catch (error) {
       console.error("Error downloading file:", error);
+      setErrorModalMsg("Error downloading file");
+      setShowErrorModal(true);
     }
   };
 
@@ -197,26 +206,6 @@ export default function ExportDataFiles() {
     setCurrentPage(selected);
   };
 
-  if (isLoading) {
-    return (
-      <div className={styles.tableContainer}>
-        <h2>Exported Data Files</h2>
-        <table className={styles.loadingTable}>
-          <thead>
-            <tr>
-              <th>Report ID</th>
-              <th>File Name</th>
-              <th>File</th>
-              <th>Edit</th>
-              <th>Delete</th>
-              <th>Download</th> {/* Added new tab for Download */}
-            </tr>
-          </thead>
-        </table>
-        <p>Loading...</p>
-      </div>
-    );
-  }
 
   const handleCloseErrorModal = () => {
     setShowErrorModal(false);
@@ -225,12 +214,12 @@ export default function ExportDataFiles() {
   return (
     <>
       <ErrorModal 
-        message={"There was an error fetching user files from the database!"}
+        message={errorModalMsg}
         showErrorModal={showErrorModal}
         handleCloseErrorModal={handleCloseErrorModal}
       />
       <div className={styles.tableContainer}>
-        <h2>Exported Data Files</h2>
+        <h2>My Reports</h2>
         <table className={styles.prettyTable}>
           <thead>
             <tr>
