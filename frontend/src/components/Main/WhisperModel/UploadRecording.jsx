@@ -1,4 +1,4 @@
-import { Spinner } from "react-bootstrap";
+import { Spinner, ProgressBar, Modal, Button } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -17,12 +17,13 @@ export default function UploadRecording({
   const [selectedFile, setSelectedFile] = useState("");
   const [fileContent, setFileContent] = useState();
   const [isFileSelected, setIsFileSelected] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [showErrorModal, setShowErrorModal] = useState(false);
 
   useEffect(() => {
     if (isAnalyzing) {
       const intervalId = setInterval(checkAnalysisStatus, 5000); // Check status every 5 seconds
-      console.log("Checked Status");
-
+      
       return () => clearInterval(intervalId); // Cleanup function to clear interval on component unmount
     }
   }, [isAnalyzing]);
@@ -47,6 +48,7 @@ export default function UploadRecording({
       console.log("Upload and transfer success!");
     } catch (error) {
       console.log("Error uploading or transferring to engine!");
+      setShowErrorModal(true); 
     }
   }
 
@@ -65,10 +67,21 @@ export default function UploadRecording({
         setIsAnalyzing(false); // Stop analysis once completed
         const transcription = response.data.reports[0].transferData.result;
         setTranscription(transcription);
+        setProgress(100);
         console.log(transcription);
+      } else if (status === "transcribing") {
+        setProgress(25);
+      } else if (status === "diarizing") {
+        setProgress(50);
+      } else if (status === "punctuating") {
+        setProgress(75);
+      } else if (status === "failed") {
+        setProgress(0);
+        setShowErrorModal(true); 
       }
     } catch (error) {
       console.log("Error checking analysis status!", error);
+      setShowErrorModal(true); 
     }
   }
 
@@ -117,13 +130,13 @@ export default function UploadRecording({
       )}
       {isAnalyzing && (
         <div>
+          <ProgressBar striped variant="info" now={progress}/>
           <Spinner
             className="spinner"
             animation="border"
             role="status"
           ></Spinner>
           <p>Analysis Status: ({analysisStatus})</p>
-          <p>Please do not refresh or exit this screen during this time</p>
         </div>
       )}
     </div>
@@ -154,8 +167,29 @@ export default function UploadRecording({
     </div>
   );
 
+  const handleCloseErrorModal = () => {
+    setShowErrorModal(false);
+  };
+
+  const renderErrorModal = () => (
+    <Modal show={showErrorModal} onHide={handleCloseErrorModal}>
+      <Modal.Header closeButton>
+        <Modal.Title>Error</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        There was an error in the analysis process. Please try again later.
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={handleCloseErrorModal}>
+          Close
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
+
   return (
     <div>
+      {renderErrorModal()}
       {renderUploadSection()}
       {(isAudio || isVideo || isNeither) &&
         renderMediaElement(isAudio ? "audio" : isVideo ? "video" : null)}
