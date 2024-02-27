@@ -66,7 +66,7 @@ export default function Whisper() {
   function generateDefaultReportId() {
     const timestamp = new Date().getTime(); // Get current timestamp
     const randomString = Math.random().toString(36).substring(2, 8); // Generate a random string
-    const reportId = `report_${timestamp}_${randomString}`; // Combine timestamp and random string
+    const reportId = `${timestamp}_${randomString}`; // Combine timestamp and random string
     setReportId(reportId);
   }
 
