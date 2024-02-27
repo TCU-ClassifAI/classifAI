@@ -190,7 +190,7 @@ export default function FullTranscript({
                         autoFocus
                       />
                     ) : (
-                      <div>{sentence.text}</div>
+                      <div className="transcript-text">{sentence.text}</div>
                     )}
                   </td>
                 </tr>
