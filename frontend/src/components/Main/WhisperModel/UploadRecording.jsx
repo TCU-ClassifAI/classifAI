@@ -1,4 +1,5 @@
-import { Spinner, ProgressBar, Modal, Button } from "react-bootstrap";
+import { Spinner, ProgressBar } from "react-bootstrap";
+import ErrorModal from "../../Common/ErrorModal";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -171,25 +172,13 @@ export default function UploadRecording({
     setShowErrorModal(false);
   };
 
-  const renderErrorModal = () => (
-    <Modal show={showErrorModal} onHide={handleCloseErrorModal}>
-      <Modal.Header closeButton>
-        <Modal.Title>Error</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        There was an error in the analysis process. Please try again later.
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={handleCloseErrorModal}>
-          Close
-        </Button>
-      </Modal.Footer>
-    </Modal>
-  );
-
   return (
     <div>
-      {renderErrorModal()}
+      <ErrorModal
+        message={"There was an error in the analysis process. Please try again later."}
+        showErrorModal={showErrorModal}
+        handleCloseErrorModal={handleCloseErrorModal}
+      />
       {renderUploadSection()}
       {(isAudio || isVideo || isNeither) &&
         renderMediaElement(isAudio ? "audio" : isVideo ? "video" : null)}

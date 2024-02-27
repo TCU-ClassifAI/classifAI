@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Auth } from "aws-amplify";
-import styles from './ExportDataFiles.module.css';
+import styles from './MyReports.module.css';
 import ReactPaginate from 'react-paginate';
 
 export default function MyReports() {
