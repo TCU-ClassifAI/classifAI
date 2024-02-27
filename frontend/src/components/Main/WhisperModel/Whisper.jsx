@@ -2,6 +2,7 @@ import UploadRecording from "./UploadRecording";
 import FullTranscript from "./FullTranscript";
 import CsvOptions from "./CsvOptions";
 import WordCloud from "./WordCloud";
+import TalkingDistribution from "./TalkingDistribution";
 import { useState, useEffect } from "react";
 import { Auth } from "aws-amplify";
 import { Tab, Tabs } from "react-bootstrap";
@@ -116,6 +117,12 @@ export default function Whisper() {
                 setShow={setShow}
                 show={show}
               />
+            </Tab>
+            <Tab eventKey="talkingdistribution" title="Talking Distribution">
+                <TalkingDistribution 
+                  transcription={transcription}
+                  teacher={teacher}
+                />
             </Tab>
             <Tab eventKey="wordcloud" title="Visualization">
               <ParentSize>
