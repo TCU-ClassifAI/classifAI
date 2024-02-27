@@ -35,6 +35,7 @@ export default function MyReports() {
   const fetchUserFiles = async () => {
     try {
       const response = await axios.get(`http://localhost:5001/reports/users/${userId}`);
+      console.log(response);
       const flattenedData = response.data.reduce((acc, obj) => {
         obj.file.forEach((file, index) => {
           acc.push({
