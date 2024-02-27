@@ -129,7 +129,7 @@ export default function FullTranscript({
 
   return (
     <>
-      <div className="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+      <div className="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto">
         <h1>Full Transcript</h1>
         <h4>Click on a sentence to make adjustments to "Questions" list</h4>
         <div className="lead" style={{ backgroundColor: "white" }}>
