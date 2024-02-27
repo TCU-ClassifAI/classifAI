@@ -48,7 +48,7 @@ export default function ExportDataFiles() {
         });
         return acc;
       }, []);
-      setFiles(flattenedData);
+      setFiles(flattenedData.reverse());
     } catch (error) {
       console.error('Error fetching user files:', error);
     } finally {
