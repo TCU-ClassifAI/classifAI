@@ -45,6 +45,7 @@ export default function UploadRecording({
           },
         }
       );
+      console.log(response);
 
       console.log("Upload and transfer success!");
     } catch (error) {
