@@ -39,6 +39,7 @@ router.get("/", async (req, res) => {
         acc.push({
           userId: report.userId,
           reportId: report.reportId,
+          reportName: report.reportName,
           file: filteredFiles.map((file) => file.filePath),
           gradeLevel: report.gradeLevel,
           subject: report.subject,
@@ -93,6 +94,7 @@ router.get("/users/:userId", async (req, res) => {
         acc.push({
           userId: report.userId,
           reportId: report.reportId,
+          reportName: report.reportName,
           file: filteredFiles.map((file) => file.filePath),
           gradeLevel: report.gradeLevel,
           subject: report.subject,
@@ -149,6 +151,7 @@ router.get("/reports/:reportId/users/:userId", async (req, res) => {
         acc.push({
           userId: report.userId,
           reportId: report.reportId,
+          reportName: report.reportName,
           file: filteredFiles.map((file) => file.filePath),
           gradeLevel: report.gradeLevel,
           subject: report.subject,
@@ -225,6 +228,7 @@ router.get("/:fileName/reports/:reportId/users/:userId", async (req, res) => {
       const filesResponse = {
         userId: report.userId,
         reportId: report.reportId,
+        reportName: report.reportName,
         files: [
           {
             filePath: fileToInclude.filePath,
