@@ -51,6 +51,7 @@ export default function ExportDataFiles() {
             userId: obj.userId,
             reportId: obj.reportId,
             reportName: obj.reportName,
+            status: obj.transferData.status,
             fileName: obj.fileName[index],
             fileType: fileExtension,
             isEditing: false, // Initialize isEditing to false
@@ -225,8 +226,8 @@ export default function ExportDataFiles() {
             <tr>
               <th>Report ID</th>
               <th>Report Name</th>
-              <th>File Name</th>
-              <th>File Type</th>
+              <th>Audio File</th>
+              <th>Status</th>
               <th>Edit</th>
               <th>Delete</th>
               <th>Download</th> {/* Added new tab for Download */}
@@ -262,7 +263,7 @@ export default function ExportDataFiles() {
                     file.fileName
                   )}
                 </td>
-                <td>{file.fileType}</td>
+                <td>{file.status}</td>
                 <td className={styles.csvButton}>
                   {file.isEditing ? (
                     <>
