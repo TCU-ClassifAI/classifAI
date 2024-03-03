@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from 'react-router-dom';
 import axios from "axios";
 import { Auth } from "aws-amplify";
 import styles from "./MyReports.module.css";
@@ -230,7 +231,8 @@ export default function ExportDataFiles() {
               <th>Status</th>
               <th>Edit</th>
               <th>Delete</th>
-              <th>Download</th> {/* Added new tab for Download */}
+              <th>Load Report</th>
+              <th>Download Audio</th>
             </tr>
           </thead>
           <tbody>
@@ -306,6 +308,20 @@ export default function ExportDataFiles() {
                     onClick={() => handleDeleteClick(file.key)}
                   >
                     Delete
+                  </button>
+                </td>
+                
+                <td>
+                  <button className={styles.loadButton}>
+                  <Link
+                    to="../whisper"
+                    state={{
+                      reportId: file.reportId,
+                    }}
+                    className={styles.loadLink}
+                  >
+                    Load
+                  </Link>
                   </button>
                 </td>
                 <td>

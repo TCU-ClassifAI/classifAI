@@ -88,7 +88,8 @@
 .saveButton,
 .cancelButton,
 .deleteButton,
-.downloadButton {
+.downloadButton,
+.loadButton {
   color: white;
   padding: 8px 16px;
   margin-right: 5px;
@@ -102,7 +103,8 @@
 .saveButton:hover,
 .deleteButton:hover,
 .cancelButton:hover,
-.downloadButton:hover {
+.downloadButton:hover,
+.loadButton:hover {
   filter: brightness(80%);
 }
 
@@ -126,4 +128,14 @@
 .downloadButton {
   background-color: #800080; 
 
+}
+
+.loadButton {
+  background-color: #FFD700;
+}
+
+
+.loadLink {
+  color: white;
+  text-decoration: none;
 }

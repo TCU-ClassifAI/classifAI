@@ -4,6 +4,7 @@ import CsvOptions from "./CsvOptions";
 import WordCloud from "./WordCloud";
 import TalkingDistribution from "./TalkingDistribution";
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { Auth } from "aws-amplify";
 import { Tab, Tabs } from "react-bootstrap";
 import ParentSize from "@visx/responsive/lib/components/ParentSize";
@@ -17,10 +18,17 @@ export default function Whisper() {
   const [teacher, setTeacher] = useState();
   const [show, setShow] = useState(false);
   const [speakers, setSpeakers] = useState();
+  const location = useLocation();
 
   useEffect(() => {
-    generateDefaultReportId(); // Call generateDefaultReportId when component mounts
-  }, []); // Empty dependency array ensures it only runs once on mount
+      generateDefaultReportId();
+  }, []);
+
+  useEffect(() => {
+    if (location.state && location.state.reportId) { // Remove the extra closing parenthesis
+      setReportId(location.state.reportId);
+    }
+  }, [location]);
 
   useEffect(() => {
     async function retrieveUserInfo() {
@@ -33,7 +41,6 @@ export default function Whisper() {
         console.error("Error fetching user data:", error);
       }
     }
-
     retrieveUserInfo();
   }, []);
 
@@ -86,16 +93,18 @@ export default function Whisper() {
   }
 
   return (
-    <>
+    <>      
       {analysisStatus !== "completed" && (
         <UploadRecording
           reportName={reportName}
           reportId={reportId}
+          setReportId={setReportId}
           userId={userId}
           transcription={transcription}
           setTranscription={setTranscription}
           analysisStatus={analysisStatus}
           setAnalysisStatus={setAnalysisStatus}
+          location={location}
         />
       )}
 

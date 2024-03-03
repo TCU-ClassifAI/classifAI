@@ -1,5 +1,5 @@
 import { Spinner, ProgressBar } from "react-bootstrap";
-import ErrorModal from "../../Common/ErrorModal";
+import GenericModal from "../../Common/GenericModal";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -7,9 +7,11 @@ export default function UploadRecording({
   reportName,
   userId,
   reportId,
+  setReportId,
   setTranscription,
   analysisStatus,
   setAnalysisStatus,
+  location,
 }) {
   const [isAudio, setIsAudio] = useState(false);
   const [isVideo, setIsVideo] = useState(false);
@@ -19,13 +21,26 @@ export default function UploadRecording({
   const [fileContent, setFileContent] = useState();
   const [isFileSelected, setIsFileSelected] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [errorModalMsg, setErrorModalMsg] = useState("");
-
+  const [showGenericModal, setShowGenericModal] = useState(false);
+  const [genericModalMsg, setGenericModalMsg] = useState("");
+  const [genericModalTitle, setGenericModalTitle] = useState("")
 
   useEffect(() => {
+    if (location.state && location.state.reportId) { // Remove the extra closing parenthesis
+      setShowGenericModal(true);
+      let msg = "Loading Report " + location.state.reportId
+      setGenericModalMsg(msg);
+      setGenericModalTitle("Loading...")
+      setIsAnalyzing(true);
+      setProgress(15);
+      setAnalysisStatus("Loading Report");
+    }
+  }, [location, setAnalysisStatus])
+
+  useEffect(() => { 
     if (isAnalyzing) {
       const intervalId = setInterval(checkAnalysisStatus, 5000); // Check status every 5 seconds
+ 
       
       return () => clearInterval(intervalId); // Cleanup function to clear interval on component unmount
     }
@@ -52,8 +67,9 @@ export default function UploadRecording({
       console.log("Upload and transfer success!");
     } catch (error) {
       console.log("Error uploading or transferring to engine!");
-      setErrorModalMsg("Error uploading or transferring to engine!");
-      setShowErrorModal(true); 
+      setGenericModalMsg("Error uploading or transferring to engine!");
+      setGenericModalTitle("Error")
+      setShowGenericModal(true); 
     }
   }
 
@@ -64,7 +80,7 @@ export default function UploadRecording({
       );
 
       const status = response.data.reports[0].transferData.status;
-      console.log(response);
+      console.log("Checked Status!");
 
       setAnalysisStatus(status);
 
@@ -82,15 +98,17 @@ export default function UploadRecording({
         setProgress(75);
       } else if (status === "failed") {
         setProgress(0);
-        setShowErrorModal(true); 
+        setShowGenericModal(true); 
         console.log("Engine failed to transcribe file!");
-        setErrorModalMsg("Engine failed to transcribe file!");
-        setShowErrorModal(true); 
+        setGenericModalMsg("Engine failed to transcribe file!");
+        setGenericModalTitle("Error");
+        setShowGenericModal(true); 
       }
     } catch (error) {
       console.log("Error checking analysis status!", error);
-      setErrorModalMsg("Error checkign analysis status!");
-      setShowErrorModal(true); 
+      setGenericModalMsg("Error checking analysis status!");
+      setGenericModalTitle("Error");
+      setShowGenericModal(true); 
     }
   }
 
@@ -176,19 +194,20 @@ export default function UploadRecording({
     </div>
   );
 
-  const handleCloseErrorModal = () => {
-    setShowErrorModal(false);
+  const handleCloseGenericModal = () => {
+    setShowGenericModal(false);
   };
 
   return (
     <div>
-      <ErrorModal
-        message={errorModalMsg}
-        showErrorModal={showErrorModal}
-        handleCloseErrorModal={handleCloseErrorModal}
+      <GenericModal
+        title={genericModalTitle}
+        message={genericModalMsg}
+        showGenericModal={showGenericModal}
+        handleCloseGenericModal={handleCloseGenericModal}
       />
       {renderUploadSection()}
-      {(isAudio || isVideo || isNeither) &&
+      {(isAudio || isVideo || isNeither || isAnalyzing) &&
         renderMediaElement(isAudio ? "audio" : isVideo ? "video" : null)}
       {!isAnalyzing && (
         <>
