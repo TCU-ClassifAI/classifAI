@@ -2,7 +2,7 @@ import { ProgressBar } from "react-bootstrap";
 import GenericModal from "../../Common/GenericModal";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import styles from "./UploadRecording.module.css"
+import styles from "./UploadRecording.module.css";
 
 export default function UploadRecording({
   reportName,
@@ -24,25 +24,25 @@ export default function UploadRecording({
   const [progress, setProgress] = useState(0);
   const [showGenericModal, setShowGenericModal] = useState(false);
   const [genericModalMsg, setGenericModalMsg] = useState("");
-  const [genericModalTitle, setGenericModalTitle] = useState("")
+  const [genericModalTitle, setGenericModalTitle] = useState("");
 
   useEffect(() => {
-    if (location.state && location.state.reportId) { // Remove the extra closing parenthesis
+    if (location.state && location.state.reportId) {
+      // Remove the extra closing parenthesis
       setShowGenericModal(true);
-      let msg = "Loading Report " + location.state.reportId
+      let msg = "Loading Report " + location.state.reportId;
       setGenericModalMsg(msg);
-      setGenericModalTitle("Loading...")
+      setGenericModalTitle("Loading...");
       setIsAnalyzing(true);
       setProgress(15);
       setAnalysisStatus("Loading Report");
     }
-  }, [location, setAnalysisStatus])
+  }, [location, setAnalysisStatus]);
 
-  useEffect(() => { 
+  useEffect(() => {
     if (isAnalyzing) {
       const intervalId = setInterval(checkAnalysisStatus, 5000); // Check status every 5 seconds
- 
-      
+
       return () => clearInterval(intervalId); // Cleanup function to clear interval on component unmount
     }
   }, [isAnalyzing]);
@@ -69,8 +69,8 @@ export default function UploadRecording({
     } catch (error) {
       console.log("Error uploading or transferring to engine!");
       setGenericModalMsg("Error uploading or transferring to engine!");
-      setGenericModalTitle("Error")
-      setShowGenericModal(true); 
+      setGenericModalTitle("Error");
+      setShowGenericModal(true);
     }
   }
 
@@ -99,17 +99,17 @@ export default function UploadRecording({
         setProgress(75);
       } else if (status === "failed") {
         setProgress(0);
-        setShowGenericModal(true); 
+        setShowGenericModal(true);
         console.log("Engine failed to transcribe file!");
         setGenericModalMsg("Engine failed to transcribe file!");
         setGenericModalTitle("Error");
-        setShowGenericModal(true); 
+        setShowGenericModal(true);
       }
     } catch (error) {
       console.log("Error checking analysis status!", error);
       setGenericModalMsg("Error checking analysis status!");
       setGenericModalTitle("Error");
-      setShowGenericModal(true); 
+      setShowGenericModal(true);
     }
   }
 
@@ -158,8 +158,17 @@ export default function UploadRecording({
       )}
       {isAnalyzing && (
         <div>
-          <p>Engine is analyzing audio in the background. You may leave this page and load it back in the 'My Reports' page!</p>
-          <ProgressBar animated variant="info" now={progress} className={styles.progessBar} label={analysisStatus}/>
+          <p>
+            Engine is analyzing audio in the background. You may leave this page
+            and load it back in the 'My Reports' page!
+          </p>
+          <ProgressBar
+            animated
+            variant="info"
+            now={progress}
+            className={styles.progessBar}
+            label={analysisStatus}
+          />
           <p>Analysis Status: ({analysisStatus})</p>
         </div>
       )}

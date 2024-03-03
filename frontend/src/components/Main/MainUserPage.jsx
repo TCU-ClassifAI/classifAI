@@ -14,11 +14,11 @@ export default function Main() {
             <SideMenu />
             <div className="main-content">
                 <Routes>
-                    <Route path="transcribe" element={<Transcribe />} /> 
                     <Route path="whisper" element={<Whisper />} /> 
                     <Route path="myreports" element={<MyReports />} /> 
                     <Route path="files" element={<ExportDataFiles />} /> 
                     <Route path="account" element={<Account />} />
+                    <Route path="transcribe" element={<Transcribe />} /> 
                     {/* other nested routes if needed */}
                 </Routes>
                 <Outlet />

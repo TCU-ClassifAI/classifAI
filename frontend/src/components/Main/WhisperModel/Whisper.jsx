@@ -21,11 +21,12 @@ export default function Whisper() {
   const location = useLocation();
 
   useEffect(() => {
-      generateDefaultReportId();
+    generateDefaultReportId();
   }, []);
 
   useEffect(() => {
-    if (location.state && location.state.reportId) { // Remove the extra closing parenthesis
+    if (location.state && location.state.reportId) {
+      // Remove the extra closing parenthesis
       setReportId(location.state.reportId);
     }
   }, [location]);
@@ -93,7 +94,7 @@ export default function Whisper() {
   }
 
   return (
-    <>      
+    <>
       {analysisStatus !== "completed" && (
         <UploadRecording
           reportName={reportName}
@@ -128,10 +129,10 @@ export default function Whisper() {
               />
             </Tab>
             <Tab eventKey="talkingdistribution" title="Talking Distribution">
-                <TalkingDistribution 
-                  transcription={transcription}
-                  teacher={teacher}
-                />
+              <TalkingDistribution
+                transcription={transcription}
+                teacher={teacher}
+              />
             </Tab>
             <Tab eventKey="wordcloud" title="Visualization">
               <ParentSize>
