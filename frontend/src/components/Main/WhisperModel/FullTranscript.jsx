@@ -1,6 +1,7 @@
 import { Dropdown } from "react-bootstrap";
 import { convertMsToTime } from "../../../utils/convertMsToTime";
 import { useState, useEffect } from "react";
+import styles from "./FullTranscript.module.css"
 
 export default function FullTranscript({
   transcription,
@@ -190,7 +191,7 @@ export default function FullTranscript({
                         autoFocus
                       />
                     ) : (
-                      <div className="transcript-text">{sentence.text}</div>
+                      <div className={styles.transcriptText}>{sentence.text}</div>
                     )}
                   </td>
                 </tr>

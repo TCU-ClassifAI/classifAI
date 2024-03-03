@@ -1,7 +1,8 @@
-import { Spinner, ProgressBar } from "react-bootstrap";
+import { ProgressBar } from "react-bootstrap";
 import GenericModal from "../../Common/GenericModal";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import styles from "./UploadRecording.module.css"
 
 export default function UploadRecording({
   reportName,
@@ -157,12 +158,8 @@ export default function UploadRecording({
       )}
       {isAnalyzing && (
         <div>
-          <ProgressBar striped variant="info" now={progress}/>
-          <Spinner
-            className="spinner"
-            animation="border"
-            role="status"
-          ></Spinner>
+          <p>Engine is analyzing audio in the background. You may leave this page and load it back in the 'My Reports' page!</p>
+          <ProgressBar animated variant="info" now={progress} className={styles.progessBar} label={analysisStatus}/>
           <p>Analysis Status: ({analysisStatus})</p>
         </div>
       )}
