@@ -2,12 +2,14 @@ import UploadRecording from "./UploadRecording";
 import FullTranscript from "./FullTranscript";
 import CsvOptions from "./CsvOptions";
 import WordCloud from "./WordCloud";
+import TalkingDistribution from "./TalkingDistribution";
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { Auth } from "aws-amplify";
 import { Tab, Tabs } from "react-bootstrap";
 import ParentSize from "@visx/responsive/lib/components/ParentSize";
 
-export default function Whisper() {
+export default function Analyze() {
   const [userId, setUserId] = useState("");
   const [reportId, setReportId] = useState("");
   const [transcription, setTranscription] = useState([]);
@@ -16,10 +18,18 @@ export default function Whisper() {
   const [teacher, setTeacher] = useState();
   const [show, setShow] = useState(false);
   const [speakers, setSpeakers] = useState();
+  const location = useLocation();
 
   useEffect(() => {
-    generateDefaultReportId(); // Call generateDefaultReportId when component mounts
-  }, []); // Empty dependency array ensures it only runs once on mount
+    generateDefaultReportId();
+  }, []);
+
+  useEffect(() => {
+    if (location.state && location.state.reportId) {
+      // Remove the extra closing parenthesis
+      setReportId(location.state.reportId);
+    }
+  }, [location]);
 
   useEffect(() => {
     async function retrieveUserInfo() {
@@ -32,7 +42,6 @@ export default function Whisper() {
         console.error("Error fetching user data:", error);
       }
     }
-
     retrieveUserInfo();
   }, []);
 
@@ -65,7 +74,7 @@ export default function Whisper() {
   function generateDefaultReportId() {
     const timestamp = new Date().getTime(); // Get current timestamp
     const randomString = Math.random().toString(36).substring(2, 8); // Generate a random string
-    const reportId = `report_${timestamp}_${randomString}`; // Combine timestamp and random string
+    const reportId = `${timestamp}_${randomString}`; // Combine timestamp and random string
     setReportId(reportId);
   }
 
@@ -90,11 +99,13 @@ export default function Whisper() {
         <UploadRecording
           reportName={reportName}
           reportId={reportId}
+          setReportId={setReportId}
           userId={userId}
           transcription={transcription}
           setTranscription={setTranscription}
           analysisStatus={analysisStatus}
           setAnalysisStatus={setAnalysisStatus}
+          location={location}
         />
       )}
 
@@ -115,6 +126,12 @@ export default function Whisper() {
                 teacher={teacher}
                 setShow={setShow}
                 show={show}
+              />
+            </Tab>
+            <Tab eventKey="talkingdistribution" title="Talking Distribution">
+              <TalkingDistribution
+                transcription={transcription}
+                teacher={teacher}
               />
             </Tab>
             <Tab eventKey="wordcloud" title="Visualization">

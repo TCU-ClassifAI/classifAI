@@ -30,7 +30,7 @@ export default function Login(){
             const test = await Auth.signIn({username: user.username, password: user.password});
             console.log(test);
             setBadSignIn(false);
-            navigate("/home/transcribe")
+            navigate("/home/analyze")
         }catch(error){
             setBadSignIn(true);
             console.log(error)

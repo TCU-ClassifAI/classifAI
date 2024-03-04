@@ -1,18 +1,11 @@
 import React, { useEffect, useState } from "react";
 import './Account.css'
 import { Auth } from "aws-amplify";
-import { Link } from "react-router-dom";
 
 
 export default function Account(){
     const[isEditing, setIsEditing] = useState(false);
     const[userAttributes, setUserAttributes] = useState({});
-    const [report, setReport] = useState({});
-    const [reportLoaded, setReportLoaded] = useState(false);
-    const [listFiles, setListFiles] = useState([]);
-    //const [filename, setFilename] = useState();
-    const[location, setLocation] = useState();
-    const [show, setShow] = useState(false)
     const [userObj, setUserObj] = useState({
         name: '',
         username: '',
@@ -104,45 +97,6 @@ export default function Account(){
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div className="card mt-2">
-                            <h4>My Reports</h4>
-                            <ul className="list-group">
-                            {listFiles && 
-                                listFiles.map((name, index) => (
-                                    <li className='list-group-item' key={index}>
-                                        <button className="btn btn-primary">{name.Key.substring(name.Key.indexOf("/") + 1)}</button>   
-                                        {/*<button className="btn btn-danger" type="button" onClick={handleShow}>Delete</button>*/}
-                                        <button variant="primary" className="btn btn-danger" id="delete-button">
-                                            Delete Report
-                                        </button>
-                                        {/*
-                                        <Modal show={show} onHide={handleClose}>
-                                        <Modal.Header closeButton>
-                                        <Modal.Title>Delete Report</Modal.Title>
-                                        </Modal.Header>
-                                        <Modal.Body>Are you sure you would like to delete this report?</Modal.Body>
-                                            <Modal.Footer>
-                                                <button variant="secondary" className="btn btn-primary" onClick={handleClose}>
-                                                    Close
-                                                </button>
-
-                                            </Modal.Footer>
-                                        </Modal>
-                                        */}
-                                    </li>         
-                            ))}
-                            {reportLoaded ? (
-                                <div>
-                                    <Link to="/home" state={{
-                                    data: report,
-                                    location: location,
-                                }} className="btn btn-success">LOAD REPORT</Link>
-                                </div>
-                                
-                            ) : null}
-                            </ul>
                         </div>
                     </div>
                     <div className="col" id="test3">

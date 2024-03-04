@@ -1,0 +1,141 @@
+.tableContainer {
+    margin-top: 10px;
+  }
+  
+  .prettyTable {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .prettyTable th,
+  .prettyTable td {
+    padding: 12px 15px;
+    text-align: left;
+  }
+  
+  .prettyTable thead {
+    background-color: #f2f2f2;
+  }
+  
+  .prettyTable tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .prettyTable tbody tr:hover {
+    background-color: #e0e0e0;
+  }
+  
+  .loadingTable {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+  }
+  
+  .pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+  }
+  
+  .pagination {
+    padding-top: 10px;
+    display: flex;
+    justify-content: center;
+    list-style: none;
+  }
+  
+  .pagination li {
+    display: inline-block;
+    margin-right: 5px;
+    color: #fff;
+
+  }
+  
+  .pagination li a {
+    color: #fff;
+    padding: 5px 10px;
+    text-decoration: none;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    border-radius: 4px;
+    background-color: #09283D;
+  }
+
+  .pagination li.active a {
+    background-color: orange;
+    color: #fff;
+  }
+  
+  
+  .pagination li a:hover {
+    background-color: orange;
+    color: #fff;
+    border: 1px solid orange;
+  }
+  
+  .active {
+    color: #fff;
+    border: 1px solid orange;
+    background-color: orange;
+
+  }
+  
+
+  
+.editButton,
+.saveButton,
+.cancelButton,
+.deleteButton,
+.downloadButton,
+.loadButton {
+  color: white;
+  padding: 8px 16px;
+  margin-right: 5px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.editButton:hover,
+.saveButton:hover,
+.deleteButton:hover,
+.cancelButton:hover,
+.downloadButton:hover,
+.loadButton:hover {
+  filter: brightness(80%);
+}
+
+.editButton {
+  background-color: #3498db; /* Blue color */
+}
+
+.saveButton {
+  background-color: #f39c12; /* Orange color */
+
+}
+
+.cancelButton {
+  background-color: #45a049; /* Purple color */
+}
+
+.deleteButton {
+  background-color: #e74c3c; /* Red color */
+}
+
+.downloadButton {
+  background-color: #800080; 
+
+}
+
+.loadButton {
+  background-color: #FFD700;
+}
+
+
+.loadLink {
+  color: white;
+  text-decoration: none;
+}

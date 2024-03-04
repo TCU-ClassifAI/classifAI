@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { Link } from 'react-router-dom';
 import axios from "axios";
 import { Auth } from "aws-amplify";
-import styles from "./ExportDataFiles.module.css";
+import styles from "./MyReports.module.css";
 import ReactPaginate from "react-paginate";
 import ErrorModal from "../../Common/ErrorModal";
 
@@ -22,7 +23,7 @@ export default function ExportDataFiles() {
         setUserId(attributes.email);
       } catch (error) {
         console.error("Error fetching user data:", error);
-        setErrorModalMsg("Error fetching user data from database! Try again later.");
+        setErrorModalMsg("Error fetching authentication data! Try again later.");
         setShowErrorModal(true);
       }
     }
@@ -39,17 +40,19 @@ export default function ExportDataFiles() {
   const fetchUserFiles = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5001/files/users/${userId}?fileType=csv&fileType=pdf`
+        `http://localhost:5001/reports/users/${userId}`
       );
+      console.log(response);
       const flattenedData = response.data.reduce((acc, obj) => {
         obj.file.forEach((file, index) => {
-          const lastDotIndex = file.lastIndexOf(".");
+          const lastDotIndex = file.lastIndexOf('.');
           const fileExtension = file.substring(lastDotIndex + 1);
           acc.push({
             key: `${obj.reportId}_${index}`, // Use reportId and index as a key
             userId: obj.userId,
             reportId: obj.reportId,
             reportName: obj.reportName,
+            status: obj.transferData.status,
             fileName: obj.fileName[index],
             fileType: fileExtension,
             isEditing: false, // Initialize isEditing to false
@@ -57,10 +60,11 @@ export default function ExportDataFiles() {
         });
         return acc;
       }, []);
-      setFiles(flattenedData.reverse());
+      const filteredFiles = flattenedData.filter(file => file.fileType !== 'pdf' && file.fileType !=='csv');
+      setFiles(filteredFiles.reverse());
     } catch (error) {
-      console.error("Error fetching user files:", error);
-      setErrorModalMsg("Error fetching user files from database! Try again later.");
+      console.error("Error fetching user reports:", error);
+      setErrorModalMsg("Error fetching reports from database! Try again later.");
       setShowErrorModal(true);
     } 
   };
@@ -68,6 +72,13 @@ export default function ExportDataFiles() {
   const handleFileNameChange = (event, key) => {
     const updatedFiles = files.map((file) =>
       file.key === key ? { ...file, fileName: event.target.value } : file
+    );
+    setFiles(updatedFiles);
+  };
+
+  const handleReportNameChange = (event, key) => {
+    const updatedFiles = files.map((file) =>
+      file.key === key ? { ...file, reportName: event.target.value } : file
     );
     setFiles(updatedFiles);
   };
@@ -85,7 +96,7 @@ export default function ExportDataFiles() {
       file.key === key ? { ...file, isEditing: false } : file
     );
     const fileToUpdate = files.find((file) => file.key === key);
-    const { fileName: newFileName, reportId } = fileToUpdate;
+    const { fileName: newFileName, reportId,  reportName: newReportName } = fileToUpdate;
     const oldFileName = oldFileNameEditing || newFileName;
 
     try {
@@ -104,6 +115,25 @@ export default function ExportDataFiles() {
       setErrorModalMsg("Error updating file name");
       setShowErrorModal(true);
     }
+
+    try {
+      await axios.put(
+        `http://localhost:5001/reports/${reportId}/users/${userId}`,
+        {
+          reportName: newReportName,
+        }
+      );
+
+      setFiles(updatedFiles);
+      console.log("Update Success");
+      fetchUserFiles();
+    } catch (error) {
+      console.error("Error updating Report name:", error);
+      setErrorModalMsg("Error updating report name");
+      setShowErrorModal(true);
+    }
+
+
   };
 
   const handleDeleteClick = async (key) => {
@@ -112,11 +142,11 @@ export default function ExportDataFiles() {
     );
     if (confirmDelete) {
       const fileToDelete = files.find((file) => file.key === key);
-      const { fileName: fileNameToDelete, reportId } = fileToDelete;
+      const { reportId } = fileToDelete;
 
       try {
         await axios.delete(
-          `http://localhost:5001/files/${fileNameToDelete}/reports/${reportId}/users/${userId}`
+          `http://localhost:5001/reports/${reportId}/users/${userId}`
         );
 
         const updatedFiles = files.filter((file) => file.key !== key);
@@ -124,7 +154,7 @@ export default function ExportDataFiles() {
         console.log("Delete Success");
       } catch (error) {
         console.error("Error deleting file:", error);
-        setErrorModalMsg("Error fetching user files");
+        setErrorModalMsg("Error deleting file");
         setShowErrorModal(true);
       }
     }
@@ -146,7 +176,7 @@ export default function ExportDataFiles() {
 
       // Create a temporary URL to the blob
       const url = window.URL.createObjectURL(blob);
-      const fileExtension = fileType === "csv" ? ".csv" : ".pdf";
+      const fileExtension = "." + fileType;
       const downloadableFileName = `${fileName}${fileExtension}`;
 
       // Create a temporary anchor element to trigger the download
@@ -178,36 +208,50 @@ export default function ExportDataFiles() {
     setCurrentPage(selected);
   };
 
+
   const handleCloseErrorModal = () => {
     setShowErrorModal(false);
   };
 
   return (
     <>
-      <ErrorModal
+      <ErrorModal 
         message={errorModalMsg}
         showErrorModal={showErrorModal}
         handleCloseErrorModal={handleCloseErrorModal}
       />
       <div className={styles.tableContainer}>
-        <h2>Exported Data Files</h2>
+        <h2>My Reports</h2>
         <table className={styles.prettyTable}>
           <thead>
             <tr>
               <th>Report ID</th>
               <th>Report Name</th>
-              <th>File Name</th>
-              <th>File Type</th>
+              <th>Audio File</th>
+              <th>Status</th>
               <th>Edit</th>
               <th>Delete</th>
-              <th>Download</th> {/* Added new tab for Download */}
+              <th>Load Report</th>
+              <th>Download Audio</th>
             </tr>
           </thead>
           <tbody>
             {currentItems.map((file, index) => (
               <tr key={file.key}>
                 <td>{file.reportId}</td>
-                <td>{file.reportName}</td>
+                <td>
+                {file.isEditing ? (
+                  <input
+                    type="text"
+                    value={file.reportName}
+                    onChange={(event) =>
+                      handleReportNameChange(event, file.key)
+                    }
+                  />
+                ) : (
+                  file.reportName
+                )}
+                </td>
                 <td>
                   {file.isEditing ? (
                     <input
@@ -221,7 +265,7 @@ export default function ExportDataFiles() {
                     file.fileName
                   )}
                 </td>
-                <td>{file.fileType}</td>
+                <td>{file.status}</td>
                 <td className={styles.csvButton}>
                   {file.isEditing ? (
                     <>
@@ -264,6 +308,20 @@ export default function ExportDataFiles() {
                     onClick={() => handleDeleteClick(file.key)}
                   >
                     Delete
+                  </button>
+                </td>
+                
+                <td>
+                  <button className={styles.loadButton}>
+                  <Link
+                    to="../analyze"
+                    state={{
+                      reportId: file.reportId,
+                    }}
+                    className={styles.loadLink}
+                  >
+                    Load
+                  </Link>
                   </button>
                 </td>
                 <td>

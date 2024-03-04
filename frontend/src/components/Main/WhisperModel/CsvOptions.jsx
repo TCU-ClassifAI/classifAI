@@ -2,6 +2,7 @@ import { useState } from "react";
 import { convertMsToTime } from "../../../utils/convertMsToTime";
 import axios from "axios";
 import { saveAs } from "file-saver";
+import ErrorModal from "../../Common/ErrorModal";
 
 export default function CsvOptions({
   transcription,
@@ -14,6 +15,8 @@ export default function CsvOptions({
   const [textBox, setTextBox] = useState(false);
   const [allSelected, setAllSelected] = useState(false);
   const [fileName, setFileName] = useState("");
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorModalMsg, setErrorModalMsg] = useState("");
 
   const handleSelectAll = () => {
     setAllSelected(!allSelected);
@@ -29,6 +32,10 @@ export default function CsvOptions({
     setEndTimeBox(false);
     setSpeakerBox(false);
     setTextBox(false);
+  };
+
+  const handleCloseErrorModal = () => {
+    setShowErrorModal(false);
   };
 
   // Helper Function for saveToCSV()
@@ -113,6 +120,8 @@ export default function CsvOptions({
     } catch (error) {
       console.error("Error uploading file", error);
       // Optionally handle error here
+      setErrorModalMsg("Error uploading file");
+      setShowErrorModal(true);
     }
   }
 
@@ -148,6 +157,11 @@ export default function CsvOptions({
 
   return (
     <>
+      <ErrorModal 
+        message={errorModalMsg}
+        showErrorModal={showErrorModal}
+        handleCloseErrorModal={handleCloseErrorModal}
+      />
       <div className="checkBox">
         <strong>Select what to include in CSV:</strong>
         <label className="checkBox">
@@ -215,7 +229,7 @@ export default function CsvOptions({
         id="bottom-button2"
         disabled={reportId.trim() === ""}
       >
-        Download CSV
+        Save & Download CSV
       </button>
     </>
   );
