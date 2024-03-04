@@ -56,7 +56,6 @@ router.get("/", async (req, res) => {
   }
 });
 
-
 // GET all reports from a specific user
 router.get("/users/:userId", async (req, res) => {
   try {
@@ -86,7 +85,7 @@ router.get("/users/:userId", async (req, res) => {
           gradeLevel: report.gradeLevel,
           subject: report.subject,
           fileName: filteredFiles.map((file) => file.fileName),
-          transferData: report.transferData, 
+          transferData: report.transferData,
         });
       }
     });
@@ -107,7 +106,6 @@ router.get("/users/:userId", async (req, res) => {
   }
 });
 
-
 // GET a specific report from a specific user
 router.get("/:reportId/users/:userId", async (req, res) => {
   try {
@@ -125,7 +123,6 @@ router.get("/:reportId/users/:userId", async (req, res) => {
     res.status(500).json({ success: false, message: "An error occurred" });
   }
 });
-
 
 // GET all reports with a reportId
 router.get("/:reportId", async (req, res) => {
@@ -178,17 +175,13 @@ router.put("/:reportId/users/:userId", async (req, res) => {
     });
   } catch (error) {
     console.error("Error updating report:", error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "An error occurred while updating the report.",
-      });
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while updating the report.",
+    });
   }
 });
 ////////////////////////////////
-
-
 
 //////////////// DELETE
 
@@ -203,12 +196,10 @@ router.delete("/:reportId/users/:userId", async (req, res) => {
       userId: userId,
     });
     if (!report) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          message: "Report not found or does not belong to the user.",
-        });
+      return res.status(404).json({
+        success: false,
+        message: "Report not found or does not belong to the user.",
+      });
     }
 
     // If the report exists and matches the user, proceed to delete
@@ -224,12 +215,10 @@ router.delete("/:reportId/users/:userId", async (req, res) => {
     res.json({ success: true, message: "Report deleted successfully." });
   } catch (error) {
     console.error("Error deleting report:", error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "An error occurred while deleting the report.",
-      });
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while deleting the report.",
+    });
   }
 });
 
@@ -251,12 +240,10 @@ async function findAllReports(query, res) {
     return reports;
   } catch (error) {
     console.error("Error finding reports:", error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "An error occurred while retrieving reports.",
-      });
+    res.status(500).json({
+      success: false,
+      message: "An error occurred while retrieving reports.",
+    });
     return null;
   }
 }
@@ -265,44 +252,42 @@ async function findAllReports(query, res) {
 async function updateTransferDataStatus(reports) {
   for (let report of reports) {
     //for (let transfer of report.transferData) {
-    if (report.transferData.status === "in progress") {
-      try {
-        const response = await axios.get(
-          `${process.env.WORKSTATION_URL}/transcription/get_transcription_status`,
-          {
-            params: {
-              job_id: report.transferData.job_id,
-            },
-          }
-        );
-        //console.log(`response:${response},result:${response.data.result}`)
-        // Dynamically update transfer object based on response fields
-        const updateFields = [
-          "fileName",
-          "duration",
-          "end_time",
-          "job_id",
-          "model_type",
-          "start_time",
-          "status",
-        ]; //, 'result'];
-        updateFields.forEach((field) => {
-          if (response.data.hasOwnProperty(field)) {
-            report.transferData[field] = response.data[field];
-          }
-        });
-
-        if (response.data.hasOwnProperty("result")) {
-          report.transferData["result"] = response.data["result"];
+    try {
+      const response = await axios.get(
+        `${process.env.WORKSTATION_URL}/transcription/get_transcription_status`,
+        {
+          params: {
+            job_id: report.transferData.job_id,
+          },
         }
-      } catch (error) {
-        console.error(
-          "Error querying workstation for job_id:",
-          report.transferData.job_id,
-          error
-        );
-        // Optionally handle specific actions on failure (e.g., retry logic, logging)
+      );
+      //console.log(`response:${response},result:${response.data.result}`)
+      // Dynamically update transfer object based on response fields
+      const updateFields = [
+        "fileName",
+        "duration",
+        "end_time",
+        "job_id",
+        "model_type",
+        "start_time",
+        "status",
+      ]; //, 'result'];
+      updateFields.forEach((field) => {
+        if (response.data.hasOwnProperty(field)) {
+          report.transferData[field] = response.data[field];
+        }
+      });
+
+      if (response.data.hasOwnProperty("result")) {
+        report.transferData["result"] = response.data["result"];
       }
+    } catch (error) {
+      console.error(
+        "Error querying workstation for job_id:",
+        report.transferData.job_id,
+        error
+      );
+      // Optionally handle specific actions on failure (e.g., retry logic, logging)
     }
     //}
     // Save updated report to the database
@@ -313,6 +298,5 @@ async function updateTransferDataStatus(reports) {
   }
   return reports; // Return updated reports
 }
-
 
 module.exports = router;
