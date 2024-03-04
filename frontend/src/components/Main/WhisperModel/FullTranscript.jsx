@@ -209,7 +209,7 @@ export default function FullTranscript({
             {" "}
             {teacher}
           </strong>{" "}
-          is the Teacher and <u>all other speakers are Students</u>.
+          is the Teacher (based on greatest speaking time) and <u>all other speakers are Students</u>.
         </h5>
         <p>
           If this is not the case, please relabel the speakers in the "Full

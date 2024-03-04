@@ -159,7 +159,7 @@ export default function UploadRecording({
       {isAnalyzing && (
         <div>
           <p>
-            Engine is analyzing audio in the background. You may leave this page
+            Our Engine is analyzing audio in the background. You may wait until completion or you may leave this page
             and load it back in the 'My Reports' page!
           </p>
           <ProgressBar

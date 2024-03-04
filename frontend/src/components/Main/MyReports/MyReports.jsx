@@ -314,7 +314,7 @@ export default function ExportDataFiles() {
                 <td>
                   <button className={styles.loadButton}>
                   <Link
-                    to="../whisper"
+                    to="../analyze"
                     state={{
                       reportId: file.reportId,
                     }}

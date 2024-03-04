@@ -9,7 +9,7 @@ import { Auth } from "aws-amplify";
 import { Tab, Tabs } from "react-bootstrap";
 import ParentSize from "@visx/responsive/lib/components/ParentSize";
 
-export default function Whisper() {
+export default function Analyze() {
   const [userId, setUserId] = useState("");
   const [reportId, setReportId] = useState("");
   const [transcription, setTranscription] = useState([]);

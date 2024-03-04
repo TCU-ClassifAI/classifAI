@@ -2,7 +2,7 @@ import React from "react";
 import { Routes, Route, Outlet } from "react-router-dom";
 import SideMenu from "./SideMenu";
 import Transcribe from "./Transcribe/Transcribe";
-import Whisper from "./WhisperModel/Whisper";
+import Analyze from "./WhisperModel/Analyze";
 import ExportDataFiles from "./ExportDataFiles/ExportDataFiles" ; // hypothetical component
 import Account from "../Account/AccountPage";
 import MyReports from "./MyReports/MyReports";
@@ -14,7 +14,7 @@ export default function Main() {
             <SideMenu />
             <div className="main-content">
                 <Routes>
-                    <Route path="whisper" element={<Whisper />} /> 
+                    <Route path="analyze" element={<Analyze />} /> 
                     <Route path="myreports" element={<MyReports />} /> 
                     <Route path="files" element={<ExportDataFiles />} /> 
                     <Route path="account" element={<Account />} />
