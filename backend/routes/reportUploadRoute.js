@@ -64,7 +64,7 @@ router.post(
       const { reportId, userId } = req.params;
       const providedFileName = req.body.fileName;
       const providedReportName = req.body.reportName;
-      const youtubeUrl = req.body.youtubeUrl; //added 3/5
+      const url = req.body.url; //added 3/5
 
       if (!reportId) {
         response.message = "reportId is required";
@@ -116,15 +116,15 @@ router.post(
       };
 
 
-      if (youtubeUrl) {
+      if (url) {
         // Send youtubeUrl
         try {
           const ytResponse = await axios.post(
             `${process.env.WORKSTATION_URL}/transcription/start_yt`,
-            { youtubeUrl }
+            { url }
           );
           // Handle success response from YouTube transcription start
-          response.youtubeUrl = youtubeUrl;
+          response.url = url;
 
           response.transferStatus = "successful";
           const job_id = ytResponse.data.job_id; // Return job_id to the client for polling
@@ -145,18 +145,20 @@ router.post(
           // Update transferData for newest audioFile transfer
           report.transferData = {
             ...transferData,
-            fileName: youtubeUrl, //providedFileName || path.basename(newPath),
+            fileName: url, //providedFileName || path.basename(newPath),
           };
           await dbconnect.updateReport(
             { userId, reportId },
             {
               transferData: report.transferData,
               status: job.status,
-              audioFile: youtubeUrl, //providedFileName || path.basename(newPath),
+              audioFile: url, //providedFileName || path.basename(newPath),
             }
           );
         } catch (error) {
           console.error("Error starting YouTube transcription:", error);
+          response.status='failed';
+          response.message = 'Error starting YouTube transcription';
         }
       }
 
