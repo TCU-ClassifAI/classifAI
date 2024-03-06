@@ -64,6 +64,7 @@ router.post(
       const { reportId, userId } = req.params;
       const providedFileName = req.body.fileName;
       const providedReportName = req.body.reportName;
+      const youtubeUrl = req.body.youtubeUrl; //added 3/5
 
       if (!reportId) {
         response.message = "reportId is required";
@@ -92,7 +93,7 @@ router.post(
       const reportData = {
         reportId: reportId,
         userId: userId,
-        reportName: providedReportName || '',
+        reportName: providedReportName || "",
         ...req.body, // includes other body data
       };
       let report = await dbconnect.createReport(reportData);
@@ -109,10 +110,56 @@ router.post(
         userId: userId,
         reportId: reportId,
         file: req.file ? req.file.originalname : "No file uploaded",
-        reportName: providedReportName || '',
+        reportName: providedReportName || "",
         gradeLevel: req.body.gradeLevel,
         subject: req.body.subject,
       };
+
+
+      if (youtubeUrl) {
+        // Send youtubeUrl
+        try {
+          const ytResponse = await axios.post(
+            `${process.env.WORKSTATION_URL}/transcription/start_yt`,
+            { youtubeUrl }
+          );
+          // Handle success response from YouTube transcription start
+          response.youtubeUrl = youtubeUrl;
+
+          response.transferStatus = "successful";
+          const job_id = ytResponse.data.job_id; // Return job_id to the client for polling
+          let job = await getInitialJobReq(process.env.WORKSTATION_URL, job_id);
+          response.data.job_id = job_id; // Return job_id to the client
+          response.flag = true;
+          response.code = 200;
+          response.message =
+            "YouTube transcription started and database entry successfully";
+
+          const { result, ...transferData } = job.transcriptionData;
+
+          response.transferData = {
+            ...transferData,
+            fileName: providedFileName || path.basename(newPath),
+          };
+
+          // Update transferData for newest audioFile transfer
+          report.transferData = {
+            ...transferData,
+            fileName: youtubeUrl, //providedFileName || path.basename(newPath),
+          };
+          await dbconnect.updateReport(
+            { userId, reportId },
+            {
+              transferData: report.transferData,
+              status: job.status,
+              audioFile: youtubeUrl, //providedFileName || path.basename(newPath),
+            }
+          );
+        } catch (error) {
+          console.error("Error starting YouTube transcription:", error);
+        }
+      }
+
 
       if (req.file) {
         response.uploadStatus = "pending";
