@@ -136,11 +136,6 @@ router.post(
 
           const { result, ...transferData } = job.transcriptionData;
 
-          response.transferData = {
-            ...transferData,
-            fileName: providedFileName || path.basename(newPath),
-          };
-
           // Update transferData for newest audioFile transfer
           report.transferData = {
             ...transferData,
