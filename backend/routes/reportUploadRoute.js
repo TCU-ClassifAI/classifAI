@@ -115,7 +115,6 @@ router.post(
         subject: req.body.subject,
       };
 
-
       if (url) {
         // Send youtubeUrl
         try {
@@ -151,11 +150,10 @@ router.post(
           );
         } catch (error) {
           console.error("Error starting YouTube transcription:", error);
-          response.status='failed';
-          response.message = 'Error starting YouTube transcription';
+          response.status = "failed";
+          response.message = "Error starting YouTube transcription";
         }
       }
-
 
       if (req.file) {
         response.uploadStatus = "pending";
