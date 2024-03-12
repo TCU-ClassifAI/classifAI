@@ -1,6 +1,7 @@
-import { ProgressBar } from "react-bootstrap";
+import { ProgressBar, Form } from "react-bootstrap";
 import GenericModal from "../../Common/GenericModal";
 import { useState, useEffect } from "react";
+import YoutubeUpload from "./YoutubeUpload";
 import axios from "axios";
 import styles from "./UploadRecording.module.css";
 
@@ -25,6 +26,8 @@ export default function UploadRecording({
   const [showGenericModal, setShowGenericModal] = useState(false);
   const [genericModalMsg, setGenericModalMsg] = useState("");
   const [genericModalTitle, setGenericModalTitle] = useState("");
+  const [youtubeMode, setYoutubeMode] = useState(false);
+  const [youtubeUrl, setYoutubeUrl] = useState("")
 
   useEffect(() => {
     if (location.state && location.state.reportId) {
@@ -51,7 +54,12 @@ export default function UploadRecording({
     setIsAnalyzing(true);
     try {
       const formData = new FormData();
-      formData.append("file", selectedFile);
+      if (youtubeMode) {
+        formData.append("url", youtubeUrl)
+      }
+      else {
+        formData.append("file", selectedFile);
+      }
       formData.append("reportName", reportName);
 
       const response = await axios.post(
@@ -159,8 +167,9 @@ export default function UploadRecording({
       {isAnalyzing && (
         <div>
           <p>
-            Our Engine is analyzing audio in the background. You may wait until completion or you may leave this page
-            and load it back in the 'My Reports' page!
+            Our Engine is analyzing audio in the background. You may wait until
+            completion or you may leave this page and load it back in the 'My
+            Reports' page!
           </p>
           <ProgressBar
             animated
@@ -204,41 +213,62 @@ export default function UploadRecording({
     setShowGenericModal(false);
   };
 
+  const handleSwitchChange = () => {
+    setYoutubeMode(!youtubeMode);
+  };
+
   return (
-    <div>
-      <GenericModal
-        title={genericModalTitle}
-        message={genericModalMsg}
-        showGenericModal={showGenericModal}
-        handleCloseGenericModal={handleCloseGenericModal}
-      />
-      {renderUploadSection()}
-      {(isAudio || isVideo || isNeither || isAnalyzing) &&
-        renderMediaElement(isAudio ? "audio" : isVideo ? "video" : null)}
+    <>
+    <GenericModal
+          title={genericModalTitle}
+          message={genericModalMsg}
+          showGenericModal={showGenericModal}
+          handleCloseGenericModal={handleCloseGenericModal}
+        />
+        <Form.Check label="Use Youtube Link" type="switch" checked={youtubeMode}
+          onChange={handleSwitchChange}/>
+
+      {youtubeMode && (
+        <div>
+          <YoutubeUpload 
+            youtubeUrl={youtubeUrl}
+            setYoutubeUrl={setYoutubeUrl}
+          />
+        </div>
+      )}
+
+      {!youtubeMode && ( <div>
+        
+
+        {renderUploadSection()}
+        {(isAudio || isVideo || isNeither || isAnalyzing) &&
+          renderMediaElement(isAudio ? "audio" : isVideo ? "video" : null)}
+       
+      </div>)}
       {!isAnalyzing && (
-        <>
-          <p></p>
+          <>
+            <p></p>
+            <button
+              type="button"
+              className="btn btn-primary"
+              id="submission-main"
+              onClick={() => handleSubmission({ selectedFile })}
+              disabled={!isFileSelected && !youtubeUrl}
+            >
+              Analyze Recording
+            </button>
+          </>
+        )}
+        {isAnalyzing && (
           <button
             type="button"
             className="btn btn-primary"
             id="submission-main"
-            onClick={() => handleSubmission({ selectedFile })}
-            disabled={!isFileSelected}
+            onClick={() => window.location.reload()}
           >
-            Analyze Recording
+            Cancel
           </button>
-        </>
-      )}
-      {isAnalyzing && (
-        <button
-          type="button"
-          className="btn btn-primary"
-          id="submission-main"
-          onClick={() => window.location.reload()}
-        >
-          Cancel
-        </button>
-      )}
-    </div>
+        )}
+    </>
   );
 }
