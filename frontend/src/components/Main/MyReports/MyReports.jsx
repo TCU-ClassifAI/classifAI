@@ -52,6 +52,8 @@ export default function ExportDataFiles() {
             userId: obj.userId,
             reportId: obj.reportId,
             reportName: obj.reportName,
+            subject: obj.subject,
+            gradeLevel: obj.gradeLevel,
             status: obj.transferData.status,
             fileName: obj.fileName[index],
             fileType: fileExtension,
@@ -227,6 +229,8 @@ export default function ExportDataFiles() {
             <tr>
               <th>Report ID</th>
               <th>Report Name</th>
+              <th>Subject</th>
+              <th>Grade</th>
               <th>Audio File</th>
               <th>Status</th>
               <th>Edit</th>
@@ -252,6 +256,8 @@ export default function ExportDataFiles() {
                   file.reportName
                 )}
                 </td>
+                <td>{file.gradeLevel}</td>
+                <td>{file.subject}</td>
                 <td>
                   {file.isEditing ? (
                     <input

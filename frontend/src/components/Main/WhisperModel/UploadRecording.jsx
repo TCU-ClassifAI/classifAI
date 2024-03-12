@@ -11,9 +11,9 @@ export default function UploadRecording({
   subject,
   userId,
   reportId,
-  setReportId,
+  setGradeLevel,
   setTranscription,
-  analysisStatus,
+  setSubject,
   setAnalysisStatus,
   location,
 }) {
@@ -93,9 +93,14 @@ export default function UploadRecording({
       );
 
       const status = response.data.reports[0].transferData.status;
+      const grade = response.data.reports[0].gradeLevel;
+      const reportSubject = response.data.reports[0].subject;
+      
       console.log("Checked Status!");
 
       setAnalysisStatus(status);
+      setGradeLevel(grade);
+      setSubject(reportSubject);
 
       if (status === "completed") {
         setIsAnalyzing(false); // Stop analysis once completed
