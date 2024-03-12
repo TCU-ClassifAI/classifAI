@@ -15,6 +15,8 @@ export default function UploadRecording({
   setTranscription,
   setSubject,
   setAnalysisStatus,
+  setReportName,
+  analysisStatus,
   location,
 }) {
   const [isAudio, setIsAudio] = useState(false);
@@ -95,12 +97,15 @@ export default function UploadRecording({
       const status = response.data.reports[0].transferData.status;
       const grade = response.data.reports[0].gradeLevel;
       const reportSubject = response.data.reports[0].subject;
+      const reportName = response.data.reports[0].reportName;
       
       console.log("Checked Status!");
 
       setAnalysisStatus(status);
       setGradeLevel(grade);
       setSubject(reportSubject);
+      setReportName(reportName);
+
 
       if (status === "completed") {
         setIsAnalyzing(false); // Stop analysis once completed
@@ -251,16 +256,22 @@ export default function UploadRecording({
             </button>
           </>
         )}
-        {isAnalyzing && (
-          <button
-            type="button"
-            className="btn btn-primary"
-            id="submission-main"
-            onClick={() => window.location.reload()}
-          >
-            Cancel
-          </button>
-        )}
+             {isAnalyzing && (
+        <div>
+          <p>
+            Our Engine is analyzing audio in the background. You may wait until completion or you may leave this page
+            and load it back in the 'My Reports' page!
+          </p>
+          <ProgressBar
+            animated
+            variant="info"
+            now={progress}
+            className={styles.progessBar}
+            label={analysisStatus}
+          />
+          <p>Analysis Status: ({analysisStatus})</p>
+        </div>
+      )}
     </>
   );
 }

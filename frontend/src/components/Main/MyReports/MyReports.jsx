@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import axios from "axios";
 import { Auth } from "aws-amplify";
 import styles from "./MyReports.module.css";
 import ReactPaginate from "react-paginate";
 import ErrorModal from "../../Common/ErrorModal";
 
-export default function ExportDataFiles() {
+export default function MyReports() {
   const [files, setFiles] = useState([]);
   const [userId, setUserId] = useState(null);
   const [currentPage, setCurrentPage] = useState(0); // Changed initial page to 0
@@ -23,7 +23,9 @@ export default function ExportDataFiles() {
         setUserId(attributes.email);
       } catch (error) {
         console.error("Error fetching user data:", error);
-        setErrorModalMsg("Error fetching authentication data! Try again later.");
+        setErrorModalMsg(
+          "Error fetching authentication data! Try again later."
+        );
         setShowErrorModal(true);
       }
     }
@@ -45,7 +47,7 @@ export default function ExportDataFiles() {
       console.log(response);
       const flattenedData = response.data.reduce((acc, obj) => {
         obj.file.forEach((file, index) => {
-          const lastDotIndex = file.lastIndexOf('.');
+          const lastDotIndex = file.lastIndexOf(".");
           const fileExtension = file.substring(lastDotIndex + 1);
           acc.push({
             key: `${obj.reportId}_${index}`, // Use reportId and index as a key
@@ -62,18 +64,36 @@ export default function ExportDataFiles() {
         });
         return acc;
       }, []);
-      const filteredFiles = flattenedData.filter(file => file.fileType !== 'pdf' && file.fileType !=='csv');
+      const filteredFiles = flattenedData.filter(
+        (file) => file.fileType !== "pdf" && file.fileType !== "csv"
+      );
       setFiles(filteredFiles.reverse());
     } catch (error) {
       console.error("Error fetching user reports:", error);
-      setErrorModalMsg("Error fetching reports from database! Try again later.");
+      setErrorModalMsg(
+        "Error fetching reports from database! Try again later."
+      );
       setShowErrorModal(true);
-    } 
+    }
   };
 
   const handleFileNameChange = (event, key) => {
     const updatedFiles = files.map((file) =>
       file.key === key ? { ...file, fileName: event.target.value } : file
+    );
+    setFiles(updatedFiles);
+  };
+
+  const handleGradeChange = (event, key) => {
+    const updatedFiles = files.map((file) =>
+      file.key === key ? { ...file, gradeLevel: event.target.value } : file
+    );
+    setFiles(updatedFiles);
+  };
+  
+  const handleSubjectChange = (event, key) => {
+    const updatedFiles = files.map((file) =>
+      file.key === key ? { ...file, subject: event.target.value } : file
     );
     setFiles(updatedFiles);
   };
@@ -98,7 +118,13 @@ export default function ExportDataFiles() {
       file.key === key ? { ...file, isEditing: false } : file
     );
     const fileToUpdate = files.find((file) => file.key === key);
-    const { fileName: newFileName, reportId,  reportName: newReportName } = fileToUpdate;
+    const {
+      fileName: newFileName,
+      reportId,
+      subject,
+      gradeLevel,
+      reportName: newReportName,
+    } = fileToUpdate;
     const oldFileName = oldFileNameEditing || newFileName;
 
     try {
@@ -123,6 +149,8 @@ export default function ExportDataFiles() {
         `http://localhost:5001/reports/${reportId}/users/${userId}`,
         {
           reportName: newReportName,
+          gradeLevel: gradeLevel,
+          subject: subject
         }
       );
 
@@ -130,12 +158,10 @@ export default function ExportDataFiles() {
       console.log("Update Success");
       fetchUserFiles();
     } catch (error) {
-      console.error("Error updating Report name:", error);
-      setErrorModalMsg("Error updating report name");
+      console.error("Error updating report name, subject, or grade:", error);
+      setErrorModalMsg("Error updating report name, subject, or grade:");
       setShowErrorModal(true);
     }
-
-
   };
 
   const handleDeleteClick = async (key) => {
@@ -210,14 +236,13 @@ export default function ExportDataFiles() {
     setCurrentPage(selected);
   };
 
-
   const handleCloseErrorModal = () => {
     setShowErrorModal(false);
   };
 
   return (
     <>
-      <ErrorModal 
+      <ErrorModal
         message={errorModalMsg}
         showErrorModal={showErrorModal}
         handleCloseErrorModal={handleCloseErrorModal}
@@ -244,20 +269,40 @@ export default function ExportDataFiles() {
               <tr key={file.key}>
                 <td>{file.reportId}</td>
                 <td>
-                {file.isEditing ? (
-                  <input
-                    type="text"
-                    value={file.reportName}
-                    onChange={(event) =>
-                      handleReportNameChange(event, file.key)
-                    }
-                  />
-                ) : (
-                  file.reportName
-                )}
+                  {file.isEditing ? (
+                    <input
+                      type="text"
+                      value={file.reportName}
+                      onChange={(event) =>
+                        handleReportNameChange(event, file.key)
+                      }
+                    />
+                  ) : (
+                    file.reportName
+                  )}
                 </td>
-                <td>{file.gradeLevel}</td>
-                <td>{file.subject}</td>
+                <td>
+                  {file.isEditing ? (
+                    <input
+                      type="text"
+                      value={file.subject}
+                      onChange={(event) => handleSubjectChange(event, file.key)}
+                    />
+                  ) : (
+                    file.subject
+                  )}
+                </td>
+                <td>
+                  {file.isEditing ? (
+                    <input
+                      type="text"
+                      value={file.gradeLevel}
+                      onChange={(event) => handleGradeChange(event, file.key)}
+                    />
+                  ) : (
+                    file.gradeLevel
+                  )}
+                </td>
                 <td>
                   {file.isEditing ? (
                     <input
@@ -316,18 +361,18 @@ export default function ExportDataFiles() {
                     Delete
                   </button>
                 </td>
-                
+
                 <td>
                   <button className={styles.loadButton}>
-                  <Link
-                    to="../analyze"
-                    state={{
-                      reportId: file.reportId,
-                    }}
-                    className={styles.loadLink}
-                  >
-                    Load
-                  </Link>
+                    <Link
+                      to="../analyze"
+                      state={{
+                        reportId: file.reportId,
+                      }}
+                      className={styles.loadLink}
+                    >
+                      Load
+                    </Link>
                   </button>
                 </td>
                 <td>

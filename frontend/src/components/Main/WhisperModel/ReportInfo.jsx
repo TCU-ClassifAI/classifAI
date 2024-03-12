@@ -4,6 +4,8 @@ import Grid from '@mui/material/Grid';
 
 export default function ReportInfo({
     gradeLevel,
+    subject,
+    reportName,
     setGradeLevel,
     setSubject,
     setReportName
@@ -22,12 +24,14 @@ export default function ReportInfo({
 
     return (
         <>
+        <div>
         <Grid container spacing={2}>
             <Grid item xs={4}>
                 <TextField 
                     variant="outlined" 
                     label="Report Name (optional)" 
                     fullWidth 
+                    value={reportName}
                     onBlur={handleReportNameChange} // Update on blur
                 />
             </Grid>
@@ -36,7 +40,7 @@ export default function ReportInfo({
                     variant="outlined" 
                     label="Grade Level (optional)" 
                     fullWidth 
-                    defaultValue={gradeLevel}
+                    value={gradeLevel}
                     onBlur={handleGradeLevelChange} // Update on blur
                 />
             </Grid>
@@ -45,10 +49,13 @@ export default function ReportInfo({
                     variant="outlined" 
                     label="Subject (optional)" 
                     fullWidth 
+                    value={subject}
                     onBlur={handleSubjectChange} // Update on blur
                 />
             </Grid>
         </Grid>
+        </div>
+        
         </>
     );
 }

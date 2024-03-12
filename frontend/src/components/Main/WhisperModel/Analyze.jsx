@@ -92,16 +92,13 @@ export default function Analyze() {
     return sentenceListStr;
   }
 
-  function handleInputChange(event) {
-    event.persist();
-    setReportName(event.target.value);
-  }
-
   return (
     <>
         {gradeLevel && (
         <ReportInfo 
           gradeLevel={gradeLevel}
+          subject={subject}
+          reportName={reportName}
           setReportName={setReportName}
           setGradeLevel={setGradeLevel}
           setSubject={setSubject}
@@ -113,23 +110,20 @@ export default function Analyze() {
           gradeLevel={gradeLevel}
           subject={subject}
           reportId={reportId}
-          setReportId={setReportId}
+          setSubject={setSubject}
           userId={userId}
           transcription={transcription}
+          setReportName={setReportName}
           setTranscription={setTranscription}
-          analysisStatus={analysisStatus}
+          setGradeLevel={setGradeLevel}
           setAnalysisStatus={setAnalysisStatus}
+          analysisStatus={analysisStatus}
           location={location}
         />
       )}
 
       {analysisStatus === "completed" && (
         <div>
-          <input
-            placeholder="Name this report"
-            onBlur={handleInputChange}
-            id="name-report"
-          ></input>
           <Tabs id="controlled-tab-example">
             <Tab eventKey="TranscriptKey" title="Full Transcript">
               <FullTranscript
