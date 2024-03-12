@@ -7,6 +7,8 @@ import styles from "./UploadRecording.module.css";
 
 export default function UploadRecording({
   reportName,
+  gradeLevel,
+  subject,
   userId,
   reportId,
   setReportId,
@@ -61,6 +63,8 @@ export default function UploadRecording({
         formData.append("file", selectedFile);
       }
       formData.append("reportName", reportName);
+      formData.append("gradeLevel", gradeLevel);
+      formData.append("subject", subject);
 
       const response = await axios.post(
         `http://localhost:5001/reports/${reportId}/users/${userId}`,
@@ -163,23 +167,6 @@ export default function UploadRecording({
             type={selectedFile.type}
           />
         </video>
-      )}
-      {isAnalyzing && (
-        <div>
-          <p>
-            Our Engine is analyzing audio in the background. You may wait until
-            completion or you may leave this page and load it back in the 'My
-            Reports' page!
-          </p>
-          <ProgressBar
-            animated
-            variant="info"
-            now={progress}
-            className={styles.progessBar}
-            label={analysisStatus}
-          />
-          <p>Analysis Status: ({analysisStatus})</p>
-        </div>
       )}
     </div>
   );

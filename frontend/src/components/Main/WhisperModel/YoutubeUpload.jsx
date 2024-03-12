@@ -1,8 +1,7 @@
 import TextField from '@mui/material/TextField';
 
 export default function YoutubeUpload({
-    youtubeUrl, 
-    setYoutubeUrl
+    setYoutubeUrl,
 }) {
 
     const handleOnBlur = (event) => {
@@ -10,9 +9,9 @@ export default function YoutubeUpload({
     }; 
 
     return (
-        <>
+        <div>
         <TextField variant="outlined" label="Youtube Link"  onBlur={handleOnBlur}/>
 
-        </>
+        </div>
     )
 }

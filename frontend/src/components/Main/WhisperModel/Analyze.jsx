@@ -2,6 +2,7 @@ import UploadRecording from "./UploadRecording";
 import FullTranscript from "./FullTranscript";
 import CsvOptions from "./CsvOptions";
 import WordCloud from "./WordCloud";
+import ReportInfo from "./ReportInfo";
 import TalkingDistribution from "./TalkingDistribution";
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
@@ -9,9 +10,12 @@ import { Auth } from "aws-amplify";
 import { Tab, Tabs } from "react-bootstrap";
 import ParentSize from "@visx/responsive/lib/components/ParentSize";
 
+
 export default function Analyze() {
   const [userId, setUserId] = useState("");
   const [reportId, setReportId] = useState("");
+  const [gradeLevel, setGradeLevel] = useState("");
+  const [subject, setSubject] = useState("");
   const [transcription, setTranscription] = useState([]);
   const [analysisStatus, setAnalysisStatus] = useState("");
   const [reportName, setReportName] = useState("");
@@ -37,7 +41,7 @@ export default function Analyze() {
         const user = await Auth.currentAuthenticatedUser();
         const { attributes } = user;
         setUserId(attributes.email);
-        console.log(attributes.email); // Ensure userId is set correctly
+        setGradeLevel(attributes["custom:grade_level"]);
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
@@ -95,9 +99,19 @@ export default function Analyze() {
 
   return (
     <>
+        {gradeLevel && (
+        <ReportInfo 
+          gradeLevel={gradeLevel}
+          setReportName={setReportName}
+          setGradeLevel={setGradeLevel}
+          setSubject={setSubject}
+        />
+      )}
       {analysisStatus !== "completed" && (
         <UploadRecording
           reportName={reportName}
+          gradeLevel={gradeLevel}
+          subject={subject}
           reportId={reportId}
           setReportId={setReportId}
           userId={userId}
