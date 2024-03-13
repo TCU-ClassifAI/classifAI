@@ -31,7 +31,7 @@ export default function ReportInfo({
                     variant="outlined" 
                     label="Report Name (optional)" 
                     fullWidth 
-                    value={reportName}
+                    defaultValue={reportName}
                     onBlur={handleReportNameChange} // Update on blur
                 />
             </Grid>
@@ -40,7 +40,7 @@ export default function ReportInfo({
                     variant="outlined" 
                     label="Grade Level (optional)" 
                     fullWidth 
-                    value={gradeLevel}
+                    defaultValue={gradeLevel}
                     onBlur={handleGradeLevelChange} // Update on blur
                 />
             </Grid>
@@ -49,7 +49,7 @@ export default function ReportInfo({
                     variant="outlined" 
                     label="Subject (optional)" 
                     fullWidth 
-                    value={subject}
+                    defaultValue={subject}
                     onBlur={handleSubjectChange} // Update on blur
                 />
             </Grid>

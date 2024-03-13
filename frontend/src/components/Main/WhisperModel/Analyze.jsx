@@ -94,8 +94,9 @@ export default function Analyze() {
 
   return (
     <>
-        {gradeLevel && (
+        {userId && (
         <ReportInfo 
+          key={`${reportName}-${gradeLevel}-${subject}`}
           gradeLevel={gradeLevel}
           subject={subject}
           reportName={reportName}
