@@ -4,7 +4,6 @@ const router = express.Router();
 const fsPromises = require("fs").promises;
 const path = require("path");
 const axios = require("axios"); // Import axios for HTTP requests
-const { ObjectId } = require('mongoose').Types; // this line to use ObjectId
 
 //////////////// GET
 
@@ -150,30 +149,35 @@ router.get("/:reportId", async (req, res) => {
 
 //TODO: check if transcript update
 // Update a specific report for a specific user
-
-router.put("/:reportId/users/:userId", async (req, res) => {
+router.put("/:reportId/users/:userId", async (req, res) => { //works on server
   const { reportId, userId } = req.params; // Extract reportId and userId from URL parameters
-  let { resultId, newText } = req.body; // Extract the result _id and new text from the request body
-
-  console.log(`Updating reportId: ${reportId}, userId: ${userId}, resultId: ${resultId}, newText: ${newText}`);
+  const { resultId, newText, ...reportData } = req.body; // Destructure to separate specific fields and general report data
 
   try {
-    // Update the report using both userId and reportId to ensure the right report is updated
-    const updatedReport = await dbconnect.updateReport(
-      { reportId, userId, "transferData.result._id": resultId }, // Use resultId as a string
-      { $set: { "transferData.result.$.text": newText } } // Update operation remains the same
-    );
+    let updatedReport;
 
+    if (resultId && newText !== undefined) {
+      // If resultId and newText are provided, update specific result text
+      updatedReport = await dbconnect.updateReport(
+        { reportId, userId, "transferData.result._id": resultId },
+        { $set: { "transferData.result.$.text": newText } }
+      );
+    } else {
+      // Otherwise, update the report with provided reportData
+      updatedReport = await dbconnect.updateReport(
+        { reportId, userId },
+        { $set: reportData } // Ensure to use $set to update fields without replacing the entire document
+      );
+    }
 
     // If no report was found or updated, return a 404 not found
     if (!updatedReport) {
-      console.log("No matching report found or no update made.");
       return res
         .status(404)
         .json({ success: false, message: "Report not found." });
     }
 
-    // Otherwise, return the updated report
+    // Return the updated report
     res.json({
       success: true,
       message: "Report updated successfully.",
