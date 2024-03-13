@@ -149,17 +149,20 @@ router.get("/:reportId", async (req, res) => {
 
 //TODO: check if transcript update
 // Update a specific report for a specific user
+// working 3/12
 router.put("/:reportId/users/:userId", async (req, res) => { //works on server
   const { reportId, userId } = req.params; // Extract reportId and userId from URL parameters
-  const { resultId, newText, ...reportData } = req.body; // Destructure to separate specific fields and general report data
+  // if using id approach: const { resultId, newText, ...reportData } = req.body; // Destructure to separate specific fields and general report data
+
+  const { oldText, newText, ...reportData } = req.body; // Use oldText to identify which result to update
 
   try {
     let updatedReport;
 
-    if (resultId && newText !== undefined) {
+    if (oldText  && newText !== undefined) {
       // If resultId and newText are provided, update specific result text
       updatedReport = await dbconnect.updateReport(
-        { reportId, userId, "transferData.result._id": resultId },
+        { reportId, userId, "transferData.result.text": oldText  },
         { $set: { "transferData.result.$.text": newText } }
       );
     } else {
