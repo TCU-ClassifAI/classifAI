@@ -1,17 +1,17 @@
 import axios from "axios";
 import ErrorModal from "../../Common/ErrorModal";
-import Alert from '@mui/material/Alert';
+import Alert from "@mui/material/Alert";
+import styles from "./SaveChanges.module.css";
 import { useState } from "react";
 export default function SaveChanges({
-    reportName,
-    subject,
-    gradeLevel,
-    reportId,
-    userId,
-    transcription,
-    setChangeAlert
+  reportName,
+  subject,
+  gradeLevel,
+  reportId,
+  userId,
+  transcription,
+  setChangeAlert,
 }) {
-
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [successAlert, setSuccessAlert] = useState(!setChangeAlert);
 
@@ -34,7 +34,7 @@ export default function SaveChanges({
       await axios.put(
         `${window.backendServer}/reports/${reportId}/users/${userId}`,
         {
-          result: transcription
+          result: transcription,
         }
       );
       setChangeAlert(false);
@@ -46,17 +46,27 @@ export default function SaveChanges({
   };
   return (
     <>
-    <ErrorModal
-          message={"Error updating report information"}
-          showErrorModal={showErrorModal}
-          handleCloseErrorModal={handleCloseErrorModal}
-        />
-      <button onClick={handleSave} className="btn btn-primary">Save Changes</button>
+      <ErrorModal
+        message={"Error updating report information"}
+        showErrorModal={showErrorModal}
+        handleCloseErrorModal={handleCloseErrorModal}
+      />
+        <button onClick={handleSave} className={`btn btn-primary ${styles.container}`}>
+          Save Changes
+        </button>
       {successAlert && (
-        <div>
-            <Alert severity="success" onClose={() => {setSuccessAlert(false)}}>Changes Saved!</Alert>
-        </div>
-      )}
+          <div>
+            <Alert
+              severity="success"
+              onClose={() => {
+                setSuccessAlert(false);
+              }}
+              className={styles.alertWrapper}
+            >
+              Changes Saved!
+            </Alert>
+          </div>
+        )}
     </>
   );
 }
