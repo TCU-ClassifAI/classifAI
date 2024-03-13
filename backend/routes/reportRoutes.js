@@ -4,6 +4,7 @@ const router = express.Router();
 const fsPromises = require("fs").promises;
 const path = require("path");
 const axios = require("axios"); // Import axios for HTTP requests
+const { ObjectId } = require('mongoose').Types; // this line to use ObjectId
 
 //////////////// GET
 
@@ -149,19 +150,24 @@ router.get("/:reportId", async (req, res) => {
 
 //TODO: check if transcript update
 // Update a specific report for a specific user
+
 router.put("/:reportId/users/:userId", async (req, res) => {
   const { reportId, userId } = req.params; // Extract reportId and userId from URL parameters
-  const reportData = req.body; // Extract the report data from the request body
+  let { resultId, newText } = req.body; // Extract the result _id and new text from the request body
+
+  console.log(`Updating reportId: ${reportId}, userId: ${userId}, resultId: ${resultId}, newText: ${newText}`);
 
   try {
     // Update the report using both userId and reportId to ensure the right report is updated
     const updatedReport = await dbconnect.updateReport(
-      { reportId, userId },
-      reportData
+      { reportId, userId, "transferData.result._id": resultId }, // Use resultId as a string
+      { $set: { "transferData.result.$.text": newText } } // Update operation remains the same
     );
+
 
     // If no report was found or updated, return a 404 not found
     if (!updatedReport) {
+      console.log("No matching report found or no update made.");
       return res
         .status(404)
         .json({ success: false, message: "Report not found." });
@@ -252,6 +258,7 @@ async function findAllReports(query, res) {
 async function updateTransferDataStatus(reports) {
   for (let report of reports) {
     //for (let transfer of report.transferData) {
+    if (report.transferData.status != 'completed') { //added 3/12
     try {
       const response = await axios.get(
         `${process.env.WORKSTATION_URL}/transcription/get_transcription_status`,
@@ -289,12 +296,13 @@ async function updateTransferDataStatus(reports) {
       );
       // Optionally handle specific actions on failure (e.g., retry logic, logging)
     }
-    //}
+    
     // Save updated report to the database
     await dbconnect.updateReport(
       { reportId: report.reportId, userId: report.userId },
       report
     );
+  }
   }
   return reports; // Return updated reports
 }

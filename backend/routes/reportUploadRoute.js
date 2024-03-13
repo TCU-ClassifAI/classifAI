@@ -126,6 +126,7 @@ router.post(
 
           response.transferStatus = "successful";
           const job_id = ytResponse.data.job_id; // Return job_id to the client for polling
+          const yt_title = ytResponse.data.title;
           let job = await getInitialJobReq(process.env.WORKSTATION_URL, job_id);
           response.data.job_id = job_id; // Return job_id to the client
           response.flag = true;
@@ -138,14 +139,14 @@ router.post(
           // Update transferData for newest audioFile transfer
           report.transferData = {
             ...transferData,
-            fileName: url, //providedFileName || path.basename(newPath),
+            fileName: yt_title || url, //providedFileName || path.basename(newPath),
           };
           await dbconnect.updateReport(
             { userId, reportId },
             {
               transferData: report.transferData,
               status: job.status,
-              audioFile: url, //providedFileName || path.basename(newPath),
+              audioFile: yt_title ||url, //providedFileName || path.basename(newPath),
             }
           );
         } catch (error) {
