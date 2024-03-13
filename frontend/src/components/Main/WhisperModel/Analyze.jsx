@@ -5,6 +5,7 @@ import WordCloud from "./WordCloud";
 import ReportInfo from "./ReportInfo";
 import SaveChanges from "./SaveChanges";
 import TalkingDistribution from "./TalkingDistribution";
+import PdfOptions from "./PdfOptions";
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Auth } from "aws-amplify";
@@ -171,6 +172,16 @@ export default function Analyze() {
             gradeLevel={gradeLevel}
             reportId={reportId}
             userId={userId}
+          />
+
+          <PdfOptions
+            transcription={transcription}
+            setTranscription={setTranscription}
+            speakers={speakers}
+            setSpeakers={setSpeakers}
+            teacher={teacher}
+            setShow={setShow}
+            show={show}
           />
         </div>
       )}
