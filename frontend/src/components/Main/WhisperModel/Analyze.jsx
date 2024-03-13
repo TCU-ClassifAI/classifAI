@@ -3,6 +3,7 @@ import FullTranscript from "./FullTranscript";
 import CsvOptions from "./CsvOptions";
 import WordCloud from "./WordCloud";
 import ReportInfo from "./ReportInfo";
+import SaveChanges from "./SaveChanges";
 import TalkingDistribution from "./TalkingDistribution";
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
@@ -92,6 +93,7 @@ export default function Analyze() {
     return sentenceListStr;
   }
 
+  
   return (
     <>
         {userId && (
@@ -159,6 +161,13 @@ export default function Analyze() {
 
           <CsvOptions
             transcription={transcription}
+            reportId={reportId}
+            userId={userId}
+          />
+          <SaveChanges
+            reportName={reportName}
+            subject={subject}
+            gradeLevel={gradeLevel}
             reportId={reportId}
             userId={userId}
           />
