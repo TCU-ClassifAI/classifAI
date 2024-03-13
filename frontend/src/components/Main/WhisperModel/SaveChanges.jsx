@@ -13,20 +13,28 @@ export default function SaveChanges({
 }) {
 
   const [showErrorModal, setShowErrorModal] = useState(false);
-  const [successAlert, setSuccessAlert] = useState(false);
+  const [successAlert, setSuccessAlert] = useState(!setChangeAlert);
 
   const handleCloseErrorModal = () => {
     setShowErrorModal(false);
   };
 
   const handleSave = async () => {
+    // investigate why these only work when separated, might be due to different content types
     try {
       await axios.put(
         `${window.backendServer}/reports/${reportId}/users/${userId}`,
         {
           reportName: reportName,
           gradeLevel: gradeLevel,
-          subject: subject
+          subject: subject,
+        }
+      );
+
+      await axios.put(
+        `${window.backendServer}/reports/${reportId}/users/${userId}`,
+        {
+          result: transcription
         }
       );
       setChangeAlert(false);

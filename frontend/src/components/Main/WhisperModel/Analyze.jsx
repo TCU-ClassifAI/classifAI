@@ -49,7 +49,7 @@ export default function Analyze() {
         console.error("Error fetching user data:", error);
       }
     }
-    console.log(window.backendServer);
+    // console.log(window.backendServer);
     retrieveUserInfo();
   }, []);
 
@@ -182,6 +182,7 @@ export default function Analyze() {
             reportId={reportId}
             userId={userId}
             setChangeAlert={setChangeAlert}
+            transcription={transcription}
           />
 
           {/* <PdfOptions
