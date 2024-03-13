@@ -150,7 +150,8 @@ router.get("/:reportId", async (req, res) => {
 //TODO: check if transcript update
 // Update a specific report for a specific user
 // working 3/12
-router.put("/:reportId/users/:userId", async (req, res) => { //works on server
+router.put("/:reportId/users/:userId", async (req, res) => {
+  //works on server
   const { reportId, userId } = req.params; // Extract reportId and userId from URL parameters
   const { transferDataResult, ...reportData } = req.body; // Extract the new transferData.result array and any other report data
 
@@ -263,51 +264,52 @@ async function findAllReports(query, res) {
 async function updateTransferDataStatus(reports) {
   for (let report of reports) {
     //for (let transfer of report.transferData) {
-    if (report.transferData.status != 'completed') { //added 3/12
-    try {
-      const response = await axios.get(
-        `${process.env.WORKSTATION_URL}/transcription/get_transcription_status`,
-        {
-          params: {
-            job_id: report.transferData.job_id,
-          },
-        }
-      );
-      //console.log(`response:${response},result:${response.data.result}`)
-      // Dynamically update transfer object based on response fields
-      const updateFields = [
-        "fileName",
-        "duration",
-        "end_time",
-        "job_id",
-        "model_type",
-        "start_time",
-        "status",
-      ]; //, 'result'];
-      updateFields.forEach((field) => {
-        if (response.data.hasOwnProperty(field)) {
-          report.transferData[field] = response.data[field];
-        }
-      });
+    if (report.transferData.status != "completed") {
+      //added 3/12
+      try {
+        const response = await axios.get(
+          `${process.env.WORKSTATION_URL}/transcription/get_transcription_status`,
+          {
+            params: {
+              job_id: report.transferData.job_id,
+            },
+          }
+        );
+        //console.log(`response:${response},result:${response.data.result}`)
+        // Dynamically update transfer object based on response fields
+        const updateFields = [
+          "fileName",
+          "duration",
+          "end_time",
+          "job_id",
+          "model_type",
+          "start_time",
+          "status",
+        ]; //, 'result'];
+        updateFields.forEach((field) => {
+          if (response.data.hasOwnProperty(field)) {
+            report.transferData[field] = response.data[field];
+          }
+        });
 
-      if (response.data.hasOwnProperty("result")) {
-        report.transferData["result"] = response.data["result"];
+        if (response.data.hasOwnProperty("result")) {
+          report.transferData["result"] = response.data["result"];
+        }
+      } catch (error) {
+        console.error(
+          "Error querying workstation for job_id:",
+          report.transferData.job_id,
+          error
+        );
+        // Optionally handle specific actions on failure (e.g., retry logic, logging)
       }
-    } catch (error) {
-      console.error(
-        "Error querying workstation for job_id:",
-        report.transferData.job_id,
-        error
+
+      // Save updated report to the database
+      await dbconnect.updateReport(
+        { reportId: report.reportId, userId: report.userId },
+        report
       );
-      // Optionally handle specific actions on failure (e.g., retry logic, logging)
     }
-    
-    // Save updated report to the database
-    await dbconnect.updateReport(
-      { reportId: report.reportId, userId: report.userId },
-      report
-    );
-  }
   }
   return reports; // Return updated reports
 }
