@@ -31,7 +31,7 @@ export default function UploadRecording({
   const [genericModalMsg, setGenericModalMsg] = useState("");
   const [genericModalTitle, setGenericModalTitle] = useState("");
   const [youtubeMode, setYoutubeMode] = useState(false);
-  const [youtubeUrl, setYoutubeUrl] = useState("")
+  const [youtubeUrl, setYoutubeUrl] = useState("");
 
   useEffect(() => {
     if (location.state && location.state.reportId) {
@@ -59,9 +59,8 @@ export default function UploadRecording({
     try {
       const formData = new FormData();
       if (youtubeMode) {
-        formData.append("url", youtubeUrl)
-      }
-      else {
+        formData.append("url", youtubeUrl);
+      } else {
         formData.append("file", selectedFile);
       }
       formData.append("reportName", reportName);
@@ -98,14 +97,13 @@ export default function UploadRecording({
       const grade = response.data.reports[0].gradeLevel;
       const reportSubject = response.data.reports[0].subject;
       const reportName = response.data.reports[0].reportName;
-      
+
       console.log("Checked Status!");
 
       setAnalysisStatus(status);
       setGradeLevel(grade);
       setSubject(reportSubject);
       setReportName(reportName);
-
 
       if (status === "completed") {
         setIsAnalyzing(false); // Stop analysis once completed
@@ -161,7 +159,7 @@ export default function UploadRecording({
 
   const renderMediaElement = (tag) => (
     <div>
-      <p>Click "Submit" to begin file analysis</p>
+      <p>Click "Analyze Recording" to begin file analysis</p>
       {tag === "audio" && (
         <audio controls id="audio-player">
           <source
@@ -216,51 +214,59 @@ export default function UploadRecording({
 
   return (
     <>
-    <GenericModal
-          title={genericModalTitle}
-          message={genericModalMsg}
-          showGenericModal={showGenericModal}
-          handleCloseGenericModal={handleCloseGenericModal}
+      <GenericModal
+        title={genericModalTitle}
+        message={genericModalMsg}
+        showGenericModal={showGenericModal}
+        handleCloseGenericModal={handleCloseGenericModal}
+      />
+      <div className={styles.switchContainer}>
+        <Form.Check
+          className={styles.switchLabel}
+          label="Use Youtube Link"
+          type="switch"
+          checked={youtubeMode}
+          onChange={handleSwitchChange}
+          id="useYoutubeLinkSwitch"
         />
-        <Form.Check label="Use Youtube Link" type="switch" checked={youtubeMode}
-          onChange={handleSwitchChange}/>
+      </div>
 
       {youtubeMode && (
         <div>
-          <YoutubeUpload 
+          <YoutubeUpload
             youtubeUrl={youtubeUrl}
             setYoutubeUrl={setYoutubeUrl}
           />
         </div>
       )}
 
-      {!youtubeMode && ( <div>
-        
-
-        {renderUploadSection()}
-        {(isAudio || isVideo || isNeither || isAnalyzing) &&
-          renderMediaElement(isAudio ? "audio" : isVideo ? "video" : null)}
-       
-      </div>)}
+      {!youtubeMode && (
+        <div>
+          {renderUploadSection()}
+          {(isAudio || isVideo || isNeither || isAnalyzing) &&
+            renderMediaElement(isAudio ? "audio" : isVideo ? "video" : null)}
+        </div>
+      )}
       {!isAnalyzing && (
-          <>
-            <p></p>
-            <button
-              type="button"
-              className="btn btn-primary"
-              id="submission-main"
-              onClick={() => handleSubmission({ selectedFile })}
-              disabled={!isFileSelected && !youtubeUrl}
-            >
-              Analyze Recording
-            </button>
-          </>
-        )}
-             {isAnalyzing && (
+        <>
+          <p></p>
+          <button
+            type="button"
+            className="btn btn-primary"
+            id="submission-main"
+            onClick={() => handleSubmission({ selectedFile })}
+            disabled={!isFileSelected && !youtubeUrl}
+          >
+            Analyze Recording
+          </button>
+        </>
+      )}
+      {isAnalyzing && (
         <div>
           <p>
-            Our Engine is analyzing audio in the background. You may wait until completion or you may leave this page
-            and load it back in the 'My Reports' page!
+            Our Engine is analyzing audio in the background. You may wait until
+            completion or you may leave this page and load it back in the 'My
+            Reports' page!
           </p>
           <ProgressBar
             animated

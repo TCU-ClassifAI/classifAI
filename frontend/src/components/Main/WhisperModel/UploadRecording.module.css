@@ -1,3 +1,26 @@
 .progressBar {
-    width: 70%;
+  width: 70%;
 }
+
+/* UploadRecording.module.css */
+
+/* UploadRecording.module.css */
+
+.switchContainer {
+    display: flex;
+    justify-content: center;
+    margin: 5px;
+  }
+  
+  .switchLabel {
+    font-size: 1.5rem; /* Adjust font size as needed */
+    font-weight: bold;
+  }
+  
+  /* Style the switch as rectangular */
+  .switchInput {
+    width: 100px; /* Adjust width as needed */
+    height: 40px; /* Adjust height as needed */
+    border-radius: 20px; /* Adjust border-radius for rectangular shape */
+  }
+  
