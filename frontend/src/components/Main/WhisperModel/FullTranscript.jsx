@@ -9,8 +9,7 @@ export default function FullTranscript({
   speakers,
   setSpeakers,
   teacher,
-  show,
-  setShow,
+  setChangeAlert
 }) {
   const [isRelabelingSpeaker, setIsRelabelingSpeaker] = useState(false);
   const [editingSpeaker, setEditingSpeaker] = useState(null);
@@ -59,17 +58,17 @@ export default function FullTranscript({
         return prevSentence;
       });
       setTranscription(newTranscription);
+      setChangeAlert(true);
     },
-    [transcription, setTranscription, editingSpeaker]
+    [transcription, setTranscription, editingSpeaker, setChangeAlert]
   );
 
   const handleItemClick = useCallback(
     (sentence, speaker) => {
       handleRelabelSpeaker(sentence, speaker, false);
       setIsRelabelingSpeaker(false);
-      setShow(null);
     },
-    [handleRelabelSpeaker, setIsRelabelingSpeaker, setShow]
+    [handleRelabelSpeaker, setIsRelabelingSpeaker]
   );
 
   const handleEditAllOccurences = useCallback(
@@ -82,10 +81,10 @@ export default function FullTranscript({
       });
       setTranscription(newTranscription);
       setIsRelabelingSpeaker(false);
-      setShow(null);
+      setChangeAlert(true);
       setEditingSpeaker(null); // Reset editingSpeaker after editing all occurrences
     },
-    [transcription, setTranscription, editingSpeaker, setIsRelabelingSpeaker, setShow]
+    [transcription, setTranscription, setIsRelabelingSpeaker, setChangeAlert]
   );
 
   const handleBlur = useCallback(() => {
@@ -103,8 +102,9 @@ export default function FullTranscript({
       });
       setTranscription(newTranscription);
       setNewSpeakerName("");
+      setChangeAlert(true);
     },
-    [transcription, setTranscription]
+    [transcription, setTranscription, setChangeAlert]
   );
 
   const handleChangeName = useCallback(
@@ -117,10 +117,10 @@ export default function FullTranscript({
       });
       setTranscription(newTranscription);
       setIsRelabelingSpeaker(false);
-      setShow(null);
       setNewSpeakerName("");
+      setChangeAlert(true);
     },
-    [transcription, setTranscription, newSpeakerName, setIsRelabelingSpeaker, setShow]
+    [transcription, setTranscription, newSpeakerName, setIsRelabelingSpeaker, setChangeAlert]
   );
 
   const handleInputChange = (e) => {
@@ -158,7 +158,7 @@ export default function FullTranscript({
                   <td>
                     {editingSpeaker === sentence.start_time ? (
                       <Dropdown>
-                        <Dropdown.Toggle variant="secondary" id="dropdown-basic">
+                        <Dropdown.Toggle variant="primary" id="dropdown-basic">
                           {sentence.speaker}
                         </Dropdown.Toggle>
                         <Dropdown.Menu onClick={(e) => e.stopPropagation()}>
@@ -171,7 +171,7 @@ export default function FullTranscript({
                               onClick={handleInputChange} // prevent propagation
                               onKeyDown={handleInputKeyDown} // prevent dropdown close on space
                             />
-                            <button onClick={() => handleChangeName(sentence)}>Change Name</button>
+                            <button onClick={() => handleChangeName(sentence)}>Change One</button>
                             <button onClick={() => handleEditAllOccurences(sentence, newSpeakerName)}>Change All Occurrences</button>
                           </Dropdown.Item>
                           {speakers.map((speaker) => (

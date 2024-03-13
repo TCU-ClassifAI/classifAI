@@ -8,18 +8,22 @@ export default function ReportInfo({
     reportName,
     setGradeLevel,
     setSubject,
-    setReportName
+    setReportName,
+    setChangeAlert
 }) {
     const handleReportNameChange = (event) => {
         setReportName(event.target.value);
+        setChangeAlert(true);
     };
 
     const handleGradeLevelChange = (event) => {
         setGradeLevel(event.target.value);
+        setChangeAlert(true);
     };
 
     const handleSubjectChange = (event) => {
         setSubject(event.target.value);
+        setChangeAlert(true);
     };
 
     return (

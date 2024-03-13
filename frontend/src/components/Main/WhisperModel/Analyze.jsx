@@ -10,8 +10,8 @@ import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Auth } from "aws-amplify";
 import { Tab, Tabs } from "react-bootstrap";
+import Alert from "@mui/material/Alert";
 import ParentSize from "@visx/responsive/lib/components/ParentSize";
-
 
 export default function Analyze() {
   const [userId, setUserId] = useState("");
@@ -23,6 +23,7 @@ export default function Analyze() {
   const [reportName, setReportName] = useState("");
   const [teacher, setTeacher] = useState();
   const [show, setShow] = useState(false);
+  const [changeAlert, setChangeAlert] = useState(false);
   const [speakers, setSpeakers] = useState();
   const location = useLocation();
 
@@ -95,11 +96,17 @@ export default function Analyze() {
     return sentenceListStr;
   }
 
-  
   return (
     <>
-        {userId && (
-        <ReportInfo 
+      {changeAlert && (
+        <div>
+          <Alert severity="warning">
+            There are unsaved changes. Use 'Save Changes' to save them.
+          </Alert>
+        </div>
+      )}
+      {userId && (
+        <ReportInfo
           key={`${reportName}-${gradeLevel}-${subject}`}
           gradeLevel={gradeLevel}
           subject={subject}
@@ -107,6 +114,7 @@ export default function Analyze() {
           setReportName={setReportName}
           setGradeLevel={setGradeLevel}
           setSubject={setSubject}
+          setChangeAlert={setChangeAlert}
         />
       )}
       {analysisStatus !== "completed" && (
@@ -139,6 +147,7 @@ export default function Analyze() {
                 teacher={teacher}
                 setShow={setShow}
                 show={show}
+                setChangeAlert={setChangeAlert}
               />
             </Tab>
             <Tab eventKey="talkingdistribution" title="Talking Distribution">
@@ -172,6 +181,7 @@ export default function Analyze() {
             gradeLevel={gradeLevel}
             reportId={reportId}
             userId={userId}
+            setChangeAlert={setChangeAlert}
           />
 
           {/* <PdfOptions
@@ -183,6 +193,14 @@ export default function Analyze() {
             setShow={setShow}
             show={show}
           /> */}
+
+          {changeAlert && (
+            <div>
+              <Alert severity="warning">
+                There are unsaved changes. Use 'Save Changes' to save them.
+              </Alert>
+            </div>
+          )}
         </div>
       )}
     </>
