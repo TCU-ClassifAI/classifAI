@@ -149,16 +149,28 @@ router.get("/:reportId", async (req, res) => {
 
 //TODO: check if transcript update
 // Update a specific report for a specific user
+// working 3/12
 router.put("/:reportId/users/:userId", async (req, res) => {
+  //works on server
   const { reportId, userId } = req.params; // Extract reportId and userId from URL parameters
-  const reportData = req.body; // Extract the report data from the request body
+  const { result, ...reportData } = req.body; // Extract the new transferData.result array and any other report data
 
   try {
-    // Update the report using both userId and reportId to ensure the right report is updated
-    const updatedReport = await dbconnect.updateReport(
-      { reportId, userId },
-      reportData
-    );
+    let updatedReport;
+
+    if (result) {
+      // If a new transferData.result array is provided, update it directly
+      updatedReport = await dbconnect.updateReport(
+        { reportId, userId },
+        { $set: { "transferData.result": result } } // Update the entire transferData.result array
+      );
+    } else {
+      // Otherwise, update the report with provided reportData
+      updatedReport = await dbconnect.updateReport(
+        { reportId, userId },
+        { $set: reportData } // Ensure to use $set to update fields without replacing the entire document
+      );
+    }
 
     // If no report was found or updated, return a 404 not found
     if (!updatedReport) {
@@ -167,7 +179,7 @@ router.put("/:reportId/users/:userId", async (req, res) => {
         .json({ success: false, message: "Report not found." });
     }
 
-    // Otherwise, return the updated report
+    // Return the updated report
     res.json({
       success: true,
       message: "Report updated successfully.",
@@ -252,49 +264,52 @@ async function findAllReports(query, res) {
 async function updateTransferDataStatus(reports) {
   for (let report of reports) {
     //for (let transfer of report.transferData) {
-    try {
-      const response = await axios.get(
-        `${process.env.WORKSTATION_URL}/transcription/get_transcription_status`,
-        {
-          params: {
-            job_id: report.transferData.job_id,
-          },
-        }
-      );
-      //console.log(`response:${response},result:${response.data.result}`)
-      // Dynamically update transfer object based on response fields
-      const updateFields = [
-        "fileName",
-        "duration",
-        "end_time",
-        "job_id",
-        "model_type",
-        "start_time",
-        "status",
-      ]; //, 'result'];
-      updateFields.forEach((field) => {
-        if (response.data.hasOwnProperty(field)) {
-          report.transferData[field] = response.data[field];
-        }
-      });
+    if (report.transferData.status != "completed") {
+      //added 3/12
+      try {
+        const response = await axios.get(
+          `${process.env.WORKSTATION_URL}/transcription/get_transcription_status`,
+          {
+            params: {
+              job_id: report.transferData.job_id,
+            },
+          }
+        );
+        //console.log(`response:${response},result:${response.data.result}`)
+        // Dynamically update transfer object based on response fields
+        const updateFields = [
+          "fileName",
+          "duration",
+          "end_time",
+          "job_id",
+          "model_type",
+          "start_time",
+          "status",
+        ]; //, 'result'];
+        updateFields.forEach((field) => {
+          if (response.data.hasOwnProperty(field)) {
+            report.transferData[field] = response.data[field];
+          }
+        });
 
-      if (response.data.hasOwnProperty("result")) {
-        report.transferData["result"] = response.data["result"];
+        if (response.data.hasOwnProperty("result")) {
+          report.transferData["result"] = response.data["result"];
+        }
+      } catch (error) {
+        console.error(
+          "Error querying workstation for job_id:",
+          report.transferData.job_id,
+          error
+        );
+        // Optionally handle specific actions on failure (e.g., retry logic, logging)
       }
-    } catch (error) {
-      console.error(
-        "Error querying workstation for job_id:",
-        report.transferData.job_id,
-        error
+
+      // Save updated report to the database
+      await dbconnect.updateReport(
+        { reportId: report.reportId, userId: report.userId },
+        report
       );
-      // Optionally handle specific actions on failure (e.g., retry logic, logging)
     }
-    //}
-    // Save updated report to the database
-    await dbconnect.updateReport(
-      { reportId: report.reportId, userId: report.userId },
-      report
-    );
   }
   return reports; // Return updated reports
 }
