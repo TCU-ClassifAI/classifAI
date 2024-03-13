@@ -16,6 +16,7 @@ import Landing from "./components/Landing/Landing";
 Amplify.configure(awsconfig);
 
 window.backendServer = "http://localhost:5001";
+// window.backendServer = "http://138.237.46.101:5001";
 
 function App() {
   return (
