@@ -47,6 +47,7 @@ export default function Analyze() {
         console.error("Error fetching user data:", error);
       }
     }
+    console.log(window.backendServer);
     retrieveUserInfo();
   }, []);
 

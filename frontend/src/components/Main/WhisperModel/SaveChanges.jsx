@@ -13,7 +13,7 @@ export default function SaveChanges({
   const handleSave = async () => {
     try {
       await axios.put(
-        `http://localhost:5001/reports/${reportId}/users/${userId}`,
+        `${window.backendServer}/reports/${reportId}/users/${userId}`,
         {
           reportName: reportName,
           gradeLevel: gradeLevel,

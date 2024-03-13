@@ -105,7 +105,7 @@ export default function CsvOptions({
 
       // Make a POST request to upload the file
       await axios.post(
-        `http://localhost:5001/files/reports/${reportId}/users/${userId}`,
+        `${window.backendServer}/files/reports/${reportId}/users/${userId}`,
         formData,
         {
           headers: {

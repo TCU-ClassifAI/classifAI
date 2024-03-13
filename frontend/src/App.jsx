@@ -15,6 +15,8 @@ import Landing from "./components/Landing/Landing";
 
 Amplify.configure(awsconfig);
 
+window.backendServer = "http://localhost:5001";
+
 function App() {
   return (
     <BrowserRouter>

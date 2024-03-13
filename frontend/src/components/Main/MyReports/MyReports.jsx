@@ -42,7 +42,7 @@ export default function MyReports() {
   const fetchUserFiles = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5001/reports/users/${userId}`
+        `${window.backendServer}/reports/users/${userId}`
       );
       console.log(response);
       const flattenedData = response.data.reduce((acc, obj) => {
@@ -129,7 +129,7 @@ export default function MyReports() {
 
     try {
       await axios.put(
-        `http://localhost:5001/files/${oldFileName}/reports/${reportId}/users/${userId}`,
+        `${window.backendServer}/files/${oldFileName}/reports/${reportId}/users/${userId}`,
         {
           fileName: newFileName,
         }
@@ -146,7 +146,7 @@ export default function MyReports() {
 
     try {
       await axios.put(
-        `http://localhost:5001/reports/${reportId}/users/${userId}`,
+        `${window.backendServer}/reports/${reportId}/users/${userId}`,
         {
           reportName: newReportName,
           gradeLevel: gradeLevel,
@@ -174,7 +174,7 @@ export default function MyReports() {
 
       try {
         await axios.delete(
-          `http://localhost:5001/reports/${reportId}/users/${userId}`
+          `${window.backendServer}/reports/${reportId}/users/${userId}`
         );
 
         const updatedFiles = files.filter((file) => file.key !== key);
@@ -191,7 +191,7 @@ export default function MyReports() {
   const handleDownloadClick = async (reportId, fileName, fileType) => {
     try {
       const response = await axios.get(
-        `http://localhost:5001/files/${fileName}/reports/${reportId}/users/${userId}?download=true`,
+        `${window.backendServer}/files/${fileName}/reports/${reportId}/users/${userId}?download=true`,
         {
           responseType: "blob", // Set response type to blob
         }
