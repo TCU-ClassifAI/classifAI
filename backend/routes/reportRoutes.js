@@ -152,18 +152,16 @@ router.get("/:reportId", async (req, res) => {
 // working 3/12
 router.put("/:reportId/users/:userId", async (req, res) => { //works on server
   const { reportId, userId } = req.params; // Extract reportId and userId from URL parameters
-  // if using id approach: const { resultId, newText, ...reportData } = req.body; // Destructure to separate specific fields and general report data
-
-  const { oldText, newText, ...reportData } = req.body; // Use oldText to identify which result to update
+  const { transferDataResult, ...reportData } = req.body; // Extract the new transferData.result array and any other report data
 
   try {
     let updatedReport;
 
-    if (oldText  && newText !== undefined) {
-      // If resultId and newText are provided, update specific result text
+    if (transferDataResult) {
+      // If a new transferData.result array is provided, update it directly
       updatedReport = await dbconnect.updateReport(
-        { reportId, userId, "transferData.result.text": oldText  },
-        { $set: { "transferData.result.$.text": newText } }
+        { reportId, userId },
+        { $set: { "transferData.result": transferDataResult } } // Update the entire transferData.result array
       );
     } else {
       // Otherwise, update the report with provided reportData
