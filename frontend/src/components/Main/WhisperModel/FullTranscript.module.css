@@ -3,3 +3,6 @@
     width: 800px;
 }
 
+.wideInput {
+    width: 100%; /* Adjust the width as needed */
+}

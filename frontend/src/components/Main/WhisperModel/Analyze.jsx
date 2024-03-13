@@ -174,7 +174,7 @@ export default function Analyze() {
             userId={userId}
           />
 
-          <PdfOptions
+          {/* <PdfOptions
             transcription={transcription}
             setTranscription={setTranscription}
             speakers={speakers}
@@ -182,7 +182,7 @@ export default function Analyze() {
             teacher={teacher}
             setShow={setShow}
             show={show}
-          />
+          /> */}
         </div>
       )}
     </>
