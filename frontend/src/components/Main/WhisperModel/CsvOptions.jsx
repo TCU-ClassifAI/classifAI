@@ -3,6 +3,7 @@ import { convertMsToTime } from "../../../utils/convertMsToTime";
 import axios from "axios";
 import { saveAs } from "file-saver";
 import ErrorModal from "../../Common/ErrorModal";
+import styles from "./CsvOptions.module.css";
 
 export default function CsvOptions({
   transcription,
@@ -162,75 +163,63 @@ export default function CsvOptions({
         showErrorModal={showErrorModal}
         handleCloseErrorModal={handleCloseErrorModal}
       />
-      <div className="checkBox">
-        <strong>Select what to include in CSV:</strong>
-        <label className="checkBox">
-          Select All
-          <input
-            type="checkbox"
-            className="checkBox"
-            checked={allSelected}
-            onChange={allSelected ? handleDeselectAll : handleSelectAll}
-          ></input>
-        </label>
-        <label className="checkBox">
-          Start Times
-          <input
-            type="checkbox"
-            className="checkBox"
-            checked={startTimeBox}
-            onChange={() => setStartTimeBox(!startTimeBox)}
-          ></input>
-        </label>
-        <label className="checkBox">
-          End Times
-          <input
-            type="checkbox"
-            className="checkBox"
-            checked={endTimeBox}
-            onChange={() => setEndTimeBox(!endTimeBox)}
-          ></input>
-        </label>
-        <label className="checkBox">
-          Speakers
-          <input
-            type="checkbox"
-            className="checkBox"
-            checked={speakerBox}
-            onChange={() => setSpeakerBox(!speakerBox)}
-          ></input>
-        </label>
-        <label className="checkBox">
-          Text
-          <input
-            type="checkbox"
-            className="checkBox"
-            checked={textBox}
-            onChange={() => setTextBox(!textBox)}
-          ></input>
-        </label>
-        <select className="dropdown">
+      <div className={styles.container}>
+        <select className={styles.dropdown}>
           <option value="fullTranscript">Include Full Transcript</option>
         </select>
+        <div className={styles.checkboxGroup}>
+          <label className={styles.checkbox}>
+            Start Times
+            <input
+              type="checkbox"
+              checked={startTimeBox}
+              onChange={() => setStartTimeBox(!startTimeBox)}
+            />
+          </label>
+          <label className={styles.checkbox}>
+            End Times
+            <input
+              type="checkbox"
+              checked={endTimeBox}
+              onChange={() => setEndTimeBox(!endTimeBox)}
+            />
+          </label>
+          <label className={styles.checkbox}>
+            Speakers
+            <input
+              type="checkbox"
+              checked={speakerBox}
+              onChange={() => setSpeakerBox(!speakerBox)}
+            />
+          </label>
+          <label className={styles.checkbox}>
+            Text
+            <input
+              type="checkbox"
+              checked={textBox}
+              onChange={() => setTextBox(!textBox)}
+            />
+          </label>
+        </div>
+        <div>
+          <input
+            className={styles.fileNameInput}
+            type="text"
+            id="fileName"
+            value={fileName}
+            placeholder="Enter CSV file name (optional)"
+            onChange={(e) => setFileName(e.target.value)}
+          />
+        </div>
+        <button
+          onClick={() => saveToCSV()}
+          className={`btn btn-primary`}
+          disabled={reportId.trim() === ""}
+        >
+          Save & Download CSV
+        </button>
       </div>
-      <div>
-        <input
-          className="fileNameInput"
-          type="text"
-          id="fileName"
-          value={fileName}
-          placeholder="Enter CSV file name (optional)"
-          onChange={(e) => setFileName(e.target.value)}
-        />
-      </div>
-      <button
-        onClick={() => saveToCSV()}
-        className="btn btn-primary"
-        id="bottom-button2"
-        disabled={reportId.trim() === ""}
-      >
-        Save & Download CSV
-      </button>
     </>
   );
+  
 }

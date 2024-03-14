@@ -6,10 +6,11 @@ import ReportInfo from "./ReportInfo";
 import SaveChanges from "./SaveChanges";
 import TalkingDistribution from "./TalkingDistribution";
 import PdfOptions from "./PdfOptions";
-import { useState, useEffect } from "react";
+import styles from "./Analyze.module.css";
+import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { Auth } from "aws-amplify";
-import { Tab, Tabs } from "react-bootstrap";
+import { Tab, Tabs, Modal, Button } from "react-bootstrap";
 import Alert from "@mui/material/Alert";
 import ParentSize from "@visx/responsive/lib/components/ParentSize";
 
@@ -24,7 +25,9 @@ export default function Analyze() {
   const [teacher, setTeacher] = useState();
   const [show, setShow] = useState(false);
   const [changeAlert, setChangeAlert] = useState(false);
+  const [showCsvModal, setShowCsvModal] = useState(false);
   const [speakers, setSpeakers] = useState();
+  const wordCloudRef = useRef(null);
   const location = useLocation();
 
   useEffect(() => {
@@ -157,7 +160,7 @@ export default function Analyze() {
               />
             </Tab>
             <Tab eventKey="wordcloud" title="Visualization">
-              <ParentSize>
+              <ParentSize ref={wordCloudRef}>
                 {({ width, height }) => (
                   <WordCloud
                     width={width}
@@ -170,11 +173,6 @@ export default function Analyze() {
             </Tab>
           </Tabs>
 
-          <CsvOptions
-            transcription={transcription}
-            reportId={reportId}
-            userId={userId}
-          />
           <SaveChanges
             reportName={reportName}
             subject={subject}
@@ -185,15 +183,49 @@ export default function Analyze() {
             transcription={transcription}
           />
 
-          {/* <PdfOptions
-            transcription={transcription}
-            setTranscription={setTranscription}
-            speakers={speakers}
-            setSpeakers={setSpeakers}
-            teacher={teacher}
-            setShow={setShow}
-            show={show}
-          /> */}
+          <button
+            className="btn btn-primary"
+            onClick={() => {
+              setShowCsvModal(true);
+            }}
+          >
+            Save & Download CSV
+          </button>
+          <Modal
+            show={showCsvModal}
+            onHide={() => {
+              setShowCsvModal(false);
+            }}
+          >
+            <Modal.Header closeButton>
+              <Modal.Title>CSV Options</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              {
+                <CsvOptions
+                  transcription={transcription}
+                  reportId={reportId}
+                  userId={userId}
+                />
+              }
+            </Modal.Body>
+            <Modal.Footer>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setShowCsvModal(false);
+                }}
+              >
+                Close
+              </Button>
+            </Modal.Footer>
+          </Modal>
+
+          
+
+          <PdfOptions
+            componentRef={wordCloudRef}
+          />
 
           {changeAlert && (
             <div>
