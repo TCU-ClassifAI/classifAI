@@ -221,10 +221,41 @@ export default function Analyze() {
             </Modal.Footer>
           </Modal>
 
-          
-
           <PdfOptions
-            componentRef={wordCloudRef}
+            wordCloudComponent={() => (
+              <div>
+                <ParentSize>
+                  {({ width }) => (
+                    <WordCloud
+                      width={width}
+                      height={600}
+                      showControls="true"
+                      transcript={createSentenceList()}
+                    />
+                  )}
+                </ParentSize>
+              </div>
+            )}
+            transcriptComponent={() => (
+              <FullTranscript
+                transcription={transcription}
+                setTranscription={setTranscription}
+                speakers={speakers}
+                setSpeakers={setSpeakers}
+                teacher={teacher}
+                setShow={setShow}
+                show={show}
+                setChangeAlert={setChangeAlert}
+              />
+            )}
+            talkingDistributionComponent={() => (
+              <div>
+                <TalkingDistribution
+                  transcription={transcription}
+                  teacher={teacher}
+                />
+              </div>
+            )}
           />
 
           {changeAlert && (

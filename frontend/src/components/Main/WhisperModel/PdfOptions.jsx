@@ -1,49 +1,139 @@
-import React, { useRef } from "react";
-import jsPDF from "jspdf";
+import React, { useRef, useState, useEffect } from "react";
+import { Modal, Button } from "react-bootstrap";
 import html2canvas from "html2canvas";
-import FullTranscript from "./FullTranscript";
+import jsPDF from "jspdf";
+import styles from "./PdfOptions.module.css";
 
-export default function PdfOptions({
-  transcription,
-  setTranscription,
-  speakers,
-  setSpeakers,
-  teacher,
-  show,
-  setShow,
-}) {
+const PdfOptions = ({
+  wordCloudComponent,
+  transcriptComponent,
+  talkingDistributionComponent,
+}) => {
   const componentRef = useRef(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const [transcriptBox, setTranscriptBox] = useState(false);
+  const [talkDistBox, setTalkDistBox] = useState(false);
+  const [wordCloudBox, setWordCloudBox] = useState(false);
+  const [showPdfModal, setShowPdfModal] = useState(false);
 
-  const handleDownloadPDF = async () => {
-    if (componentRef.current) {
-      const canvas = await html2canvas(componentRef.current);
-      const imgData = canvas.toDataURL("image/png");
+  useEffect(() => {
+    if (isVisible) {
+      // Capture component after it has been rendered
+      setTimeout(() => {
+        html2canvas(componentRef.current)
+          .then((canvas) => {
+            const imgData = canvas.toDataURL("image/png");
+            const pdf = new jsPDF();
+            const width = pdf.internal.pageSize.getWidth();
+            const height = (canvas.height * width) / canvas.width;
+            pdf.addImage(imgData, "PNG", 0, 0, width, height);
+            pdf.save("download.pdf");
 
-      const doc = new jsPDF();
-      doc.addImage(imgData, "PNG", 10, 10, 100, 100); // Add image to PDF
-      doc.text("Hello, this is content for PDF!", 10, 120); // Add text to PDF
-      doc.save("generated.pdf"); // Save PDF
+            // Hide the component after a delay
+            setTimeout(() => {
+              setIsVisible(false);
+            }, 1000); // 1000 milliseconds = 1 second
+          })
+          .catch((error) => {
+            console.error("Error generating PDF:", error);
+          });
+      }, 1000);
     }
+  }, [isVisible]);
+
+  const handleOpenModal = () => {
+    setShowPdfModal(true);
+  };
+
+  const handleDownloadPDF = () => {
+    setShowPdfModal(false);
+    setIsVisible(true); // Show the component before capturing
+  };
+  
+
+  const componentToCapture = () => {
+    let wordCloud;
+    let transcript;
+    let talkDist;
+    if (wordCloudBox) {
+      wordCloud = wordCloudComponent();
+    }
+
+    if (transcriptBox) {
+      transcript = transcriptComponent();
+    }
+
+    if (talkDistBox) {
+      talkDist = talkingDistributionComponent();
+    }
+
+    return (
+      <>
+        {wordCloud}
+        {transcript}
+        {talkDist}
+      </>
+    );
   };
 
   return (
     <div>
-      <div ref={componentRef}>
-        {/* Include the React component you want to render */}
-        <FullTranscript
-          transcription={transcription}
-          setTranscription={setTranscription}
-          speakers={speakers}
-          setSpeakers={setSpeakers}
-          teacher={teacher}
-          setShow={setShow}
-          show={show}
-        />
-        {/* Other content can be added here as well */}
-        <h1>Hello, this is content for the image!</h1>
-        <p>This is a paragraph.</p>
-      </div>
-      <button onClick={handleDownloadPDF}>Download PDF</button>
+      {isVisible && <div ref={componentRef}>{componentToCapture()}</div>}
+      <button onClick={handleOpenModal} className="btn btn-primary">Save & Download PDF</button>
+      <Modal
+        show={showPdfModal}
+        onHide={() => {
+          setShowPdfModal(false);
+        }}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>PDF Options</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {
+            <div className={styles.checkboxGroup}>
+              <label className={styles.checkbox}>
+                Transcript
+                <input
+                  type="checkbox"
+                  checked={transcriptBox}
+                  onChange={() => setTranscriptBox(!transcriptBox)}
+                />
+              </label>
+              <label className={styles.checkbox}>
+                Talking Distribution
+                <input
+                  type="checkbox"
+                  checked={talkDistBox}
+                  onChange={() => setTalkDistBox(!talkDistBox)}
+                />
+              </label>
+              <label className={styles.checkbox}>
+                Word Cloud
+                <input
+                  type="checkbox"
+                  checked={wordCloudBox}
+                  onChange={() => setWordCloudBox(!wordCloudBox)}
+                />
+              </label>
+            <button onClick={handleDownloadPDF} className="btn btn-primary">Save & Download PDF</button>
+
+            </div>      
+          }
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setShowPdfModal(false);
+            }}
+          >
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
-}
+};
+
+export default PdfOptions;
