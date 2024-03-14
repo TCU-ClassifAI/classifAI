@@ -256,6 +256,8 @@ export default function Analyze() {
                 />
               </div>
             )}
+            reportId={reportId}
+            userId={userId}
           />
 
           {changeAlert && (

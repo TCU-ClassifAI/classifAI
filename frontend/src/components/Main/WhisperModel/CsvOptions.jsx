@@ -168,6 +168,14 @@ export default function CsvOptions({
           <option value="fullTranscript">Include Full Transcript</option>
         </select>
         <div className={styles.checkboxGroup}>
+        <label className={styles.checkbox}>
+            Select All
+            <input
+              type="checkbox"
+              checked={allSelected}
+              onChange={allSelected ? handleDeselectAll : handleSelectAll}
+            />
+          </label>
           <label className={styles.checkbox}>
             Start Times
             <input
