@@ -101,7 +101,7 @@ export default function Analyze() {
 
   return (
     <>
-      {changeAlert && (
+      {changeAlert && analysisStatus === "completed" && (
         <div>
           <Alert severity="warning">
             There are unsaved changes. Use 'Save Changes' to save them.
