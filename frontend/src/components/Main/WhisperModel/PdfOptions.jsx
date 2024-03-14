@@ -175,6 +175,7 @@ const PdfOptions = ({
               onChange={allSelected ? handleDeselectAll : handleSelectAll}
             />
           </label>
+            {/* Currently this copies the transcript to an image but it doesnt capture the whole table 
             <label className={styles.checkbox}>
               Transcript
               <input
@@ -182,7 +183,7 @@ const PdfOptions = ({
                 checked={transcriptBox}
                 onChange={() => setTranscriptBox(!transcriptBox)}
               />
-            </label>
+            </label> */}
             <label className={styles.checkbox}>
               Talking Distribution
               <input
