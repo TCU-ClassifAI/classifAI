@@ -264,9 +264,10 @@ async function findAllReports(query, res) {
 async function updateTransferDataStatus(reports) {
   for (let report of reports) {
     //for (let transfer of report.transferData) {
-    if (!report.transferData.result) {//(report.transferData.status != "completed") {
+    if (report.transferData.status != "completed") {
       //added 3/12
       try {
+        //console.log(report.transferData.job_id)
         const response = await axios.get(
           `${process.env.WORKSTATION_URL}/transcription/get_transcription_status`,
           {
@@ -276,37 +277,26 @@ async function updateTransferDataStatus(reports) {
           }
         );
 
-        if (response.data.hasOwnProperty('meta')) {
+        if (response.data.meta) {
           //console.log(`response:${response},result:${response.data.result}`)
           // Dynamically update transfer object based on response fields
-          const metaFields = [
-            "fileName",
-            "duration",
-            "end_time",
-            "job_id",
-            "job_type",
-            "model_type",
-            "start_time",
-            "status",
-            "progress",
-            "message"
+          //console.log('meta response:',response.data.meta);
+          for (const [key, value] of Object.entries(response.data.meta)) {
+            report.transferData[key] = value;
+            console.log(report.transferData[key]);
+          }
 
-          ]; //, 'result'];
-          metaFields.forEach((field) => {
-            if (response.data.hasOwnProperty(field)) {
-              console.log(field)
-              report.transferData[field] = response.data[field];
-            }
-          });
         }
         // Handling for status which is outside meta
-        if (response.data.hasOwnProperty("status")) {
-          report.transferData["status"] = response.data["status"];
+        if (response.data.status) {
+          report.transferData["status"] = response.data.status;
         }
 
-        if (response.data.hasOwnProperty("result")) {
-          report.transferData["result"] = response.data["result"];
+        if (response.data.result) {
+          report.transferData["result"] = response.data.result;
         }
+
+        console.log(report.transferData)
 
       } catch (error) {
         console.error(
@@ -314,7 +304,6 @@ async function updateTransferDataStatus(reports) {
           report.transferData.job_id,
           error
         );
-        // Optionally handle specific actions on failure (e.g., retry logic, logging)
       }
 
       // Save updated report to the database

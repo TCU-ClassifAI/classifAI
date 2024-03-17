@@ -44,6 +44,7 @@ const reportSchema = new mongoose.Schema({
       duration: Number,
       end_time: String,
       job_id: String,
+      job_type: String,
       model_type: String,
       start_time: String,
       status: String,
