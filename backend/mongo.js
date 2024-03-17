@@ -47,6 +47,8 @@ const reportSchema = new mongoose.Schema({
       model_type: String,
       start_time: String,
       status: String,
+      progress: String,
+      message: String,
       result: [{
         speaker: String,
         start_time: Number,

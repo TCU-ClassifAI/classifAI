@@ -119,7 +119,7 @@ router.post(
         // Send youtubeUrl
         try {
           const ytResponse = await axios.get(
-            `${process.env.WORKSTATION_URL}/transcription/start_yt?url=${url}`
+            `${process.env.WORKSTATION_URL}/transcription/transcribe_yt?url=${url}`
           );
           // Handle success response from YouTube transcription start
           response.url = url;
@@ -202,7 +202,7 @@ router.post(
         ) {
           try {
             const transferResponse = await handleFileTransfer(
-              `${process.env.WORKSTATION_URL}/transcription/start_transcription`,
+              `${process.env.WORKSTATION_URL}/transcription/transcribe`, //changed from start_transcription
               newPath,
               reportId
             );

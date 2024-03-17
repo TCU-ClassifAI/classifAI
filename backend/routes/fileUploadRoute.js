@@ -145,7 +145,7 @@ router.post("/reports/:reportId/users/:userId",
 
       if (audioTypes.includes(fileType)) {
         const transferResponse = await handleFileTransfer(
-          `${process.env.WORKSTATION_URL}/transcription/start_transcription`,
+          `${process.env.WORKSTATION_URL}/transcription/transcribe`, //changed from start transcription
           newPath,
           reportId
         );

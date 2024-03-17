@@ -264,7 +264,7 @@ async function findAllReports(query, res) {
 async function updateTransferDataStatus(reports) {
   for (let report of reports) {
     //for (let transfer of report.transferData) {
-    if (report.transferData.status != "completed") {
+    if (report.transferData.status != "completed" || report.transferData.progress != "finished") {
       //added 3/12
       try {
         const response = await axios.get(
@@ -275,26 +275,38 @@ async function updateTransferDataStatus(reports) {
             },
           }
         );
-        //console.log(`response:${response},result:${response.data.result}`)
-        // Dynamically update transfer object based on response fields
-        const updateFields = [
-          "fileName",
-          "duration",
-          "end_time",
-          "job_id",
-          "model_type",
-          "start_time",
-          "status",
-        ]; //, 'result'];
-        updateFields.forEach((field) => {
-          if (response.data.hasOwnProperty(field)) {
-            report.transferData[field] = response.data[field];
-          }
-        });
+
+        if (response.data.hasOwnProperty('meta')) {
+          //console.log(`response:${response},result:${response.data.result}`)
+          // Dynamically update transfer object based on response fields
+          const metaFields = [
+            "fileName",
+            "duration",
+            "end_time",
+            "job_id",
+            "job_type",
+            "model_type",
+            "start_time",
+            "status",
+            "progress",
+            "message"
+
+          ]; //, 'result'];
+          metaFields.forEach((field) => {
+            if (response.data.hasOwnProperty(field)) {
+              report.transferData[field] = response.data[field];
+            }
+          });
+        }
+        // Handling for status which is outside meta
+        if (response.data.hasOwnProperty("status")) {
+          report.transferData["status"] = response.data["status"];
+        }
 
         if (response.data.hasOwnProperty("result")) {
           report.transferData["result"] = response.data["result"];
         }
+
       } catch (error) {
         console.error(
           "Error querying workstation for job_id:",
