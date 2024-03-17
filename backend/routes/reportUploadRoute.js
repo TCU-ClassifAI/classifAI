@@ -125,8 +125,8 @@ router.post(
           response.url = url;
 
           response.transferStatus = "successful";
-          const job_id = ytResponse.data.job_id; // Return job_id to the client for polling
-          const yt_title = ytResponse.data.title;
+          const job_id = ytResponse.data.meta.job_id; // Return job_id to the client for polling
+          const yt_title = ytResponse.data.meta.title;
           let job = await getInitialJobReq(process.env.WORKSTATION_URL, job_id);
           response.data.job_id = job_id; // Return job_id to the client
           response.flag = true;
@@ -207,7 +207,7 @@ router.post(
               reportId
             );
             response.transferStatus = "successful";
-            const job_id = transferResponse.data.job_id; // Return job_id to the client for polling
+            const job_id = transferResponse.data.meta.job_id; // Return job_id to the client for polling
             let job = await getInitialJobReq(
               process.env.WORKSTATION_URL,
               job_id

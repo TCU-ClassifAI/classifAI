@@ -149,7 +149,7 @@ router.post("/reports/:reportId/users/:userId",
           newPath,
           reportId
         );
-        const job_id = transferResponse.data.job_id; // Return job_id to the client for polling
+        const job_id = transferResponse.data.meta.job_id; // Return job_id to the client for polling
         let job = await getInitialJobReq(process.env.WORKSTATION_URL, job_id);
         response.data.job_id = job_id; // Return job_id to the client
         response.flag = true;
