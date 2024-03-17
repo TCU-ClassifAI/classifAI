@@ -128,24 +128,28 @@ router.post(
           const job_id = ytResponse.data.job_id; // Return job_id to the client for polling
           const yt_title = ytResponse.data.title;
           let job = await getInitialJobReq(process.env.WORKSTATION_URL, job_id);
+          
+          let transcriptionData = {
+            ...job.transcriptionData.meta,
+            status: job.status 
+          };
+          
           response.data.job_id = job_id; // Return job_id to the client
           response.flag = true;
           response.code = 200;
           response.message =
             "YouTube transcription started and database entry successfully";
 
-          const { result, ...transferData } = job.transcriptionData;
-
           // Update transferData for newest audioFile transfer
           report.transferData = {
-            ...transferData,
+            ...transcriptionData,
             fileName: yt_title || url, //providedFileName || path.basename(newPath),
           };
           await dbconnect.updateReport(
             { userId, reportId },
             {
               transferData: report.transferData,
-              status: job.status,
+              status: transcriptionData.status,
               audioFile: yt_title ||url, //providedFileName || path.basename(newPath),
             }
           );
@@ -208,6 +212,7 @@ router.post(
             );
             response.transferStatus = "successful";
             const job_id = transferResponse.data.job_id; // Return job_id to the client for polling
+            
             let job = await getInitialJobReq(
               process.env.WORKSTATION_URL,
               job_id
@@ -218,23 +223,26 @@ router.post(
             response.message =
               "File uploaded, database entry successfully, and transcription started";
 
-            const { result, ...transferData } = job.transcriptionData;
+            let transcriptionData = {
+              ...job.transcriptionData.meta,
+              status: job.status // Assuming 'status' is directly under 'job'
+            };
 
             response.transferData = {
-              ...transferData,
+              ...transcriptionData,
               fileName: providedFileName || path.basename(newPath),
             };
 
             // Update transferData for newest audioFile transfer
             report.transferData = {
-              ...transferData,
+              ...transcriptionData,
               fileName: providedFileName || path.basename(newPath),
             };
             await dbconnect.updateReport(
               { userId, reportId },
               {
                 transferData: report.transferData,
-                status: job.status,
+                status: transcriptionData.status,
                 audioFile: providedFileName || path.basename(newPath),
               }
             );
