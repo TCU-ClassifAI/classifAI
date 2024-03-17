@@ -294,6 +294,7 @@ async function updateTransferDataStatus(reports) {
           ]; //, 'result'];
           metaFields.forEach((field) => {
             if (response.data.hasOwnProperty(field)) {
+              console.log(field)
               report.transferData[field] = response.data[field];
             }
           });
