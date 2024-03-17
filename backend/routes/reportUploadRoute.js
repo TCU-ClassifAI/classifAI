@@ -126,7 +126,7 @@ router.post(
 
           response.transferStatus = "successful";
           const job_id = ytResponse.data.job_id; // Return job_id to the client for polling
-          console.log('job id:',job_id);
+          //console.log('job id:',job_id);
 
           const yt_title = ytResponse.data.title;
           //let job = await getInitialJobReq(process.env.WORKSTATION_URL, job_id);
@@ -137,7 +137,7 @@ router.post(
           // };
           
           response.data.job_id = job_id; // Return job_id to the client
-          console.log('response data:', response.data);
+          //console.log('response data:', response.data);
           response.flag = true;
           response.code = 200;
           response.message =
@@ -150,7 +150,7 @@ router.post(
             fileName: yt_title || url, //providedFileName || path.basename(newPath),
           };
 
-          console.log('transfer data:' ,report.transferData);
+          //('transfer data:' ,report.transferData);
           await dbconnect.updateReport(
             { userId, reportId },
             {

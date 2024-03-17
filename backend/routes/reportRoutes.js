@@ -283,7 +283,7 @@ async function updateTransferDataStatus(reports) {
           //console.log('meta response:',response.data.meta);
           for (const [key, value] of Object.entries(response.data.meta)) {
             report.transferData[key] = value;
-            console.log(report.transferData[key]);
+            //(report.transferData[key]);
           }
 
         }
@@ -296,7 +296,7 @@ async function updateTransferDataStatus(reports) {
           report.transferData["result"] = response.data.result;
         }
 
-        console.log(report.transferData)
+        //(report.transferData)
 
       } catch (error) {
         console.error(
