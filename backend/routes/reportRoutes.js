@@ -264,7 +264,7 @@ async function findAllReports(query, res) {
 async function updateTransferDataStatus(reports) {
   for (let report of reports) {
     //for (let transfer of report.transferData) {
-    if (report.transferData.status != "completed") {
+    if (!report.transferData.result) {//(report.transferData.status != "completed") {
       //added 3/12
       try {
         const response = await axios.get(
