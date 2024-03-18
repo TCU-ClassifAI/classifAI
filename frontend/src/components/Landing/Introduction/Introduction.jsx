@@ -5,7 +5,7 @@ import classroomgraphic from "../../../images/classroomgraphic.jpg";
 
 export default function Introduction() {
     const title =
-        "An Instructional Equity Observing Tool Powered by AI";
+        "A Human-Centered AI-Driven Instructional Feedback System";
     const sections = [
         {
             title: "Why:",
@@ -20,7 +20,7 @@ export default function Introduction() {
         {
             title: "What:",
             content:
-                "An online video/audio analysis platform to assist educators in understanding how their interactions with students impact real learning. It provides quantifiable metrics related to teacher-student interaction, such as talk time, student response time, and question types (categorized by Blooms Taxonomy).",
+                "An online video/audio analysis platform to assist educators in understanding how their interactions with students impact real learning. It provides quantifiable metrics related to teacher-student interaction, such as talk time, student response time, and question types (categorized by Costa level).",
         },
         {
             title: "Where:",
