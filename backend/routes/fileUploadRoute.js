@@ -145,7 +145,7 @@ router.post("/reports/:reportId/users/:userId",
 
       if (audioTypes.includes(fileType)) {
         const transferResponse = await handleFileTransfer(
-          `${process.env.WORKSTATION_URL}/transcription/start_transcription`,
+          `${process.env.WORKSTATION_URL}/transcription/transcribe`, //changed from start transcription
           newPath,
           reportId
         );
@@ -157,17 +157,21 @@ router.post("/reports/:reportId/users/:userId",
         response.message =
           "File uploaded, database entry successfully, and transcription started";
 
-        const { result, ...transferData } = job.transcriptionData;
+
+        let transcriptionData = {
+          ...job.transcriptionData.meta,
+          status: job.status // Assuming 'status' is directly under 'job'
+        };
 
         try {
           response.transferData = {
-            ...transferData,
+            ...transcriptionData,
             fileName: providedFileName || path.basename(newPath),
           };
 
           // Update transferData for newest audioFile transfer
           report.transferData = {
-            ...transferData,
+            ...transcriptionData,
             fileName: providedFileName || path.basename(newPath),
           };
 
@@ -180,7 +184,7 @@ router.post("/reports/:reportId/users/:userId",
             { userId, reportId },
             {
               transferData: report.transferData,
-              status: job.status,
+              status: transcriptionData.status,
               audioFile: providedFileName || path.basename(newPath),
             }
           );
