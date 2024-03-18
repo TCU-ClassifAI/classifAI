@@ -267,6 +267,7 @@ async function updateTransferDataStatus(reports) {
     if (report.transferData.status != "completed") {
       //added 3/12
       try {
+        //console.log(report.transferData.job_id)
         const response = await axios.get(
           `${process.env.WORKSTATION_URL}/transcription/get_transcription_status`,
           {
@@ -275,33 +276,34 @@ async function updateTransferDataStatus(reports) {
             },
           }
         );
-        //console.log(`response:${response},result:${response.data.result}`)
-        // Dynamically update transfer object based on response fields
-        const updateFields = [
-          "fileName",
-          "duration",
-          "end_time",
-          "job_id",
-          "model_type",
-          "start_time",
-          "status",
-        ]; //, 'result'];
-        updateFields.forEach((field) => {
-          if (response.data.hasOwnProperty(field)) {
-            report.transferData[field] = response.data[field];
-          }
-        });
 
-        if (response.data.hasOwnProperty("result")) {
-          report.transferData["result"] = response.data["result"];
+        if (response.data.meta) {
+          //console.log(`response:${response},result:${response.data.result}`)
+          // Dynamically update transfer object based on response fields
+          //console.log('meta response:',response.data.meta);
+          for (const [key, value] of Object.entries(response.data.meta)) {
+            report.transferData[key] = value;
+            //(report.transferData[key]);
+          }
+
         }
+        // Handling for status which is outside meta
+        if (response.data.status) {
+          report.transferData["status"] = response.data.status;
+        }
+
+        if (response.data.result) {
+          report.transferData["result"] = response.data.result;
+        }
+
+        //(report.transferData)
+
       } catch (error) {
         console.error(
           "Error querying workstation for job_id:",
           report.transferData.job_id,
           error
         );
-        // Optionally handle specific actions on failure (e.g., retry logic, logging)
       }
 
       // Save updated report to the database
