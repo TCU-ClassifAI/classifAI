@@ -39,7 +39,7 @@ export default function ExportDataFiles() {
   const fetchUserFiles = async () => {
     try {
       const response = await axios.get(
-        `${window.backendServer}/files/users/${userId}?fileType=csv&fileType=pdf`
+        `${import.meta.env.VITE_BACKEND_SERVER}/files/users/${userId}?fileType=csv&fileType=pdf`
       );
       const flattenedData = response.data.reduce((acc, obj) => {
         obj.file.forEach((file, index) => {
@@ -90,7 +90,7 @@ export default function ExportDataFiles() {
 
     try {
       await axios.put(
-        `${window.backendServer}/files/${oldFileName}/reports/${reportId}/users/${userId}`,
+        `${import.meta.env.VITE_BACKEND_SERVER}/files/${oldFileName}/reports/${reportId}/users/${userId}`,
         {
           fileName: newFileName,
         }
@@ -116,7 +116,7 @@ export default function ExportDataFiles() {
 
       try {
         await axios.delete(
-          `${window.backendServer}/files/${fileNameToDelete}/reports/${reportId}/users/${userId}`
+          `${import.meta.env.VITE_BACKEND_SERVER}/files/${fileNameToDelete}/reports/${reportId}/users/${userId}`
         );
 
         const updatedFiles = files.filter((file) => file.key !== key);
@@ -133,7 +133,7 @@ export default function ExportDataFiles() {
   const handleDownloadClick = async (reportId, fileName, fileType) => {
     try {
       const response = await axios.get(
-        `${window.backendServer}/files/${fileName}/reports/${reportId}/users/${userId}?download=true`,
+        `${import.meta.env.VITE_BACKEND_SERVER}/files/${fileName}/reports/${reportId}/users/${userId}?download=true`,
         {
           responseType: "blob", // Set response type to blob
         }

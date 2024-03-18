@@ -52,7 +52,7 @@ export default function Analyze() {
         console.error("Error fetching user data:", error);
       }
     }
-    // console.log(window.backendServer);
+    // console.log(import.meta.env.VITE_BACKEND_SERVER);
     retrieveUserInfo();
   }, []);
 

@@ -68,7 +68,7 @@ export default function UploadRecording({
       formData.append("subject", subject);
 
       const response = await axios.post(
-        `${window.backendServer}/reports/${reportId}/users/${userId}`,
+        `${import.meta.env.VITE_BACKEND_SERVER}/reports/${reportId}/users/${userId}`,
         formData, // Pass formData directly as data
         {
           headers: {
@@ -90,7 +90,7 @@ export default function UploadRecording({
   async function checkAnalysisStatus() {
     try {
       const response = await axios.get(
-        `${window.backendServer}/reports/${reportId}/users/${userId}/`
+        `${import.meta.env.VITE_BACKEND_SERVER}/reports/${reportId}/users/${userId}/`
       );
 
       const status = response.data.reports[0].transferData.status;

@@ -121,7 +121,7 @@ export default function CsvOptions({ sentences, reportName, setReportName, userI
       formData.append('file', blob, `${finalFileName}.csv`);
   
       // Make a POST request to upload the file
-      await axios.post(`${window.backendServer}/files/reports/${reportName}/users/${userId}`, formData, {
+      await axios.post(`${import.meta.env.VITE_BACKEND_SERVER}/files/reports/${reportName}/users/${userId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }

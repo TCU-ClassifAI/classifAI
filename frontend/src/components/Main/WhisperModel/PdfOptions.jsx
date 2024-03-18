@@ -93,7 +93,7 @@ const PdfOptions = ({
     const formData = new FormData();
     formData.append("file", pdfBlob, `${pdfName}.pdf`);
     // Make API call using Axios to save the PDF
-    axios.post(`${window.backendServer}/files/reports/${reportId}/users/${userId}`, 
+    axios.post(`${import.meta.env.VITE_BACKEND_SERVER}/files/reports/${reportId}/users/${userId}`, 
       formData,
       {
         headers: {

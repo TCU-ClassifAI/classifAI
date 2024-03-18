@@ -23,7 +23,7 @@ export default function SaveChanges({
     // investigate why these only work when separated, might be due to different content types
     try {
       await axios.put(
-        `${window.backendServer}/reports/${reportId}/users/${userId}`,
+        `${import.meta.env.VITE_BACKEND_SERVER}/reports/${reportId}/users/${userId}`,
         {
           reportName: reportName,
           gradeLevel: gradeLevel,
@@ -32,7 +32,7 @@ export default function SaveChanges({
       );
 
       await axios.put(
-        `${window.backendServer}/reports/${reportId}/users/${userId}`,
+        `${import.meta.env.VITE_BACKEND_SERVER}/reports/${reportId}/users/${userId}`,
         {
           result: transcription,
         }
