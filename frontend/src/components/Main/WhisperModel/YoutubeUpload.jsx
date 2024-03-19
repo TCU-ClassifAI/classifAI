@@ -1,19 +1,21 @@
-import TextField from '@mui/material/TextField';
+import TextField from "@mui/material/TextField";
 
-export default function YoutubeUpload({
-    setYoutubeUrl,
-}) {
+export default function YoutubeUpload({ setYoutubeUrl, isAnalyzing }) {
+  const handleOnBlur = (event) => {
+    setYoutubeUrl(event.target.value);
+  };
 
-    const handleOnBlur = (event) => {
-        setYoutubeUrl(event.target.value)
-    }; 
+  return (
+    <div>
+      <h4>Please paste a Youtube Link to be transcribed and analyzed</h4>
 
-    return (
-        <div>
-        <h4>Please paste a Youtube Link to be transcribed and analyzed</h4>
-
-        <TextField variant="outlined" label="Youtube Link"  fullWidth onBlur={handleOnBlur}/>
-
-        </div>
-    )
+      <TextField
+        variant="outlined"
+        label="Youtube Link"
+        fullWidth
+        onBlur={handleOnBlur}
+        disabled={isAnalyzing}
+      />
+    </div>
+  );
 }
