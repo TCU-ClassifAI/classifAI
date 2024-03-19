@@ -1,17 +1,22 @@
-import { ProgressBar } from "react-bootstrap";
+import { ProgressBar, Form } from "react-bootstrap";
 import GenericModal from "../../Common/GenericModal";
 import { useState, useEffect } from "react";
+import YoutubeUpload from "./YoutubeUpload";
 import axios from "axios";
 import styles from "./UploadRecording.module.css";
 
 export default function UploadRecording({
   reportName,
+  gradeLevel,
+  subject,
   userId,
   reportId,
-  setReportId,
+  setGradeLevel,
   setTranscription,
-  analysisStatus,
+  setSubject,
   setAnalysisStatus,
+  setReportName,
+  analysisStatus,
   location,
 }) {
   const [isAudio, setIsAudio] = useState(false);
@@ -25,6 +30,9 @@ export default function UploadRecording({
   const [showGenericModal, setShowGenericModal] = useState(false);
   const [genericModalMsg, setGenericModalMsg] = useState("");
   const [genericModalTitle, setGenericModalTitle] = useState("");
+  const [youtubeMode, setYoutubeMode] = useState(false);
+  const [youtubeUrl, setYoutubeUrl] = useState("");
+  const [analysisStatusMsg, setAnalysisStatusMsg] = useState("");
 
   useEffect(() => {
     if (location.state && location.state.reportId) {
@@ -51,11 +59,17 @@ export default function UploadRecording({
     setIsAnalyzing(true);
     try {
       const formData = new FormData();
-      formData.append("file", selectedFile);
+      if (youtubeMode) {
+        formData.append("url", youtubeUrl);
+      } else {
+        formData.append("file", selectedFile);
+      }
       formData.append("reportName", reportName);
+      formData.append("gradeLevel", gradeLevel);
+      formData.append("subject", subject);
 
       const response = await axios.post(
-        `http://localhost:5001/reports/${reportId}/users/${userId}`,
+        `${import.meta.env.VITE_BACKEND_SERVER}/reports/${reportId}/users/${userId}`,
         formData, // Pass formData directly as data
         {
           headers: {
@@ -77,33 +91,48 @@ export default function UploadRecording({
   async function checkAnalysisStatus() {
     try {
       const response = await axios.get(
-        `http://localhost:5001/reports/${reportId}/users/${userId}/`
+        `${import.meta.env.VITE_BACKEND_SERVER}/reports/${reportId}/users/${userId}/`
       );
 
       const status = response.data.reports[0].transferData.status;
-      console.log("Checked Status!");
+      const progress = response.data.reports[0].transferData.progress;
+      const message = response.data.reports[0].transferData.message;
+      const grade = response.data.reports[0].gradeLevel;
+      const reportSubject = response.data.reports[0].subject;
+      const reportName = response.data.reports[0].reportName;
 
-      setAnalysisStatus(status);
+      console.log(response);
 
-      if (status === "completed") {
+      if (progress) {
+        setAnalysisStatus(progress);
+      }
+      else {
+        setAnalysisStatus(status);
+      }
+      setAnalysisStatusMsg(message);
+      setGradeLevel(grade);
+      setSubject(reportSubject);
+      setReportName(reportName);
+
+      if (progress === "finished" || progress === "completed" || status === "completed") {
         setIsAnalyzing(false); // Stop analysis once completed
         const transcription = response.data.reports[0].transferData.result;
+        console.log(transcription);
         setTranscription(transcription);
         setProgress(100);
-        console.log(transcription);
-      } else if (status === "transcribing") {
-        setProgress(25);
-      } else if (status === "diarizing") {
-        setProgress(50);
-      } else if (status === "punctuating") {
-        setProgress(75);
-      } else if (status === "failed") {
+      } else if (progress === "splitting") {
+        setProgress(20);
+      } else if (progress === "loading-nemo") {
+        setProgress(40);
+      } else if (progress === "transcribing") {
+        setProgress(60);
+      } else if (progress === "aligning") {
+        setProgress(80);
+      } else if (progress === "started" || progress === "queued") {
+        setProgress(5);
+      }
+      else {
         setProgress(0);
-        setShowGenericModal(true);
-        console.log("Engine failed to transcribe file!");
-        setGenericModalMsg("Engine failed to transcribe file!");
-        setGenericModalTitle("Error");
-        setShowGenericModal(true);
       }
     } catch (error) {
       console.log("Error checking analysis status!", error);
@@ -139,7 +168,7 @@ export default function UploadRecording({
 
   const renderMediaElement = (tag) => (
     <div>
-      <p>Click "Submit" to begin file analysis</p>
+      <p>Click "Analyze Recording" to begin file analysis</p>
       {tag === "audio" && (
         <audio controls id="audio-player">
           <source
@@ -155,22 +184,6 @@ export default function UploadRecording({
             type={selectedFile.type}
           />
         </video>
-      )}
-      {isAnalyzing && (
-        <div>
-          <p>
-            Our Engine is analyzing audio in the background. You may wait until completion or you may leave this page
-            and load it back in the 'My Reports' page!
-          </p>
-          <ProgressBar
-            animated
-            variant="info"
-            now={progress}
-            className={styles.progessBar}
-            label={analysisStatus}
-          />
-          <p>Analysis Status: ({analysisStatus})</p>
-        </div>
       )}
     </div>
   );
@@ -204,17 +217,46 @@ export default function UploadRecording({
     setShowGenericModal(false);
   };
 
+  const handleSwitchChange = () => {
+    setYoutubeMode(!youtubeMode);
+  };
+
   return (
-    <div>
+    <>
       <GenericModal
         title={genericModalTitle}
         message={genericModalMsg}
         showGenericModal={showGenericModal}
         handleCloseGenericModal={handleCloseGenericModal}
       />
-      {renderUploadSection()}
-      {(isAudio || isVideo || isNeither || isAnalyzing) &&
-        renderMediaElement(isAudio ? "audio" : isVideo ? "video" : null)}
+      <div className={styles.switchContainer}>
+        <Form.Check
+          className={styles.switchLabel}
+          label="Use Youtube Link"
+          type="switch"
+          checked={youtubeMode}
+          onChange={handleSwitchChange}
+          id="useYoutubeLinkSwitch"
+        />
+      </div>
+
+      {(youtubeMode && analysisStatus !== "finished") && (
+        <div>
+          <YoutubeUpload
+            youtubeUrl={youtubeUrl}
+            setYoutubeUrl={setYoutubeUrl}
+            isAnalyzing={isAnalyzing}
+          />
+        </div>
+      )}
+
+      {!youtubeMode && (
+        <div>
+          {renderUploadSection()}
+          {(isAudio || isVideo || isNeither || isAnalyzing) &&
+            renderMediaElement(isAudio ? "audio" : isVideo ? "video" : null)}
+        </div>
+      )}
       {!isAnalyzing && (
         <>
           <p></p>
@@ -223,22 +265,29 @@ export default function UploadRecording({
             className="btn btn-primary"
             id="submission-main"
             onClick={() => handleSubmission({ selectedFile })}
-            disabled={!isFileSelected}
+            disabled={!isFileSelected && !youtubeUrl}
           >
             Analyze Recording
           </button>
         </>
       )}
       {isAnalyzing && (
-        <button
-          type="button"
-          className="btn btn-primary"
-          id="submission-main"
-          onClick={() => window.location.reload()}
-        >
-          Cancel
-        </button>
+        <div>
+          <p>
+            Our Engine is analyzing audio in the background. You may wait until
+            completion or you may leave this page and load it back in the 'My
+            Reports' page!
+          </p>
+          <ProgressBar
+            animated
+            variant="info"
+            now={progress}
+            className={styles.progessBar}
+            label={analysisStatus}
+          />
+          <p>Analysis Status Description: ({analysisStatusMsg})</p>
+        </div>
       )}
-    </div>
+    </>
   );
 }

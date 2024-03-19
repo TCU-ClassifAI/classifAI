@@ -1,0 +1,31 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .checkboxGroup {
+    margin-bottom: 10px;
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .checkbox {
+    margin-right: 10px;
+  }
+  
+  .dropdown {
+    margin-bottom: 10px;
+  }
+  
+  .fileNameInput {
+    margin-bottom: 10px;
+    width: 800px;
+  }
+
+  

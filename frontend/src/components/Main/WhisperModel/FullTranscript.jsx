@@ -1,6 +1,6 @@
+import React, { useState, useEffect, useCallback } from "react";
 import { Dropdown } from "react-bootstrap";
 import { convertMsToTime } from "../../../utils/convertMsToTime";
-import { useState, useEffect } from "react";
 import styles from "./FullTranscript.module.css";
 
 export default function FullTranscript({
@@ -9,11 +9,12 @@ export default function FullTranscript({
   speakers,
   setSpeakers,
   teacher,
-  show,
-  setShow,
+  setChangeAlert
 }) {
   const [isRelabelingSpeaker, setIsRelabelingSpeaker] = useState(false);
-  const [editing, setEditing] = useState(false);
+  const [editingSpeaker, setEditingSpeaker] = useState(null);
+  const [editingText, setEditingText] = useState(null);
+  const [newSpeakerName, setNewSpeakerName] = useState("");
 
   const speakerColors = [
     "#0074D9",
@@ -44,95 +45,101 @@ export default function FullTranscript({
     setSpeakers(uniqueSpeakers);
   }, [transcription]);
 
-  function handleRelabelSpeaker(sentence, newSpeaker) {
-    const newTranscription = transcription.map((prevSentence) => {
-      if (prevSentence.start_time === sentence.start_time) {
-        return { ...prevSentence, speaker: newSpeaker };
-      }
-      return prevSentence;
-    });
-    setTranscription(newTranscription);
-  }
-
-  const handleItemClick = (sentence, speaker) => {
-    handleRelabelSpeaker(sentence, speaker);
-    setIsRelabelingSpeaker(false);
-    setShow(null);
-  };
-
-  const CustomToggle = ({ children, onClick }) => (
-    <div onClick={onClick} style={{ cursor: "pointer" }}>
-      {children}
-    </div>
+  const handleRelabelSpeaker = useCallback(
+    (sentence, newSpeaker, editAll) => {
+      const newTranscription = transcription.map((prevSentence) => {
+        if (
+          editAll ||
+          (prevSentence.start_time === sentence.start_time &&
+            editingSpeaker === sentence.start_time)
+        ) {
+          return { ...prevSentence, speaker: newSpeaker };
+        }
+        return prevSentence;
+      });
+      setTranscription(newTranscription);
+      setChangeAlert(true);
+    },
+    [transcription, setTranscription, editingSpeaker, setChangeAlert]
   );
 
-  const handleToggle = (event) => {
-    if (show !== null) {
-      //event.stopPropagation();
+  const handleItemClick = useCallback(
+    (sentence, speaker) => {
+      handleRelabelSpeaker(sentence, speaker, false);
+      setIsRelabelingSpeaker(false);
+    },
+    [handleRelabelSpeaker, setIsRelabelingSpeaker]
+  );
+
+  const handleEditAllOccurences = useCallback(
+    (sentence, newSpeaker) => {
+      const newTranscription = transcription.map((prevSentence) => {
+        if (prevSentence.speaker === sentence.speaker) {
+          return { ...prevSentence, speaker: newSpeaker };
+        }
+        return prevSentence;
+      });
+      setTranscription(newTranscription);
+      setIsRelabelingSpeaker(false);
+      setChangeAlert(true);
+      setEditingSpeaker(null); // Reset editingSpeaker after editing all occurrences
+    },
+    [transcription, setTranscription, setIsRelabelingSpeaker, setChangeAlert]
+  );
+
+  const handleBlur = useCallback(() => {
+    setEditingSpeaker(null);
+    setEditingText(null);
+  }, []);
+
+  const handleChangeText = useCallback(
+    (sentence, event) => {
+      const newTranscription = transcription.map((prevSentence) => {
+        if (prevSentence.start_time === sentence.start_time) {
+          return { ...prevSentence, text: event.target.value };
+        }
+        return prevSentence;
+      });
+      setTranscription(newTranscription);
+      setNewSpeakerName("");
+      setChangeAlert(true);
+    },
+    [transcription, setTranscription, setChangeAlert]
+  );
+
+  const handleChangeName = useCallback(
+    (sentence) => {
+      const newTranscription = transcription.map((prevSentence) => {
+        if (prevSentence.start_time === sentence.start_time) {
+          return { ...prevSentence, speaker: newSpeakerName };
+        }
+        return prevSentence;
+      });
+      setTranscription(newTranscription);
+      setIsRelabelingSpeaker(false);
+      setNewSpeakerName("");
+      setChangeAlert(true);
+    },
+    [transcription, setTranscription, newSpeakerName, setIsRelabelingSpeaker, setChangeAlert]
+  );
+
+  const handleInputChange = (e) => {
+    // This prevents the click event from propagating to the Dropdown.Toggle
+    e.stopPropagation();
+  };
+
+  const handleInputKeyDown = (e) => {
+    // Prevent the dropdown from closing when space is pressed
+    if (e.key === " ") {
+      e.stopPropagation();
     }
-    setShow(null);
-  };
-
-  const handleBlur = () => {
-    setEditing(false);
-  };
-
-  const handleChangeText = (sentence, event) => {
-    const newTranscription = transcription.map((prevSentence) => {
-      if (prevSentence.start_time === sentence.start_time) {
-        return { ...prevSentence, text: event.target.value };
-      }
-      return prevSentence;
-    });
-    setTranscription(newTranscription);
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.keyCode === 13) {
-      e.target.blur();
-    }
-  };
-
-  const removeSentence = (removedSentence) => {
-    const updatedTranscription = transcription.filter(
-      (sentence) => sentence.start_time !== removedSentence.start_time
-    );
-    setTranscription(updatedTranscription);
-  };
-
-  const handleAddNewSentence = (sentencePrior) => {
-    const selectedIndex = transcription.findIndex((s) => s === sentencePrior);
-    const newStart = Math.ceil(sentencePrior.start_time / 1000) * 1000;
-    const newEnd = newStart + 1000;
-    const newSentence = {
-      start_time: newStart,
-      end_time: newEnd,
-      speaker: "A",
-      text: "",
-    };
-    const updatedTranscription = [
-      ...transcription.slice(0, selectedIndex + 1),
-      newSentence,
-      ...transcription.slice(selectedIndex + 1),
-    ];
-    setTranscription(updatedTranscription);
-  };
-
-  const handleAddNewSpeaker = (sentence) => {
-    const newSpeaker = String.fromCharCode(
-      Array.from(new Set(speakers)).length + 65
-    );
-    console.log(newSpeaker); // Assuming speakers are uppercase letters starting from 'A'
-    handleRelabelSpeaker(sentence, newSpeaker);
-    setIsRelabelingSpeaker(false);
-    setShow(null);
   };
 
   return (
     <>
       <div className="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto">
         <h1>Full Transcript</h1>
-        <h4>Click on a sentence to make adjustments to "Questions" list</h4>
+        <h4>Click on a cell to edit</h4>
         <div className="lead" style={{ backgroundColor: "white" }}>
           <table className="table">
             <thead>
@@ -149,49 +156,64 @@ export default function FullTranscript({
                   <td>{convertMsToTime(sentence.start_time)}</td>
                   <td>{convertMsToTime(sentence.end_time)}</td>
                   <td>
-                    <Dropdown show={show === sentence.start_time}>
-                      <CustomToggle onClick={(event) => handleToggle(event)}>
-                        <span
-                          className="speaker"
-                          style={{
-                            color:
-                              speakerColors[speakers.indexOf(sentence.speaker)],
-                          }}
-                        >
+                    {editingSpeaker === sentence.start_time ? (
+                      <Dropdown>
+                        <Dropdown.Toggle variant="primary" id="dropdown-basic">
                           {sentence.speaker}
-                        </span>
-                      </CustomToggle>
-                      <Dropdown.Menu>
-                        {speakers.map((speaker) => (
-                          <Dropdown.Item
-                            key={`handle-speaker-click-${sentence.start_time}-${speaker}`}
-                            onClick={() => handleItemClick(sentence, speaker)}
-                          >
-                            {speaker}
+                        </Dropdown.Toggle>
+                        <Dropdown.Menu onClick={(e) => e.stopPropagation()}>
+                        <Dropdown.Item>
+                            <input
+                              type="text"
+                              placeholder="New Name"
+                              value={newSpeakerName}
+                              onChange={(e) => setNewSpeakerName(e.target.value)}
+                              onClick={handleInputChange} // prevent propagation
+                              onKeyDown={handleInputKeyDown} // prevent dropdown close on space
+                            />
+                            <button onClick={() => handleChangeName(sentence)}>Change One</button>
+                            <button onClick={() => handleEditAllOccurences(sentence, newSpeakerName)}>Change All Occurrences</button>
                           </Dropdown.Item>
-                        ))}
-                        <Dropdown.Item
-                          key={`label-new-speaker-${sentence.start_time}`}
-                          onClick={() => handleAddNewSpeaker(sentence)}
-                        >
-                          Label as new speaker
-                        </Dropdown.Item>
-                      </Dropdown.Menu>
-                    </Dropdown>
+                          {speakers.map((speaker) => (
+                            <Dropdown.Item
+                              key={speaker}
+                              onClick={() => handleItemClick(sentence, speaker)}
+                            >
+                              {speaker}
+                            </Dropdown.Item>
+                          ))}
+                        </Dropdown.Menu>
+                      </Dropdown>
+                    ) : (
+                      <span
+                        onClick={() => setEditingSpeaker(sentence.start_time)}
+                        className="speaker"
+                        style={{
+                          color:
+                            speakerColors[speakers.indexOf(sentence.speaker)],
+                          cursor: "pointer",
+                        }}
+                      >
+                        {sentence.speaker}
+                      </span>
+                    )}
                   </td>
-                  <td onClick={() => setShow(sentence.start_time)}>
-                    {editing === sentence.start_time ? (
+                  <td>
+                    {editingText === sentence.start_time ? (
                       <input
-                        className="edit-text"
                         type="text"
                         value={sentence.text}
+                        className={styles.wideInput}
                         onBlur={handleBlur}
-                        onChange={(event) => handleChangeText(sentence, event)}
-                        onKeyDown={(event) => handleKeyPress(event)}
-                        autoFocus
+                        onChange={(event) =>
+                          handleChangeText(sentence, event)
+                        }
                       />
                     ) : (
-                      <div className={styles.transcriptText}>
+                      <div
+                        onClick={() => setEditingText(sentence.start_time)}
+                        className={styles.transcriptText}
+                      >
                         {sentence.text}
                       </div>
                     )}
@@ -209,7 +231,8 @@ export default function FullTranscript({
             {" "}
             {teacher}
           </strong>{" "}
-          is the Teacher (based on greatest speaking time) and <u>all other speakers are Students</u>.
+          is the Teacher (based on greatest speaking time) and{" "}
+          <u>all other speakers are Students</u>.
         </h5>
         <p>
           If this is not the case, please relabel the speakers in the "Full

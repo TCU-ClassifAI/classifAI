@@ -2,22 +2,32 @@ import UploadRecording from "./UploadRecording";
 import FullTranscript from "./FullTranscript";
 import CsvOptions from "./CsvOptions";
 import WordCloud from "./WordCloud";
+import ReportInfo from "./ReportInfo";
+import SaveChanges from "./SaveChanges";
 import TalkingDistribution from "./TalkingDistribution";
-import { useState, useEffect } from "react";
+import PdfOptions from "./PdfOptions";
+import styles from "./Analyze.module.css";
+import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { Auth } from "aws-amplify";
-import { Tab, Tabs } from "react-bootstrap";
+import { Tab, Tabs, Modal, Button } from "react-bootstrap";
+import Alert from "@mui/material/Alert";
 import ParentSize from "@visx/responsive/lib/components/ParentSize";
 
 export default function Analyze() {
   const [userId, setUserId] = useState("");
   const [reportId, setReportId] = useState("");
+  const [gradeLevel, setGradeLevel] = useState("");
+  const [subject, setSubject] = useState("");
   const [transcription, setTranscription] = useState([]);
   const [analysisStatus, setAnalysisStatus] = useState("");
   const [reportName, setReportName] = useState("");
   const [teacher, setTeacher] = useState();
   const [show, setShow] = useState(false);
+  const [changeAlert, setChangeAlert] = useState(false);
+  const [showCsvModal, setShowCsvModal] = useState(false);
   const [speakers, setSpeakers] = useState();
+  const wordCloudRef = useRef(null);
   const location = useLocation();
 
   useEffect(() => {
@@ -37,16 +47,18 @@ export default function Analyze() {
         const user = await Auth.currentAuthenticatedUser();
         const { attributes } = user;
         setUserId(attributes.email);
-        console.log(attributes.email); // Ensure userId is set correctly
+        setGradeLevel(attributes["custom:grade_level"]);
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
     }
+    // console.log(import.meta.env.VITE_BACKEND_SERVER);
     retrieveUserInfo();
   }, []);
 
   useEffect(() => {
     // Calculate speaking time for each speaker
+    console.log(analysisStatus)
     const speakingTime = {};
     transcription.forEach((sentence) => {
       const speaker = sentence.speaker;
@@ -69,7 +81,7 @@ export default function Analyze() {
 
     // Set unique speakers
     setSpeakers(Object.keys(speakingTime));
-  }, [transcription]);
+  }, [transcription,analysisStatus]);
 
   function generateDefaultReportId() {
     const timestamp = new Date().getTime(); // Get current timestamp
@@ -88,34 +100,47 @@ export default function Analyze() {
     return sentenceListStr;
   }
 
-  function handleInputChange(event) {
-    event.persist();
-    setReportName(event.target.value);
-  }
-
   return (
     <>
-      {analysisStatus !== "completed" && (
+      {changeAlert && analysisStatus === "finished" && (
+        <div>
+          <Alert severity="warning">
+            There are unsaved changes. Use 'Save Changes' to save them.
+          </Alert>
+        </div>
+      )}
+      {userId && (
+        <ReportInfo
+          key={`${reportName}-${gradeLevel}-${subject}`}
+          gradeLevel={gradeLevel}
+          subject={subject}
+          reportName={reportName}
+          setReportName={setReportName}
+          setGradeLevel={setGradeLevel}
+          setSubject={setSubject}
+          setChangeAlert={setChangeAlert}
+        />
+      )}
+      {analysisStatus !== "finished" && (
         <UploadRecording
           reportName={reportName}
+          gradeLevel={gradeLevel}
+          subject={subject}
           reportId={reportId}
-          setReportId={setReportId}
+          setSubject={setSubject}
           userId={userId}
           transcription={transcription}
+          setReportName={setReportName}
           setTranscription={setTranscription}
-          analysisStatus={analysisStatus}
+          setGradeLevel={setGradeLevel}
           setAnalysisStatus={setAnalysisStatus}
+          analysisStatus={analysisStatus}
           location={location}
         />
       )}
 
-      {analysisStatus === "completed" && (
+      {(analysisStatus === "completed" || analysisStatus === "finished" )&& (
         <div>
-          <input
-            placeholder="Name this report"
-            onBlur={handleInputChange}
-            id="name-report"
-          ></input>
           <Tabs id="controlled-tab-example">
             <Tab eventKey="TranscriptKey" title="Full Transcript">
               <FullTranscript
@@ -126,6 +151,7 @@ export default function Analyze() {
                 teacher={teacher}
                 setShow={setShow}
                 show={show}
+                setChangeAlert={setChangeAlert}
               />
             </Tab>
             <Tab eventKey="talkingdistribution" title="Talking Distribution">
@@ -148,11 +174,100 @@ export default function Analyze() {
             </Tab>
           </Tabs>
 
-          <CsvOptions
+          <SaveChanges
+            reportName={reportName}
+            subject={subject}
+            gradeLevel={gradeLevel}
+            reportId={reportId}
+            userId={userId}
+            setChangeAlert={setChangeAlert}
             transcription={transcription}
+          />
+
+          <button
+            className="btn btn-primary"
+            onClick={() => {
+              setShowCsvModal(true);
+            }}
+          >
+            Save & Download CSV
+          </button>
+          <Modal
+            show={showCsvModal}
+            onHide={() => {
+              setShowCsvModal(false);
+            }}
+          >
+            <Modal.Header closeButton>
+              <Modal.Title>CSV Options</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              {
+                <CsvOptions
+                  transcription={transcription}
+                  reportId={reportId}
+                  userId={userId}
+                />
+              }
+            </Modal.Body>
+            <Modal.Footer>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setShowCsvModal(false);
+                }}
+              >
+                Close
+              </Button>
+            </Modal.Footer>
+          </Modal>
+
+          <PdfOptions
+            wordCloudComponent={() => (
+              <div>
+                <ParentSize>
+                  {({ width }) => (
+                    <WordCloud
+                      width={width}
+                      height={600}
+                      showControls="true"
+                      transcript={createSentenceList()}
+                    />
+                  )}
+                </ParentSize>
+              </div>
+            )}
+            transcriptComponent={() => (
+              <FullTranscript
+                transcription={transcription}
+                setTranscription={setTranscription}
+                speakers={speakers}
+                setSpeakers={setSpeakers}
+                teacher={teacher}
+                setShow={setShow}
+                show={show}
+                setChangeAlert={setChangeAlert}
+              />
+            )}
+            talkingDistributionComponent={() => (
+              <div>
+                <TalkingDistribution
+                  transcription={transcription}
+                  teacher={teacher}
+                />
+              </div>
+            )}
             reportId={reportId}
             userId={userId}
           />
+
+          {changeAlert && (
+            <div>
+              <Alert severity="warning">
+                There are unsaved changes. Use 'Save Changes' to save them.
+              </Alert>
+            </div>
+          )}
         </div>
       )}
     </>

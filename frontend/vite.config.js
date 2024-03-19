@@ -1,6 +1,10 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import eslint from 'vite-plugin-eslint';
+import dotenv from 'dotenv';
+
+// Load environment variables from each .env file
+dotenv.config({ path: 'frontend.env' });
 
 // https://vitejs.dev/config/
 export default defineConfig({

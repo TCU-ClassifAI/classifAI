@@ -1,8 +1,9 @@
 import { Modal, Button } from "react-bootstrap";
 export default function ErrorModal({
-  message,
-  showErrorModal,
-  handleCloseErrorModal,
+  message = "An Error has occured",
+  showErrorModal = false,
+  handleCloseErrorModal = () => {
+  },
 }) {
   return (
     <Modal show={showErrorModal} onHide={handleCloseErrorModal}>
