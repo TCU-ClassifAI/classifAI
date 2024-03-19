@@ -58,6 +58,7 @@ export default function Analyze() {
 
   useEffect(() => {
     // Calculate speaking time for each speaker
+    console.log(analysisStatus)
     const speakingTime = {};
     transcription.forEach((sentence) => {
       const speaker = sentence.speaker;
@@ -80,7 +81,7 @@ export default function Analyze() {
 
     // Set unique speakers
     setSpeakers(Object.keys(speakingTime));
-  }, [transcription]);
+  }, [transcription,analysisStatus]);
 
   function generateDefaultReportId() {
     const timestamp = new Date().getTime(); // Get current timestamp
@@ -101,7 +102,7 @@ export default function Analyze() {
 
   return (
     <>
-      {changeAlert && analysisStatus === "completed" && (
+      {changeAlert && analysisStatus === "finished" && (
         <div>
           <Alert severity="warning">
             There are unsaved changes. Use 'Save Changes' to save them.
@@ -120,7 +121,7 @@ export default function Analyze() {
           setChangeAlert={setChangeAlert}
         />
       )}
-      {analysisStatus !== "completed" && (
+      {analysisStatus !== "finished" && (
         <UploadRecording
           reportName={reportName}
           gradeLevel={gradeLevel}

@@ -32,6 +32,7 @@ export default function UploadRecording({
   const [genericModalTitle, setGenericModalTitle] = useState("");
   const [youtubeMode, setYoutubeMode] = useState(false);
   const [youtubeUrl, setYoutubeUrl] = useState("");
+  const [analysisStatusMsg, setAnalysisStatusMsg] = useState("");
 
   useEffect(() => {
     if (location.state && location.state.reportId) {
@@ -95,19 +96,25 @@ export default function UploadRecording({
 
       const status = response.data.reports[0].transferData.status;
       const progress = response.data.reports[0].transferData.progress;
-      const message = response.data.reports[0].transferData.messages;
+      const message = response.data.reports[0].transferData.message;
       const grade = response.data.reports[0].gradeLevel;
       const reportSubject = response.data.reports[0].subject;
       const reportName = response.data.reports[0].reportName;
 
       console.log(response);
 
-      setAnalysisStatus(progress);
+      if (progress) {
+        setAnalysisStatus(progress);
+      }
+      else {
+        setAnalysisStatus(status);
+      }
+      setAnalysisStatusMsg(message);
       setGradeLevel(grade);
       setSubject(reportSubject);
       setReportName(reportName);
 
-      if (progress === "finished" || progress === "completed") {
+      if (progress === "finished" || progress === "completed" || status === "completed") {
         setIsAnalyzing(false); // Stop analysis once completed
         const transcription = response.data.reports[0].transferData.result;
         console.log(transcription);
@@ -233,7 +240,7 @@ export default function UploadRecording({
         />
       </div>
 
-      {youtubeMode && (
+      {(youtubeMode && analysisStatus !== "finished") && (
         <div>
           <YoutubeUpload
             youtubeUrl={youtubeUrl}
@@ -278,7 +285,7 @@ export default function UploadRecording({
             className={styles.progessBar}
             label={analysisStatus}
           />
-          <p>Analysis Status: ({analysisStatus})</p>
+          <p>Analysis Status Description: ({analysisStatusMsg})</p>
         </div>
       )}
     </>
