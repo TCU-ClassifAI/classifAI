@@ -294,7 +294,6 @@ async function updateTransferDataStatus(reports) {
 
         if (response.data.meta.title){
           report.transferData["fileName"] = response.data.meta.title;
-          report.audioFile = response.data.meta.title;
         }
 
 
