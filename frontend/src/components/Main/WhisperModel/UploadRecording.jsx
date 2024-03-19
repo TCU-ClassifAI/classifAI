@@ -107,12 +107,12 @@ export default function UploadRecording({
       setSubject(reportSubject);
       setReportName(reportName);
 
-      if (progress === "finished") {
+      if (progress === "finished" || progress === "completed") {
         setIsAnalyzing(false); // Stop analysis once completed
         const transcription = response.data.reports[0].transferData.result;
+        console.log(transcription);
         setTranscription(transcription);
         setProgress(100);
-        console.log(transcription);
       } else if (progress === "splitting") {
         setProgress(20);
       } else if (progress === "loading-nemo") {
@@ -121,13 +121,11 @@ export default function UploadRecording({
         setProgress(60);
       } else if (progress === "aligning") {
         setProgress(80);
-      } else if (progress === "started") {
+      } else if (progress === "started" || progress === "queued") {
+        setProgress(5);
+      }
+      else {
         setProgress(0);
-        setShowGenericModal(true);
-        console.log("Engine failed to transcribe file!");
-        setGenericModalMsg("Engine failed to transcribe file!");
-        setGenericModalTitle("Error");
-        setShowGenericModal(true);
       }
     } catch (error) {
       console.log("Error checking analysis status!", error);
@@ -240,6 +238,7 @@ export default function UploadRecording({
           <YoutubeUpload
             youtubeUrl={youtubeUrl}
             setYoutubeUrl={setYoutubeUrl}
+            isAnalyzing={isAnalyzing}
           />
         </div>
       )}

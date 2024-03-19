@@ -138,7 +138,7 @@ export default function Analyze() {
         />
       )}
 
-      {analysisStatus === "completed" && (
+      {(analysisStatus === "completed" || analysisStatus === "finished" )&& (
         <div>
           <Tabs id="controlled-tab-example">
             <Tab eventKey="TranscriptKey" title="Full Transcript">
@@ -160,7 +160,7 @@ export default function Analyze() {
               />
             </Tab>
             <Tab eventKey="wordcloud" title="Visualization">
-              <ParentSize ref={wordCloudRef}>
+              <ParentSize>
                 {({ width, height }) => (
                   <WordCloud
                     width={width}
