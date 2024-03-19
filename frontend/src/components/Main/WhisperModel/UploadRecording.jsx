@@ -94,30 +94,34 @@ export default function UploadRecording({
       );
 
       const status = response.data.reports[0].transferData.status;
+      const progress = response.data.reports[0].transferData.progress;
+      const message = response.data.reports[0].transferData.messages;
       const grade = response.data.reports[0].gradeLevel;
       const reportSubject = response.data.reports[0].subject;
       const reportName = response.data.reports[0].reportName;
 
-      console.log("Checked Status!");
+      console.log(response);
 
-      setAnalysisStatus(status);
+      setAnalysisStatus(progress);
       setGradeLevel(grade);
       setSubject(reportSubject);
       setReportName(reportName);
 
-      if (status === "completed") {
+      if (progress === "finished") {
         setIsAnalyzing(false); // Stop analysis once completed
         const transcription = response.data.reports[0].transferData.result;
         setTranscription(transcription);
         setProgress(100);
         console.log(transcription);
-      } else if (status === "transcribing") {
-        setProgress(25);
-      } else if (status === "diarizing") {
-        setProgress(50);
-      } else if (status === "punctuating") {
-        setProgress(75);
-      } else if (status === "failed") {
+      } else if (progress === "splitting") {
+        setProgress(20);
+      } else if (progress === "loading-nemo") {
+        setProgress(40);
+      } else if (progress === "transcribing") {
+        setProgress(60);
+      } else if (progress === "aligning") {
+        setProgress(80);
+      } else if (progress === "started") {
         setProgress(0);
         setShowGenericModal(true);
         console.log("Engine failed to transcribe file!");
