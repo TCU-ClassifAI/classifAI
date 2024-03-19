@@ -292,6 +292,11 @@ async function updateTransferDataStatus(reports) {
           report.transferData["result"] = response.data.result;
         }
 
+        if (response.data.meta.title){
+          report.transferData["fileName"] = response.data.meta.title;
+          report.audioFile = response.data.meta.title;
+        }
+
 
       } catch (error) {
         console.error(
