@@ -1,6 +1,7 @@
 import styles from "./about.module.css"; // Import the CSS file for styling
 import JohnNguyen from "../../../images/headshot_john.jpg";
 import generic from "../../../images/genericprofile.jpg";
+import TaylorGriffin from "../../../images/TaylorGriffin.png";
 
 export default function DeveloperTeam() {
   const developers = [
@@ -26,7 +27,7 @@ export default function DeveloperTeam() {
       name: "Taylor Griffin",
       role: "Developer",
       description: `A senior computer information technology student. Developed the backend written in Express.js. Additionally, designed ClassifAI logo.`,
-      imageUrl: generic,
+      imageUrl: TaylorGriffin,
     },
     {
       name: "Nagato Kadoya",
