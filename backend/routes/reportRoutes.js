@@ -289,11 +289,7 @@ async function updateTransferDataStatus(reports) {
         }
 
         if (response.data.result) {
-          const parsedResult = JSON.parse(response.data.result.replace(/'/g, '"')); 
-          // Needed because it turns result from: "[{'speaker': 'Speaker 0', 'start_time': 60, 'end_time': 3579, 'text': 'Hello my name is Taylor Griffin and I am testing the Endpoints. '}]"
-          // to this: "[{\"speaker\": \"Speaker 0\", \"start_time\": 60, \"end_time\": 3579, \"text\": \"Hello my name is Taylor Griffin and I am testing the Endpoints. \"}]"
-
-          report.transferData["result"] = parsedResult;
+          report.transferData["result"] = response.data.result;
         }
 
 
