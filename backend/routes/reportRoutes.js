@@ -264,10 +264,8 @@ async function findAllReports(query, res) {
 async function updateTransferDataStatus(reports) {
   for (let report of reports) {
     //for (let transfer of report.transferData) {
-    if (report.transferData.status != "completed") {
-      //added 3/12
+    if (report.transferData.status != "finished") {
       try {
-        //console.log(report.transferData.job_id)
         const response = await axios.get(
           `${process.env.WORKSTATION_URL}/transcription/get_transcription_status`,
           {
@@ -278,9 +276,7 @@ async function updateTransferDataStatus(reports) {
         );
 
         if (response.data.meta) {
-          //console.log(`response:${response},result:${response.data.result}`)
           // Dynamically update transfer object based on response fields
-          //console.log('meta response:',response.data.meta);
           for (const [key, value] of Object.entries(response.data.meta)) {
             report.transferData[key] = value;
             //(report.transferData[key]);
@@ -293,10 +289,13 @@ async function updateTransferDataStatus(reports) {
         }
 
         if (response.data.result) {
-          report.transferData["result"] = response.data.result;
+          const parsedResult = JSON.parse(response.data.result.replace(/'/g, '"')); 
+          // Needed because it turns result from: "[{'speaker': 'Speaker 0', 'start_time': 60, 'end_time': 3579, 'text': 'Hello my name is Taylor Griffin and I am testing the Endpoints. '}]"
+          // to this: "[{\"speaker\": \"Speaker 0\", \"start_time\": 60, \"end_time\": 3579, \"text\": \"Hello my name is Taylor Griffin and I am testing the Endpoints. \"}]"
+
+          report.transferData["result"] = parsedResult;
         }
 
-        //(report.transferData)
 
       } catch (error) {
         console.error(
