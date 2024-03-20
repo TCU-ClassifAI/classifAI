@@ -2,6 +2,7 @@ import styles from "./about.module.css"; // Import the CSS file for styling
 import JohnNguyen from "../../../images/headshot_john.jpg";
 import generic from "../../../images/genericprofile.jpg";
 import TaylorGriffin from "../../../images/TaylorGriffin.png";
+import JohnHenryMejia from "../../../images/JohnHenryMejia.jpg";
 
 export default function DeveloperTeam() {
   const developers = [
@@ -13,9 +14,9 @@ export default function DeveloperTeam() {
     },
     {
       name: "John Henry Mejía",
-      role: "Developer",
-      description: `An Honors senior computer science student with a double minor in mathematics and general business. Developed the classifAI engine using flask and WhisperX.`,
-      imageUrl: generic,
+      role: "CEO Developer",
+      description: `A senior computer science student with a double minor in mathematics and general business. Developed the classifAI engine using WhisperX and NVIDIA's NeMo for alignment, and for question categorization by fine-tuning Google's Gemma via LoRA.`,
+      imageUrl: JohnHenryMejia,
     },
     {
       name: "Jaxon Hill",
