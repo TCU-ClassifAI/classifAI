@@ -14,7 +14,7 @@ export default function DeveloperTeam() {
     },
     {
       name: "John Henry Mejía",
-      role: "CEO Developer",
+      role: "Developer",
       description: `A senior computer science student with a double minor in mathematics and general business. Developed the classifAI engine using WhisperX and NVIDIA's NeMo for alignment, and for question categorization by fine-tuning Google's Gemma via LoRA.`,
       imageUrl: JohnHenryMejia,
     },
