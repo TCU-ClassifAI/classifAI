@@ -6,6 +6,7 @@ import ReportInfo from "./ReportInfo";
 import SaveChanges from "./SaveChanges";
 import TalkingDistribution from "./TalkingDistribution";
 import PdfOptions from "./PdfOptions";
+import QuestionCategorization from "./QuestionCategorization";
 import styles from "./Analyze.module.css";
 import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
@@ -27,6 +28,7 @@ export default function Analyze() {
   const [changeAlert, setChangeAlert] = useState(false);
   const [showCsvModal, setShowCsvModal] = useState(false);
   const [speakers, setSpeakers] = useState();
+  const [categorizedQuestions, setCategorizedQuestions] = useState([]);
   const wordCloudRef = useRef(null);
   const location = useLocation();
 
@@ -171,6 +173,15 @@ export default function Analyze() {
                   />
                 )}
               </ParentSize>
+            </Tab>
+            <Tab eventKey="categorization" title="Question Categorization">
+                  <QuestionCategorization 
+                    userId={userId}
+                    reportId={reportId}
+                    setCategorizedQuestions={setCategorizedQuestions}
+                    categorizedQuestions={categorizedQuestions}
+                  />
+
             </Tab>
           </Tabs>
 
