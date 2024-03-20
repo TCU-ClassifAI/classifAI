@@ -119,9 +119,9 @@ router.get("/:reportId/users/:userId", async (req, res) => {
     reports = await updateTransferDataStatus(reports);
 
     // New functionality: WIP question categorization if categorize paramter === true
-    // if (req.query.categorize === 'true') {
-    //   reports = categorizeReports(reports);
-    // }
+    if (req.query.categorize === 'true') {
+      reports = categorizeReports(reports);
+    }
 
     // New functionality: WIP summarize if summarize paramter === true
     // if (req.query.summarize === 'true') {
@@ -335,25 +335,29 @@ async function updateTransferDataStatus(reports) {
 }
 
 
-// async function categorizeReports(report){
-//   if (report.transferData.status === "finished") {
-//     // make and send a JSON file of reports.transferData.result to endpoint
+async function categorizeReports(report){
+  if (report.transferData.status === "finished") {
+    // send a JSON of reports.transferData.result to endpoint
 
-//   try {
-//     const response = await axios.post(
-//       `${process.env.WORKSTATION_URL}/categorize/categorize_transcript`,
-//       {
-//         //the json file of reports.transferData.result to endpoint
-//       }
-//     );
-    
-//   }
+    try {
+      // Sending the result for categorization
+      console.log(report.transferData.result);
+      const response = await axios.post(
+        `${process.env.WORKSTATION_URL}/categorize/categorize_transcript`,
+        report.transferData.result
+      );
 
-//   catch (error) {
 
-//   }
+      console.log(response.data);
+      
+    }
+
+    catch (error) {
+      console.error("Error during report categorization:", error);
+
+    }
   
-//   }
-// }
+  }
+}
 
 module.exports = router;
