@@ -5,6 +5,8 @@ import { Auth } from "aws-amplify";
 import styles from "./MyReports.module.css";
 import ReactPaginate from "react-paginate";
 import ErrorModal from "../../Common/ErrorModal";
+import Alert from "@mui/material/Alert";
+
 
 export default function MyReports() {
   const [files, setFiles] = useState([]);
@@ -14,6 +16,8 @@ export default function MyReports() {
   const [oldFileNameEditing, setOldFileNameEditing] = useState("");
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorModalMsg, setErrorModalMsg] = useState("");
+  const [editSaveSuccess, setEditSaveSuccess] = useState(false);
+  const [alertMsg, setAlertMsg] = useState("");
 
   useEffect(() => {
     async function retrieveUserInfo() {
@@ -45,29 +49,31 @@ export default function MyReports() {
         `${import.meta.env.VITE_BACKEND_SERVER}/reports/users/${userId}`
       );
       console.log(response);
-      const flattenedData = response.data.reduce((acc, obj) => {
-        obj.file.forEach((file, index) => {
-          const lastDotIndex = file.lastIndexOf(".");
-          const fileExtension = file.substring(lastDotIndex + 1);
-          acc.push({
-            key: `${obj.reportId}_${index}`, // Use reportId and index as a key
-            userId: obj.userId,
-            reportId: obj.reportId,
-            reportName: obj.reportName,
-            subject: obj.subject,
-            gradeLevel: obj.gradeLevel,
-            status: obj.transferData.status,
-            fileName: obj.fileName[index],
-            fileType: fileExtension,
-            isEditing: false, // Initialize isEditing to false
-          });
-        });
-        return acc;
-      }, []);
-      const filteredFiles = flattenedData.filter(
-        (file) => file.fileType !== "pdf" && file.fileType !== "csv"
-      );
-      setFiles(filteredFiles.reverse());
+      const reports = response.data;
+      const filtered_reports = reports.map(report => {
+          let fileExtension;
+          let fileName = report.transferData ? String(report.transferData.fileName) : null;
+
+          if (fileName && fileName.toLowerCase().includes("youtube")) {
+              fileExtension = "youtube";
+          } else {
+              fileExtension = fileName.split(".").pop();
+              fileName = fileName.split(".").shift();
+          }
+          return {
+              userId: report.userId,
+              reportId: report.reportId,
+              reportName: report.reportName,
+              subject: report.subject,
+              gradeLevel: report.gradeLevel,
+              status: report.transferData ? report.transferData.status : null,
+              fileName: fileName,
+              fileType: fileExtension,
+              isEditing: false
+          };
+      });
+      
+      setFiles(filtered_reports.reverse());
     } catch (error) {
       console.error("Error fetching user reports:", error);
       setErrorModalMsg(
@@ -79,45 +85,45 @@ export default function MyReports() {
 
   const handleFileNameChange = (event, key) => {
     const updatedFiles = files.map((file) =>
-      file.key === key ? { ...file, fileName: event.target.value } : file
+      file.reportId === key ? { ...file, fileName: event.target.value } : file
     );
     setFiles(updatedFiles);
   };
 
   const handleGradeChange = (event, key) => {
     const updatedFiles = files.map((file) =>
-      file.key === key ? { ...file, gradeLevel: event.target.value } : file
+      file.reportId === key ? { ...file, gradeLevel: event.target.value } : file
     );
     setFiles(updatedFiles);
   };
   
   const handleSubjectChange = (event, key) => {
     const updatedFiles = files.map((file) =>
-      file.key === key ? { ...file, subject: event.target.value } : file
+      file.reportId === key ? { ...file, subject: event.target.value } : file
     );
     setFiles(updatedFiles);
   };
 
   const handleReportNameChange = (event, key) => {
     const updatedFiles = files.map((file) =>
-      file.key === key ? { ...file, reportName: event.target.value } : file
+      file.reportId === key ? { ...file, reportName: event.target.value } : file
     );
     setFiles(updatedFiles);
   };
 
   const handleEditClick = (key) => {
     const updatedFiles = files.map((file) =>
-      file.key === key ? { ...file, isEditing: true } : file
+      file.reportId === key ? { ...file, isEditing: true } : file
     );
-    setOldFileNameEditing(files.find((file) => file.key === key).fileName);
+    setOldFileNameEditing(files.find((file) => file.reportId === key).fileName);
     setFiles(updatedFiles);
   };
 
   const handleSaveClick = async (key) => {
     const updatedFiles = files.map((file) =>
-      file.key === key ? { ...file, isEditing: false } : file
+      file.reportId === key ? { ...file, isEditing: false } : file
     );
-    const fileToUpdate = files.find((file) => file.key === key);
+    const fileToUpdate = files.find((file) => file.reportId === key);
     const {
       fileName: newFileName,
       reportId,
@@ -136,7 +142,8 @@ export default function MyReports() {
       );
 
       setFiles(updatedFiles);
-      console.log("Update Success");
+      setEditSaveSuccess(true);
+      setAlertMsg("Successful update to report name!");
       fetchUserFiles();
     } catch (error) {
       console.error("Error updating file name:", error);
@@ -155,7 +162,8 @@ export default function MyReports() {
       );
 
       setFiles(updatedFiles);
-      console.log("Update Success");
+      setEditSaveSuccess(true);
+      setAlertMsg("Report Id: " + reportId + " report name, subject, or grade updated successfully!");
       fetchUserFiles();
     } catch (error) {
       console.error("Error updating report name, subject, or grade:", error);
@@ -169,7 +177,7 @@ export default function MyReports() {
       "Are you sure you want to delete this file?"
     );
     if (confirmDelete) {
-      const fileToDelete = files.find((file) => file.key === key);
+      const fileToDelete = files.find((file) => file.reportId === key);
       const { reportId } = fileToDelete;
 
       try {
@@ -177,9 +185,11 @@ export default function MyReports() {
           `${import.meta.env.VITE_BACKEND_SERVER}/reports/${reportId}/users/${userId}`
         );
 
-        const updatedFiles = files.filter((file) => file.key !== key);
+        const updatedFiles = files.filter((file) => file.reportId !== key);
         setFiles(updatedFiles);
-        console.log("Delete Success");
+        setEditSaveSuccess(true);
+        setAlertMsg("Report Id: " + reportId + " deleted successfully!")
+
       } catch (error) {
         console.error("Error deleting file:", error);
         setErrorModalMsg("Error deleting file");
@@ -197,26 +207,21 @@ export default function MyReports() {
         }
       );
 
-      // Create a blob object from the response data
       const blob = new Blob([response.data], {
         type: response.headers["content-type"],
       });
 
-      // Create a temporary URL to the blob
       const url = window.URL.createObjectURL(blob);
       const fileExtension = "." + fileType;
       const downloadableFileName = `${fileName}${fileExtension}`;
 
-      // Create a temporary anchor element to trigger the download
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", downloadableFileName); // Set the file name for download
+      link.setAttribute("download", downloadableFileName);
       document.body.appendChild(link);
 
-      // Trigger the download
       link.click();
 
-      // Clean up
       link.parentNode.removeChild(link);
       window.URL.revokeObjectURL(url);
 
@@ -247,6 +252,11 @@ export default function MyReports() {
         showErrorModal={showErrorModal}
         handleCloseErrorModal={handleCloseErrorModal}
       />
+      {editSaveSuccess && (<div>
+          <Alert severity="success">
+            {alertMsg}
+          </Alert>
+      </div>)}
       <div className={styles.tableContainer}>
         <h2>My Reports</h2>
         <table className={styles.prettyTable}>
@@ -266,7 +276,7 @@ export default function MyReports() {
           </thead>
           <tbody>
             {currentItems.map((file, index) => (
-              <tr key={file.key}>
+              <tr key={file.reportId}>
                 <td>{file.reportId}</td>
                 <td>
                   {file.isEditing ? (
@@ -274,7 +284,7 @@ export default function MyReports() {
                       type="text"
                       value={file.reportName}
                       onChange={(event) =>
-                        handleReportNameChange(event, file.key)
+                        handleReportNameChange(event, file.reportId)
                       }
                     />
                   ) : (
@@ -286,7 +296,7 @@ export default function MyReports() {
                     <input
                       type="text"
                       value={file.subject}
-                      onChange={(event) => handleSubjectChange(event, file.key)}
+                      onChange={(event) => handleSubjectChange(event, file.reportId)}
                     />
                   ) : (
                     file.subject
@@ -297,7 +307,7 @@ export default function MyReports() {
                     <input
                       type="text"
                       value={file.gradeLevel}
-                      onChange={(event) => handleGradeChange(event, file.key)}
+                      onChange={(event) => handleGradeChange(event, file.reportId)}
                     />
                   ) : (
                     file.gradeLevel
@@ -309,7 +319,7 @@ export default function MyReports() {
                       type="text"
                       value={file.fileName}
                       onChange={(event) =>
-                        handleFileNameChange(event, file.key)
+                        handleFileNameChange(event, file.reportId)
                       }
                     />
                   ) : (
@@ -322,7 +332,7 @@ export default function MyReports() {
                     <>
                       <button
                         className={styles.saveButton}
-                        onClick={() => handleSaveClick(file.key)}
+                        onClick={() => handleSaveClick(file.reportId)}
                       >
                         Save
                       </button>
@@ -330,7 +340,7 @@ export default function MyReports() {
                         className={styles.cancelButton}
                         onClick={() => {
                           const updatedFiles = files.map((f) =>
-                            f.key === file.key
+                            f.reportId === file.reportId
                               ? {
                                   ...f,
                                   isEditing: false,
@@ -347,7 +357,7 @@ export default function MyReports() {
                   ) : (
                     <button
                       className={styles.editButton}
-                      onClick={() => handleEditClick(file.key)}
+                      onClick={() => handleEditClick(file.reportId)}
                     >
                       Edit
                     </button>
@@ -356,7 +366,7 @@ export default function MyReports() {
                 <td>
                   <button
                     className={styles.deleteButton}
-                    onClick={() => handleDeleteClick(file.key)}
+                    onClick={() => handleDeleteClick(file.reportId)}
                   >
                     Delete
                   </button>
@@ -385,6 +395,7 @@ export default function MyReports() {
                         file.fileType
                       )
                     }
+                    disabled={file.fileType === "youtube"}
                   >
                     Download
                   </button>
