@@ -86,6 +86,7 @@ router.get("/users/:userId", async (req, res) => {
           subject: report.subject,
           fileName: filteredFiles.map((file) => file.fileName),
           transferData: report.transferData,
+          audioFile: report.audioFile,
         });
       }
     });
