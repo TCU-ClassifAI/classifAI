@@ -86,6 +86,7 @@ router.get("/users/:userId", async (req, res) => {
           subject: report.subject,
           fileName: filteredFiles.map((file) => file.fileName),
           transferData: report.transferData,
+          audioFile: report.audioFile,
         });
       }
     });
@@ -116,6 +117,16 @@ router.get("/:reportId/users/:userId", async (req, res) => {
     // New functionality: Query workstation for "in progress" transfers and update
     // Returns llm info
     reports = await updateTransferDataStatus(reports);
+
+    // New functionality: WIP question categorization if categorize paramter === true
+    // if (req.query.categorize === 'true') {
+    //   reports = categorizeReports(reports);
+    // }
+
+    // New functionality: WIP summarize if summarize paramter === true
+    // if (req.query.summarize === 'true') {
+    //   reports = summarizeReports(reports);
+    // }
 
     res.json({ success: true, reports: reports });
   } catch (error) {
@@ -292,6 +303,18 @@ async function updateTransferDataStatus(reports) {
           report.transferData["result"] = response.data.result;
         }
 
+        if (response.data.meta.title){
+          report.audioFile = response.data.meta.title +' YouTube';
+
+          // if not already existing, then push to mongo db report.files[]
+
+          report.files[0]={
+            fileName: response.data.meta.title,
+            filePath: 'testLink',
+            fileType: 'YouTube',
+          };
+        }
+
 
       } catch (error) {
         console.error(
@@ -310,5 +333,27 @@ async function updateTransferDataStatus(reports) {
   }
   return reports; // Return updated reports
 }
+
+
+// async function categorizeReports(report){
+//   if (report.transferData.status === "finished") {
+//     // make and send a JSON file of reports.transferData.result to endpoint
+
+//   try {
+//     const response = await axios.post(
+//       `${process.env.WORKSTATION_URL}/categorize/categorize_transcript`,
+//       {
+//         //the json file of reports.transferData.result to endpoint
+//       }
+//     );
+    
+//   }
+
+//   catch (error) {
+
+//   }
+  
+//   }
+// }
 
 module.exports = router;
