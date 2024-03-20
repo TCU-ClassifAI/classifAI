@@ -337,7 +337,7 @@ async function updateTransferDataStatus(reports) {
 
 async function categorizeReports(reports){
   for (let report of reports) {
-    if (!report.categorized){
+   // if (!report.categorized){
 
   //if (report.transferData.status === "finished") {
     // send a JSON of reports.transferData.result to endpoint
@@ -369,7 +369,7 @@ async function categorizeReports(reports){
 
     }
   
-  }
+ // }
   }
 
   return reports;
