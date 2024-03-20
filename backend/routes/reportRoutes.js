@@ -292,9 +292,13 @@ async function updateTransferDataStatus(reports) {
           report.transferData["result"] = response.data.result;
         }
 
+        console.log(response.data.meta.title);
         if (response.data.meta.title){
           //report.transferData["fileName"] = response.data.meta.title;
-          report.files["fileName"] = response.data.meta.title;
+          report.files.push({
+            fileName: response.data.meta.title,
+            fileType: 'YouTube',
+          });
         }
 
 
