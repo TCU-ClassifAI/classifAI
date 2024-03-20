@@ -56,9 +56,17 @@ const reportSchema = new mongoose.Schema({
         end_time: Number,
         text: String,
         confidence: Number,
-      }]
+      }],
       // Include any other fields as necessary
-  }
+      
+  },
+  categorized:[{
+    speaker: String,
+    start_time: Number,
+    end_time: Number,
+    question: String,
+    level: Number
+  }]
 });
 
 // Define a schema and a model for storing users in MongoDB

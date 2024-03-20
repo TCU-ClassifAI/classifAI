@@ -335,20 +335,30 @@ async function updateTransferDataStatus(reports) {
 }
 
 
-async function categorizeReports(report){
-  if (report.transferData.status === "finished") {
+async function categorizeReports(reports){
+  for (let report of reports) {
+  //if (report.transferData.status === "finished") {
     // send a JSON of reports.transferData.result to endpoint
 
     try {
       // Sending the result for categorization
-      console.log(report.transferData.result);
+      //console.log(report.transferData.result);
       const response = await axios.post(
         `${process.env.WORKSTATION_URL}/categorize/categorize_transcript`,
         report.transferData.result
       );
 
 
-      console.log(response.data);
+      //console.log(response.data);
+      report.categorized = response.data; // Assuming 'categorized' is properly defined in your schema
+      //console.log("After categorization:", report.categorized);
+      
+      // Debugging: Verify the query matches and data is correctly structured
+      const updatedReport = await dbconnect.updateReport(
+        { reportId: report.reportId, userId: report.userId },
+        { $set: { "categorized": report.categorized } } 
+      );
+      //console.log("Update response:", updatedReport);
       
     }
 
@@ -356,8 +366,11 @@ async function categorizeReports(report){
       console.error("Error during report categorization:", error);
 
     }
+
+   
   
   }
+  return reports;
 }
 
 module.exports = router;
