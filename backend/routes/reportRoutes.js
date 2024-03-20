@@ -305,15 +305,14 @@ async function updateTransferDataStatus(reports) {
 
         if (response.data.meta.title){
           report.audioFile = response.data.meta.title +' YouTube';
-          report.transferData["fileName"] = response.data.meta.title +' YouTube';
 
           // if not already existing, then push to mongo db report.files[]
 
-          // report.files[0]={
-          //   fileName: response.data.meta.title,
-          //   filePath: 'testLink',
-          //   fileType: 'YouTube',
-          // };
+          report.files[0]={
+            fileName: response.data.meta.title,
+            filePath: 'testLink',
+            fileType: 'YouTube',
+          };
         }
 
 
