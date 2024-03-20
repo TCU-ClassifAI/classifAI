@@ -294,11 +294,14 @@ async function updateTransferDataStatus(reports) {
 
         console.log(response.data.meta.title);
         if (response.data.meta.title){
-          //report.transferData["fileName"] = response.data.meta.title;
-          report.files.push({
+          
+
+          // if not already existing, then push to mongo db report.files[]
+
+          report.files[0]={
             fileName: response.data.meta.title,
             fileType: 'YouTube',
-          });
+          };
         }
 
 
