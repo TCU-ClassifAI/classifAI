@@ -300,6 +300,7 @@ async function updateTransferDataStatus(reports) {
 
           report.files[0]={
             fileName: response.data.meta.title,
+            filePath: 'testLink',
             fileType: 'YouTube',
           };
         }
