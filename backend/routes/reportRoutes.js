@@ -292,7 +292,6 @@ async function updateTransferDataStatus(reports) {
           report.transferData["result"] = response.data.result;
         }
 
-        console.log(response.data.meta.title);
         if (response.data.meta.title){
           
 
