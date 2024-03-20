@@ -108,7 +108,7 @@ router.get("/users/:userId", async (req, res) => {
 });
 
 // GET a specific report from a specific user
-router.get("/:reportId/users/:userId", async (req, res) => {
+router.get("/:reportId/users/:userId", async (req, res) => { //?categorize=true
   try {
     const query = { reportId: req.params.reportId, userId: req.params.userId };
     let reports = await findAllReports(query, res);
@@ -120,7 +120,7 @@ router.get("/:reportId/users/:userId", async (req, res) => {
 
     // New functionality: WIP question categorization if categorize paramter === true
     if (req.query.categorize === 'true') {
-      reports = categorizeReports(reports);
+      reports = await categorizeReports(reports);
     }
 
     // New functionality: WIP summarize if summarize paramter === true
@@ -366,8 +366,6 @@ async function categorizeReports(reports){
       console.error("Error during report categorization:", error);
 
     }
-
-   
   
   }
   return reports;
