@@ -293,7 +293,8 @@ async function updateTransferDataStatus(reports) {
         }
 
         if (response.data.meta.title){
-          report.transferData["fileName"] = response.data.meta.title;
+          //report.transferData["fileName"] = response.data.meta.title;
+          report.files["fileName"] = response.data.meta.title;
         }
 
 
