@@ -128,7 +128,7 @@ router.post(
           const job_id = ytResponse.data.job_id; // Return job_id to the client for polling
           //console.log('job id:',job_id);
 
-          const yt_title = ytResponse.data.title;
+          //const yt_title = ytResponse.data.title;
           //let job = await getInitialJobReq(process.env.WORKSTATION_URL, job_id);
           
           // let transcriptionData = {
@@ -147,7 +147,7 @@ router.post(
           report.transferData = {
             //...transcriptionData,
             job_id: job_id,
-            fileName: yt_title || url, //providedFileName || path.basename(newPath),
+            fileName: url, //providedFileName || path.basename(newPath),
           };
 
           //('transfer data:' ,report.transferData);
@@ -156,7 +156,7 @@ router.post(
             {
               transferData: report.transferData,
               //status: job.data.status,
-              audioFile: yt_title ||url, //providedFileName || path.basename(newPath),
+              audioFile: url, //providedFileName || path.basename(newPath),
             }
           );
         } catch (error) {
