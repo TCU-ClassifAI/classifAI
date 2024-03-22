@@ -20,7 +20,7 @@ const reportUploadRoute = require('./routes/reportUploadRoute.js');
 //
 
 
-const PORT = 5002; // env
+const PORT = 5001; // env
 const app = express();
 app.use(cors());
 app.use(express.json());
