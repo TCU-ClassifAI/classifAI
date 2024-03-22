@@ -183,6 +183,21 @@ router.put("/:reportId/users/:userId", async (req, res) => {
       );
     }
 
+    
+    if (categorized){
+      updatedReport = await dbconnect.updateReport(
+        { reportId, userId },
+        { $set: { "categorized": categorized } } // Update the entire transferData.result array
+      );
+    }
+    else {
+      // Otherwise, update the report with provided reportData
+      updatedReport = await dbconnect.updateReport(
+        { reportId, userId },
+        { $set: reportData } // Ensure to use $set to update fields without replacing the entire document
+      );
+    }
+
     // If no report was found or updated, return a 404 not found
     if (!updatedReport) {
       return res
