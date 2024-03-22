@@ -164,7 +164,7 @@ router.get("/:reportId", async (req, res) => {
 router.put("/:reportId/users/:userId", async (req, res) => {
   //works on server
   const { reportId, userId } = req.params; // Extract reportId and userId from URL parameters
-  const { result, ...reportData } = req.body; // Extract the new transferData.result array and any other report data
+  const { result, categorized, ...reportData } = req.body; // Extract the new transferData.result array and any other report data
 
   try {
     let updatedReport;

@@ -1,6 +1,11 @@
 require('dotenv').config();
 const express = require("express");
 const cors = require("cors");
+const https = require("https");
+const fs = require('node:fs');
+
+
+
 
 const fileUploadRoute = require('./routes/fileUploadRoute.js');
 //const transcriptionRoutes = require('./routes/transcriptionRoutes.js'); // Adjust the path as necessary
@@ -15,10 +20,16 @@ const reportUploadRoute = require('./routes/reportUploadRoute.js');
 //
 
 
-const PORT = 5001; // env
+const PORT = 5002; // env
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+const options = {
+  key: fs.readFileSync('/etc/letsencrypt/live/classifai.tcu.edu/privkey.pem'),
+  cert: fs.readFileSync('/etc/letsencrypt/live/classifai.tcu.edu/fullchain.pem')
+};
+
 
 
 
@@ -26,9 +37,13 @@ app.get("/", (req, res) => { // Dev route
   return res.status(200).send("It's working");
 });
 
-app.listen(PORT, () => {
-  console.log("Server Running sucessfully.");
+https.createServer(options, app).listen(PORT, () => {
+  console.log(`Server is running on https://localhost:${PORT}`);
 });
+
+// app.listen(PORT, () => {
+//   console.log("Server Running sucessfully.");
+// });
 
 
 // TODO transcription routes?
