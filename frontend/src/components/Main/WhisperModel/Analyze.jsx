@@ -60,7 +60,7 @@ export default function Analyze() {
 
   useEffect(() => {
     // Calculate speaking time for each speaker
-    console.log(analysisStatus)
+    console.log(analysisStatus);
     const speakingTime = {};
     transcription.forEach((sentence) => {
       const speaker = sentence.speaker;
@@ -83,7 +83,7 @@ export default function Analyze() {
 
     // Set unique speakers
     setSpeakers(Object.keys(speakingTime));
-  }, [transcription,analysisStatus]);
+  }, [transcription, analysisStatus]);
 
   function generateDefaultReportId() {
     const timestamp = new Date().getTime(); // Get current timestamp
@@ -138,10 +138,11 @@ export default function Analyze() {
           setAnalysisStatus={setAnalysisStatus}
           analysisStatus={analysisStatus}
           location={location}
+          setCategorizedQuestions={setCategorizedQuestions}
         />
       )}
 
-      {(analysisStatus === "completed" || analysisStatus === "finished" )&& (
+      {(analysisStatus === "completed" || analysisStatus === "finished") && (
         <div>
           <Tabs id="controlled-tab-example">
             <Tab eventKey="TranscriptKey" title="Full Transcript">
@@ -175,34 +176,27 @@ export default function Analyze() {
               </ParentSize>
             </Tab>
             <Tab eventKey="categorization" title="Question Categorization">
-                  <QuestionCategorization 
-                    userId={userId}
-                    reportId={reportId}
-                    setCategorizedQuestions={setCategorizedQuestions}
-                    categorizedQuestions={categorizedQuestions}
-                  />
-
+              <QuestionCategorization
+                userId={userId}
+                reportId={reportId}
+                setCategorizedQuestions={setCategorizedQuestions}
+                categorizedQuestions={categorizedQuestions}
+                setChangeAlert={setChangeAlert}
+              />
             </Tab>
           </Tabs>
 
-          <SaveChanges
-            reportName={reportName}
-            subject={subject}
-            gradeLevel={gradeLevel}
-            reportId={reportId}
-            userId={userId}
-            setChangeAlert={setChangeAlert}
-            transcription={transcription}
-          />
+          <div>
+            <button
+              className="btn btn-primary"
+              onClick={() => {
+                setShowCsvModal(true);
+              }}
+            >
+              Save & Download CSV
+            </button>
+          </div>
 
-          <button
-            className="btn btn-primary"
-            onClick={() => {
-              setShowCsvModal(true);
-            }}
-          >
-            Save & Download CSV
-          </button>
           <Modal
             show={showCsvModal}
             onHide={() => {
@@ -270,6 +264,17 @@ export default function Analyze() {
             )}
             reportId={reportId}
             userId={userId}
+          />
+
+          <SaveChanges
+            reportName={reportName}
+            subject={subject}
+            gradeLevel={gradeLevel}
+            reportId={reportId}
+            userId={userId}
+            setChangeAlert={setChangeAlert}
+            transcription={transcription}
+            categorizedQuestions={categorizedQuestions}
           />
 
           {changeAlert && (

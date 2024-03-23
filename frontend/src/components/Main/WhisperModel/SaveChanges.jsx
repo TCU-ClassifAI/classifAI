@@ -11,6 +11,7 @@ export default function SaveChanges({
   userId,
   transcription,
   setChangeAlert,
+  categorizedQuestions
 }) {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [successAlert, setSuccessAlert] = useState(!setChangeAlert);
@@ -37,6 +38,13 @@ export default function SaveChanges({
           result: transcription,
         }
       );
+      const catResponse = await axios.put(
+        `${import.meta.env.VITE_BACKEND_SERVER}/reports/${reportId}/users/${userId}`,
+        {
+          categorized: categorizedQuestions,
+        }
+      );
+      console.log(catResponse);
       setChangeAlert(false);
       setSuccessAlert(true);
     } catch (error) {

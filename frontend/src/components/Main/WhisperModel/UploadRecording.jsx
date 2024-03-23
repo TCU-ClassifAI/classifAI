@@ -18,6 +18,7 @@ export default function UploadRecording({
   setReportName,
   analysisStatus,
   location,
+  setCategorizedQuestions
 }) {
   const [isAudio, setIsAudio] = useState(false);
   const [isVideo, setIsVideo] = useState(false);
@@ -100,9 +101,13 @@ export default function UploadRecording({
       const grade = response.data.reports[0].gradeLevel;
       const reportSubject = response.data.reports[0].subject;
       const reportName = response.data.reports[0].reportName;
-
+      let categorizedQuestions;
       console.log(response);
-
+      if (response.data.reports[0].categorized)
+      {
+        categorizedQuestions = response.data.reports[0].categorized;
+        setCategorizedQuestions(categorizedQuestions);
+      }
       if (progress) {
         setAnalysisStatus(progress);
       }
