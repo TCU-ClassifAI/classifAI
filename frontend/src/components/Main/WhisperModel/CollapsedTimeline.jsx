@@ -1,56 +1,56 @@
 import Chart from "react-apexcharts";
 import { convertMsToTime } from "../../../utils/convertMsToTime";
 
-export default function CollapsedTimeline({
-  categorizedQuestions
-}) {
-
+export default function CollapsedTimeline({ categorizedQuestions }) {
   const labelColors = {
     0: "#0000FF",
     1: "#D42AC8",
     2: "#009400",
     3: "#FF7300",
   };
-  
+
   function setTimeLineData() {
     let timeData = [];
 
     let questionList = categorizedQuestions;
 
-      const minTime = Math.min(...categorizedQuestions.map((q) => q.start_time / 1000));
-      const maxTime = Math.max(...categorizedQuestions.map((q) => q.start_time / 1000));
-      const totalTimeRange = maxTime - minTime;
-      const entryWidthPercentage = 0.04;
-      const constantWidth = totalTimeRange * entryWidthPercentage;
+    const minTime = Math.min(
+      ...categorizedQuestions.map((q) => q.start_time / 1000)
+    );
+    const maxTime = Math.max(
+      ...categorizedQuestions.map((q) => q.start_time / 1000)
+    );
+    const totalTimeRange = maxTime - minTime;
+    const entryWidthPercentage = 0.04;
+    const constantWidth = totalTimeRange * entryWidthPercentage;
 
-      let initialEntry = {
-        x: "Questions",
-        y: [0, maxTime],
-        fillColor: "#FFFFFF",
-      };
-      timeData.push(initialEntry);
+    let initialEntry = {
+      x: "Questions",
+      y: [0, maxTime],
+      fillColor: "#FFFFFF",
+    };
+    timeData.push(initialEntry);
 
-      for (let i = 0; i < questionList.length; i++) {
-        if (labelColors.hasOwnProperty(questionList[i].label)) {
-          let endTime;
-          if (i < questionList.length - 1) {
-            endTime = Math.min(
-              questionList[i + 1].start_time / 1000,
-              questionList[i].start_time / 1000 + constantWidth
-            );
-          } else {
-            endTime = questionList[i].start_time / 1000 + constantWidth;
-          }
-          let entry = {
-            x: "Questions",
-            y: [questionList[i].start_time / 1000, endTime],
-            fillColor: labelColors[questionList[i].level],
-          };
-          timeData.push(entry);
+    for (let i = 0; i < questionList.length; i++) {
+      if (labelColors.hasOwnProperty(questionList[i].level)) {
+        let endTime;
+        if (i < questionList.length - 1) {
+          endTime = Math.min(
+            questionList[i + 1].start_time / 1000,
+            questionList[i].start_time / 1000 + constantWidth
+          );
+        } else {
+          endTime = questionList[i].start_time / 1000 + constantWidth;
         }
+        let entry = {
+          x: "Questions",
+          y: [questionList[i].start_time / 1000, endTime],
+          fillColor: labelColors[questionList[i].level],
+        };
+        timeData.push(entry);
       }
-      return timeData;
-    
+    }
+    return timeData;
   }
 
   function getTimeLineProps() {
@@ -133,21 +133,25 @@ export default function CollapsedTimeline({
   }
   return (
     <>
-      <table>
-        <tbody>
-          <tr>
-            <td id="timeLineContainer">
-              <Chart
-                options={getTimeLineProps().options}
-                series={getTimeLineProps().series}
-                type="rangeBar"
-                height={200}
-                width={1400}
-              />
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      {categorizedQuestions ? (
+        <table>
+          <tbody>
+            <tr>
+              <td id="timeLineContainer">
+                <Chart
+                  options={getTimeLineProps().options}
+                  series={getTimeLineProps().series}
+                  type="rangeBar"
+                  height={200}
+                  width={1400}
+                />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      ) : (
+        <div>Please wait for questions to be categorized</div>
+      )}
     </>
   );
 }

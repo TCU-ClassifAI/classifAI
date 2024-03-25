@@ -14,7 +14,7 @@ export default function QuestionDistribution({ categorizedQuestions }) {
   }, [categorizedQuestions]);
 
   if (!categorizedQuestions) {
-    return (<div>Questions are being categorized or need to be recategorized</div>)
+    return (<div>Please wait for questions to be categorized.</div>)
   }
 
   const barChartProps = {
