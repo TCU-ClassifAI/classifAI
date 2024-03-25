@@ -7,6 +7,7 @@ import SaveChanges from "./SaveChanges";
 import TalkingDistribution from "./TalkingDistribution";
 import PdfOptions from "./PdfOptions";
 import QuestionCategorization from "./QuestionCategorization";
+import QuestionDistribution from "./QuestionDistribution";
 import styles from "./Analyze.module.css";
 import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
@@ -182,6 +183,11 @@ export default function Analyze() {
                 setCategorizedQuestions={setCategorizedQuestions}
                 categorizedQuestions={categorizedQuestions}
                 setChangeAlert={setChangeAlert}
+              />
+            </Tab>
+            <Tab eventKey="categorizedDist" title="Question Distribution">
+              <QuestionDistribution
+                categorizedQuestions={categorizedQuestions}
               />
             </Tab>
           </Tabs>

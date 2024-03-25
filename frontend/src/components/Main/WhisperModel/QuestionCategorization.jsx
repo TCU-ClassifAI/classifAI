@@ -6,18 +6,15 @@ export default function QuestionCategorization({ reportId, userId, categorizedQu
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [categorizationDone, setCategorizationDone] = useState(false);
-  const [editableLevels, setEditableLevels] = useState({});
-  const [recategorizeClicked, setRecategorizeClicked] = useState(false);
 
   useEffect(() => {
-    if (!categorizedQuestions || recategorizeClicked) {
+    if (!categorizedQuestions) {
       categorizeQuestions();
-      setRecategorizeClicked(false);
     }
     else {
       setCategorizationDone(true);
     }
-  }, [categorizedQuestions, recategorizeClicked]);
+  }, [categorizedQuestions]);
 
   const categorizeQuestions = async () => {
     setIsLoading(true);
@@ -39,27 +36,15 @@ export default function QuestionCategorization({ reportId, userId, categorizedQu
     }
   };
 
-  const handleLevelClick = (index) => {
-    const newEditableLevels = { ...editableLevels };
-    newEditableLevels[index] = true;
-    setEditableLevels(newEditableLevels);
-  };
-
   const handleLevelChange = (index, event) => {
     const newCategorizedQuestions = [...categorizedQuestions];
-    newCategorizedQuestions[index].level = event.target.value;
+    newCategorizedQuestions[index].level = parseInt(event.target.value);
     setCategorizedQuestions(newCategorizedQuestions);
     setChangeAlert(true);
   };
 
-  const handleBlur = (index) => {
-    const newEditableLevels = { ...editableLevels };
-    delete newEditableLevels[index];
-    setEditableLevels(newEditableLevels);
-  };
-
-  const handleRecategorize = () => {
-    setRecategorizeClicked(true);
+  const handleRecategorize = async () => {
+    await categorizeQuestions();
   };
 
   return (
@@ -91,17 +76,16 @@ export default function QuestionCategorization({ reportId, userId, categorizedQu
                       <td>{convertMsToTime(question.end_time)}</td>
                       <td>{question.speaker}</td>
                       <td>{question.question}</td>
-                      <td onClick={() => handleLevelClick(index)}>
-                        {editableLevels[index] ? (
-                          <input
-                            type="text"
-                            value={question.level}
-                            onChange={(event) => handleLevelChange(index, event)}
-                            onBlur={() => handleBlur(index)}
-                          />
-                        ) : (
-                          question.level
-                        )}
+                      <td>
+                        <select
+                          value={question.level}
+                          onChange={(event) => handleLevelChange(index, event)}
+                        >
+                          <option value={0}>0</option>
+                          <option value={1}>1</option>
+                          <option value={2}>2</option>
+                          <option value={3}>3</option>
+                        </select>
                       </td>
                     </tr>
                   ))}
