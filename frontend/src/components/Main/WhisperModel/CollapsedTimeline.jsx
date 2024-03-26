@@ -92,24 +92,26 @@ export default function CollapsedTimeline({ categorizedQuestions }) {
           custom: function ({ seriesIndex, dataPointIndex, w }) {
             //because 6 init entries
             let tooltipIndex = dataPointIndex - 1;
-            let questionList = categorizedQuestions;
+            let questionList = categorizedQuestions || [];
 
             let question = questionList[tooltipIndex];
-
-            return (
-              '<div class="arrow_box">' +
-              "<span><strong>Speaker " +
-              question.speaker +
-              ": </strong>" +
-              question.question +
-              "</span><br>" +
-              "<span>" +
-              convertMsToTime(question.start_time) +
-              "-" +
-              convertMsToTime(question.end_time) +
-              "</span>" +
-              "</div>"
-            );
+            if (question.speaker) {
+              return (
+                '<div class="arrow_box">' +
+                "<span><strong>Speaker " +
+                question.speaker +
+                ": </strong>" +
+                question.question +
+                "</span><br>" +
+                "<span>" +
+                convertMsToTime(question.start_time) +
+                "-" +
+                convertMsToTime(question.end_time) +
+                "</span>" +
+                "</div>"
+              );
+            }
+            
           },
         },
         xaxis: {
