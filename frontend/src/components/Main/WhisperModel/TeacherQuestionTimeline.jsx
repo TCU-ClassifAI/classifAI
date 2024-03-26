@@ -3,13 +3,10 @@ import { convertMsToTime } from "../../../utils/convertMsToTime";
 
 export default function TeacherQuestionTimeline({ categorizedQuestions }) {
   const labelColors = {
-
-
     0: "#0000FF",
     1: "#D42AC8",
     2: "#009400",
     3: "#FF7300",
-
   };
 
   function setTimeChartData() {
@@ -54,8 +51,8 @@ export default function TeacherQuestionTimeline({ categorizedQuestions }) {
       }
     }
     //console.log("timeData:");
-    console.log(timeData);
-    return timeData;
+    timeData.sort((a, b) => a.x - b.x); //sort it based on 0-3
+    return timeData.reverse(); // reverse it so 0 is on the bottom of y axis
   }
 
   function getTimeChartProps() {
