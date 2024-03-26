@@ -9,6 +9,7 @@ import PdfOptions from "./PdfOptions";
 import QuestionCategorization from "./QuestionCategorization";
 import QuestionDistribution from "./QuestionDistribution";
 import CollapsedTimeline from "./CollapsedTimeline";
+import TeacherQuestionTimeline from "./TeacherQuestionTimeline";
 import styles from "./Analyze.module.css";
 import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
@@ -193,6 +194,11 @@ export default function Analyze() {
             </Tab>
             <Tab eventKey="collapsedTimeline" title="Collapsed Timeline">
                 <CollapsedTimeline 
+                  categorizedQuestions={categorizedQuestions}
+                />
+            </Tab>
+            <Tab eventKey="teacherTimeline" title="Teacher Question Timeline">
+                <TeacherQuestionTimeline 
                   categorizedQuestions={categorizedQuestions}
                 />
             </Tab>
