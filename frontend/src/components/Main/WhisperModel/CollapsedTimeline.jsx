@@ -142,7 +142,7 @@ export default function CollapsedTimeline({ categorizedQuestions }) {
                   options={getTimeLineProps().options}
                   series={getTimeLineProps().series}
                   type="rangeBar"
-                  height={200}
+                  height={600}
                   width={1400}
                 />
               </td>

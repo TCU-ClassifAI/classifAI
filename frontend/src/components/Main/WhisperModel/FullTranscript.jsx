@@ -146,8 +146,8 @@ export default function FullTranscript({
               <tr>
                 <th>Start Time</th>
                 <th>End Time</th>
-                <th>Speaker</th>
-                <th>Text</th>
+                <th>Speaker (editable)</th>
+                <th>Text (editable)</th>
               </tr>
             </thead>
             <tbody>

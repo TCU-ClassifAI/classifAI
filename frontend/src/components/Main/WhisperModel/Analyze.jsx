@@ -165,7 +165,7 @@ export default function Analyze() {
                 teacher={teacher}
               />
             </Tab>
-            <Tab eventKey="wordcloud" title="Visualization">
+            <Tab eventKey="wordcloud" title="Word Visualization">
               <ParentSize>
                 {({ width, height }) => (
                   <WordCloud
