@@ -184,19 +184,19 @@ router.put("/:reportId/users/:userId", async (req, res) => {
     }
 
     
-    if (categorized){
-      updatedReport = await dbconnect.updateReport(
-        { reportId, userId },
-        { $set: { "categorized": categorized } } // Update the entire transferData.result array
-      );
-    }
-    else {
-      // Otherwise, update the report with provided reportData
-      updatedReport = await dbconnect.updateReport(
-        { reportId, userId },
-        { $set: reportData } // Ensure to use $set to update fields without replacing the entire document
-      );
-    }
+    // if (categorized){
+    //   updatedReport = await dbconnect.updateReport(
+    //     { reportId, userId },
+    //     { $set: { "categorized": categorized } } // Update the entire transferData.result array
+    //   );
+    // }
+    // else {
+    //   // Otherwise, update the report with provided reportData
+    //   updatedReport = await dbconnect.updateReport(
+    //     { reportId, userId },
+    //     { $set: reportData } // Ensure to use $set to update fields without replacing the entire document
+    //   );
+    // }
 
     // If no report was found or updated, return a 404 not found
     if (!updatedReport) {
@@ -350,32 +350,20 @@ async function updateTransferDataStatus(reports) {
 }
 
 
-async function categorizeReports(reports){
-  for (let report of reports) {
-   // if (!report.categorized){
-
-  //if (report.transferData.status === "finished") {
+async function categorizeReports(report){
+  if (report.transferData.status === "finished") {
     // send a JSON of reports.transferData.result to endpoint
 
     try {
       // Sending the result for categorization
-      //console.log(report.transferData.result);
+      console.log(report.transferData.result);
       const response = await axios.post(
         `${process.env.WORKSTATION_URL}/categorize/categorize_transcript`,
         report.transferData.result
       );
 
 
-      //console.log(response.data);
-      report.categorized = response.data; // Assuming 'categorized' is properly defined in your schema
-      //console.log("After categorization:", report.categorized);
-      
-      // Debugging: Verify the query matches and data is correctly structured
-      const updatedReport = await dbconnect.updateReport(
-        { reportId: report.reportId, userId: report.userId },
-        { $set: { "categorized": report.categorized } } 
-      );
-      //console.log("Update response:", updatedReport);
+      console.log(response.data);
       
     }
 
@@ -384,10 +372,7 @@ async function categorizeReports(reports){
 
     }
   
- // }
   }
-
-  return reports;
 }
 
 module.exports = router;
