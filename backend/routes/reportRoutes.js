@@ -91,11 +91,11 @@ router.get("/users/:userId", async (req, res) => {
       }
     });
 
-    if (filesResponse.length === 0) {
-      return res
-        .status(404)
-        .send("No files found matching the specified types.");
-    }
+    // if (filesResponse.length === 0) {
+    //   return res
+    //     .status(404)
+    //     .send("No files found matching the specified types.");
+    // }
 
     res.status(200).json(filesResponse);
   } catch (error) {
