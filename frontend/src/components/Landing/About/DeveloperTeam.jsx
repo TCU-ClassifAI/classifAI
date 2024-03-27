@@ -1,8 +1,8 @@
 import styles from "./about.module.css"; // Import the CSS file for styling
-import JohnNguyen from "../../../images/headshot_john.jpg";
 import generic from "../../../images/genericprofile.jpg";
 import TaylorGriffin from "../../../images/TaylorGriffin.png";
 import JohnHenryMejia from "../../../images/JohnHenryMejia.jpg";
+import JohnNguyen from "../../../images/johnheadshot2.jpeg";
 
 export default function DeveloperTeam() {
   const developers = [
