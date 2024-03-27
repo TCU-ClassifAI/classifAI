@@ -24,7 +24,7 @@ export default function QuestionCategorization({ reportId, userId, categorizedQu
       );
       if (!response.data.reports[0].categorized) {
         setIsLoading(false);
-        setCategorizedQuestions([]); // Set empty array if no categorized questions are returned
+        //setCategorizedQuestions([]); // Set empty array if no categorized questions are returned
       } else {
         setCategorizedQuestions(response.data.reports[0].categorized);
         setCategorizationDone(true);
