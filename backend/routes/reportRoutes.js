@@ -17,38 +17,57 @@ router.get("/", async (req, res) => {
       fileTypes = [fileTypes];
     }
 
-    const reports = await dbconnect.getAllReportsWhere({});
-    if (!reports || reports.length === 0) {
-      return res.status(404).send("No reports found.");
-    }
-
     let filesResponse = [];
-    reports.forEach((report) => {
-      const filteredFiles = report.files.filter((file) =>
-        fileTypes
-          ? fileTypes.some((fileType) => file.fileType.includes(fileType))
-          : true
-      );
 
-      if (filteredFiles.length > 0) {
-        filesResponse.push({
-          userId: report.userId,
-          reportName: report.reportName,
-          reportId: report.reportId,
-          file: filteredFiles.map((file) => file.filePath),
-          gradeLevel: report.gradeLevel,
-          subject: report.subject,
-          fileName: filteredFiles.map((file) => file.fileName),
-          transferData: report.transferData, //added 2/5
-        });
-      }
-    });
+    const reports = await dbconnect.getAllReportsWhere({});
 
-    if (filesResponse.length === 0) {
-      return res
-        .status(404)
-        .send("No files found matching the specified types.");
+    if (!reports || reports.length === 0) {
+      const blankReport = {
+        userId: '',
+        reportId: '',
+        reportName: '',
+        subject: '',
+        gradeLevel: '',
+        status: '',
+        fileName: '',
+        fileType: '',
+      };
+      filesResponse.push(blankReport)
+     
+      return res.status(200).json(filesResponse);
     }
+    else {
+      reports.forEach((report) => {
+        const filteredFiles = report.files.filter((file) =>
+          fileTypes
+            ? fileTypes.some((fileType) => file.fileType.includes(fileType))
+            : true
+        );
+  
+        
+        if (filteredFiles.length > 0) {
+          filesResponse.push({
+            userId: report.userId,
+            reportName: report.reportName,
+            reportId: report.reportId,
+            file: filteredFiles.map((file) => file.filePath),
+            gradeLevel: report.gradeLevel,
+            subject: report.subject,
+            fileName: filteredFiles.map((file) => file.fileName),
+            transferData: report.transferData, //added 2/5
+          });
+        }
+      });
+  
+      if (filesResponse.length === 0) {
+        return res
+          .status(404)
+          .send("No files found matching the specified types.");
+      }
+    }
+
+    
+    
 
     res.status(200).json(filesResponse);
   } catch (error) {
@@ -268,12 +287,21 @@ router.delete("/:reportId/users/:userId", async (req, res) => {
 async function findAllReports(query, res) {
   try {
     const reports = await dbconnect.getAllReportsWhere(query); // Corrected usage
-    if (reports.length === 0) {
+    if (!reports) {
       // Check if the reports array is empty
-      res
-        .status(404)
-        .json({ success: false, message: "No reports found for this user." });
-      return null;
+      const blankReport = {
+        userId: '',
+        reportId: '',
+        reportName: '',
+        subject: '',
+        gradeLevel: '',
+        status: '',
+        fileName: '',
+        fileType: '',
+      };
+      filesResponse.push(blankReport)
+     
+      return res.status(200).json(filesResponse);
     }
     return reports;
   } catch (error) {
