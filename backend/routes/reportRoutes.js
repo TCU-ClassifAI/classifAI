@@ -383,38 +383,38 @@ async function categorizeReports(report){
 }
 
 
-async function summarizeReports(report){
-  if (report.transferData.status === "finished") {
-    // send a JSON of reports.transferData.result to endpoint
+// async function summarizeReports(report){
+//   if (report.transferData.status === "finished") {
+//     // send a JSON of reports.transferData.result to endpoint
 
-    try {
-      // Sending the result for categorization
-      console.log(report.transferData.result);
-      const response = await axios.post(
-        `${process.env.WORKSTATION_URL}/summarize`,
-        report.transferData.result
-      );
+//     try {
+//       // Sending the result for categorization
+//       console.log(report.transferData.result);
+//       const response = await axios.post(
+//         `${process.env.WORKSTATION_URL}/summarize`,
+//         report.transferData.result
+//       );
 
 
-      console.log(response.data);
+//       console.log(response.data);
 
-      report.summary = response.data; // set response.categorized field to response
+//       report.summary = response.data; // set response.categorized field to response
 
-      const updatedReport = await dbconnect.updateReport(
-        { reportId: report.reportId, userId: report.userId },
-        { $set: { "summary": report.summary } } 
-      );
+//       const updatedReport = await dbconnect.updateReport(
+//         { reportId: report.reportId, userId: report.userId },
+//         { $set: { "summary": report.summary } } 
+//       );
       
-    }
+//     }
 
-    catch (error) {
-      console.error("Error during report categorization:", error);
+//     catch (error) {
+//       console.error("Error during report categorization:", error);
 
-    }
+//     }
   
-  }
-  return report;
+//   }
+//   return report;
 
-}
+// }
 
 module.exports = router;
