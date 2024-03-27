@@ -52,12 +52,15 @@ export default function MyReports() {
       const reports = response.data;
       const filtered_reports = reports.map(report => {
           let fileExtension;
-          let fileName = report.transferData ? String(report.transferData.fileName) : null;
+          let fileName = String(report.audioFile);
+          // console.log(report.audioFile)
+          // let fileName = report.transferData ? String(report.transferData.fileName) : null;
 
           if (fileName && fileName.toLowerCase().includes("youtube")) {
               fileExtension = "youtube";
           } else {
-              fileExtension = fileName.split(".").pop();
+            
+              fileExtension = String(fileName).split(".").pop();
               fileName = fileName.split(".").shift();
           }
           return {
@@ -131,25 +134,6 @@ export default function MyReports() {
       gradeLevel,
       reportName: newReportName,
     } = fileToUpdate;
-    const oldFileName = oldFileNameEditing || newFileName;
-
-    try {
-      await axios.put(
-        `${import.meta.env.VITE_BACKEND_SERVER}/files/${oldFileName}/reports/${reportId}/users/${userId}`,
-        {
-          fileName: newFileName,
-        }
-      );
-
-      setFiles(updatedFiles);
-      setEditSaveSuccess(true);
-      setAlertMsg("Successful update to report name!");
-      fetchUserFiles();
-    } catch (error) {
-      console.error("Error updating file name:", error);
-      setErrorModalMsg("Error updating file name");
-      setShowErrorModal(true);
-    }
 
     try {
       await axios.put(
@@ -314,17 +298,7 @@ export default function MyReports() {
                   )}
                 </td>
                 <td>
-                  {file.isEditing ? (
-                    <input
-                      type="text"
-                      value={file.fileName}
-                      onChange={(event) =>
-                        handleFileNameChange(event, file.reportId)
-                      }
-                    />
-                  ) : (
-                    file.fileName
-                  )}
+                  {file.fileName}
                 </td>
                 <td>{file.status}</td>
                 <td className={styles.csvButton}>
