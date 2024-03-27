@@ -22,8 +22,21 @@ router.get("/", async (req, res) => {
     // Fetch reports from all users
     const reports = await dbconnect.getAllReportsWhere({}); // Empty query to get all
 
-    if (!reports || reports.length === 0) {
-      return res.status(404).send("No reports found.");
+    if (!reports) {
+      // Check if the reports array is empty
+      const blankReport = {
+        userId: '',
+        reportId: '',
+        reportName: '',
+        subject: '',
+        gradeLevel: '',
+        status: '',
+        fileName: '',
+        fileType: '',
+      };
+      filesResponse.push(blankReport)
+     
+      return res.status(200).json(filesResponse);
     }
 
     // Filter each report's files based on the specified file types
@@ -51,9 +64,20 @@ router.get("/", async (req, res) => {
     }, []);
 
     if (filesResponse.length === 0) {
-      return res
-        .status(404)
-        .send("No files found matching the specified types.");
+        // Check if the reports array is empty
+        const blankReport = {
+          userId: '',
+          reportId: '',
+          reportName: '',
+          file: [],
+          gradeLevel: '',
+          subject: '',
+          fileName: '',
+        };
+        filesResponse.push(blankReport)
+       
+        return res.status(200).json(filesResponse);
+      
     }
 
     // Send the response
@@ -79,8 +103,21 @@ router.get("/users/:userId", async (req, res) => {
     // Fetch reports for the specified user
     const reports = await dbconnect.getAllReportsWhere({ userId: userId });
 
-    if (!reports || reports.length === 0) {
-      return res.status(404).send("No reports found for this user.");
+    if (!reports) {
+      // Check if the reports array is empty
+      const blankReport = {
+        userId: '',
+        reportId: '',
+        reportName: '',
+        subject: '',
+        gradeLevel: '',
+        status: '',
+        fileName: '',
+        fileType: '',
+      };
+      filesResponse.push(blankReport)
+     
+      return res.status(200).json(filesResponse);
     }
 
     let filesResponse = reports.reduce((acc, report) => {
@@ -106,9 +143,19 @@ router.get("/users/:userId", async (req, res) => {
     }, []);
 
     if (filesResponse.length === 0) {
-      return res
-        .status(404)
-        .send("No files found matching the specified types for this user.");
+        // Check if the reports array is empty
+        const blankReport = {
+          userId: '',
+          reportId: '',
+          reportName: '',
+          file: [],
+          gradeLevel: '',
+          subject: '',
+          fileName: '',
+        };
+        filesResponse.push(blankReport)
+       
+        return res.status(200).json(filesResponse);
     }
 
     res.status(200).json(filesResponse);
@@ -136,8 +183,21 @@ router.get("/reports/:reportId/users/:userId", async (req, res) => {
       userId: userId,
     });
 
-    if (!reports || reports.length === 0) {
-      return res.status(404).send("No reports found for this user.");
+    if (!reports) {
+      // Check if the reports array is empty
+      const blankReport = {
+        userId: '',
+        reportId: '',
+        reportName: '',
+        subject: '',
+        gradeLevel: '',
+        status: '',
+        fileName: '',
+        fileType: '',
+      };
+      filesResponse.push(blankReport)
+     
+      return res.status(200).json(filesResponse);
     }
 
     let filesResponse = reports.reduce((acc, report) => {
@@ -163,9 +223,18 @@ router.get("/reports/:reportId/users/:userId", async (req, res) => {
     }, []);
 
     if (filesResponse.length === 0) {
-      return res
-        .status(404)
-        .send("No files found matching the specified types for this user.");
+      const blankReport = {
+        userId: '',
+        reportId: '',
+        reportName: '',
+        file: [],
+        gradeLevel: '',
+        subject: '',
+        fileName: '',
+      };
+      filesResponse.push(blankReport)
+     
+      return res.status(200).json(filesResponse);
     }
 
     res.status(200).json(filesResponse);
@@ -197,9 +266,19 @@ router.get("/:fileName/reports/:reportId/users/:userId", async (req, res) => {
     );
 
     if (!fileToInclude) {
-      return res
-        .status(404)
-        .send("No files found matching the specified name for this user.");
+      const blankReport = {
+        userId: '',
+        reportId: '',
+        reportName: '',
+        subject: '',
+        gradeLevel: '',
+        status: '',
+        fileName: '',
+        fileType: '',
+      };
+      filesResponse.push(blankReport)
+     
+      return res.status(200).json(filesResponse);
     }
 
     // Decide action based on the download query parameter

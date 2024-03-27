@@ -38,7 +38,7 @@ const upload = multer({
       cb(null, file.originalname); //file.fieldname + '-' + Date.now() + path.extname(file.originalname));
     },
   }),
-  limits: { fileSize: 5 * 1024 * 1024 * 1024 },
+  // limits: { fileSize: 5 * 1024 * 1024 * 1024 }, took out arbitrary file size limit
   fileFilter: (req, file, cb) => {
     cb(null, !!req.params.userId);
   },
@@ -81,22 +81,32 @@ router.post("/reports/:reportId/users/:userId",
         return res.status(400).json(response);
       }
 
-      const allowedTypes = [
-        "application/json",
-        "text/csv",
-        "application/pdf",
+      const allowedTypes = [ //added video types from website
+          "application/json",
+          "text/csv",
+          "application/pdf",
+          "audio/mpeg",
+          "audio/wav",
+          "audio/aac",
+          "audio/ogg",
+          "audio/webm",
+          "video/webm",
+          "video/mp2t",
+          "video/quicktime",
+          "video/mp4",
+          "application/mxf"
+        ];
+      const audioTypes = [ //add other types from website
         "audio/mpeg",
         "audio/wav",
         "audio/aac",
         "audio/ogg",
         "audio/webm",
-      ];
-      const audioTypes = [
-        "audio/mpeg",
-        "audio/wav",
-        "audio/aac",
-        "audio/ogg",
-        "audio/webm",
+        "video/webm",
+        "video/mp2t",
+        "video/quicktime",
+        "video/mp4",
+        "application/mxf"
       ];
       const fileType = req.file.mimetype;
       if (!allowedTypes.includes(fileType)) {

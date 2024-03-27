@@ -17,38 +17,57 @@ router.get("/", async (req, res) => {
       fileTypes = [fileTypes];
     }
 
-    const reports = await dbconnect.getAllReportsWhere({});
-    if (!reports || reports.length === 0) {
-      return res.status(404).send("No reports found.");
-    }
-
     let filesResponse = [];
-    reports.forEach((report) => {
-      const filteredFiles = report.files.filter((file) =>
-        fileTypes
-          ? fileTypes.some((fileType) => file.fileType.includes(fileType))
-          : true
-      );
 
-      if (filteredFiles.length > 0) {
-        filesResponse.push({
-          userId: report.userId,
-          reportName: report.reportName,
-          reportId: report.reportId,
-          file: filteredFiles.map((file) => file.filePath),
-          gradeLevel: report.gradeLevel,
-          subject: report.subject,
-          fileName: filteredFiles.map((file) => file.fileName),
-          transferData: report.transferData, //added 2/5
-        });
-      }
-    });
+    const reports = await dbconnect.getAllReportsWhere({});
 
-    if (filesResponse.length === 0) {
-      return res
-        .status(404)
-        .send("No files found matching the specified types.");
+    if (!reports || reports.length === 0) {
+      const blankReport = {
+        userId: '',
+        reportId: '',
+        reportName: '',
+        subject: '',
+        gradeLevel: '',
+        status: '',
+        fileName: '',
+        fileType: '',
+      };
+      filesResponse.push(blankReport)
+     
+      return res.status(200).json(filesResponse);
     }
+    else {
+      reports.forEach((report) => {
+        const filteredFiles = report.files.filter((file) =>
+          fileTypes
+            ? fileTypes.some((fileType) => file.fileType.includes(fileType))
+            : true
+        );
+  
+        
+        if (filteredFiles.length > 0) {
+          filesResponse.push({
+            userId: report.userId,
+            reportName: report.reportName,
+            reportId: report.reportId,
+            file: filteredFiles.map((file) => file.filePath),
+            gradeLevel: report.gradeLevel,
+            subject: report.subject,
+            fileName: filteredFiles.map((file) => file.fileName),
+            transferData: report.transferData, //added 2/5
+          });
+        }
+      });
+  
+      if (filesResponse.length === 0) {
+        return res
+          .status(404)
+          .send("No files found matching the specified types.");
+      }
+    }
+
+    
+    
 
     res.status(200).json(filesResponse);
   } catch (error) {
@@ -91,11 +110,11 @@ router.get("/users/:userId", async (req, res) => {
       }
     });
 
-    if (filesResponse.length === 0) {
-      return res
-        .status(404)
-        .send("No files found matching the specified types.");
-    }
+    // if (filesResponse.length === 0) {
+    //   return res
+    //     .status(404)
+    //     .send("No files found matching the specified types.");
+    // }
 
     res.status(200).json(filesResponse);
   } catch (error) {
@@ -108,7 +127,7 @@ router.get("/users/:userId", async (req, res) => {
 });
 
 // GET a specific report from a specific user
-router.get("/:reportId/users/:userId", async (req, res) => {
+router.get("/:reportId/users/:userId", async (req, res) => { //?categorize=true
   try {
     const query = { reportId: req.params.reportId, userId: req.params.userId };
     let reports = await findAllReports(query, res);
@@ -120,13 +139,13 @@ router.get("/:reportId/users/:userId", async (req, res) => {
 
     // New functionality: WIP question categorization if categorize paramter === true
     if (req.query.categorize === 'true') {
-      reports = categorizeReports(reports);
+      reports = await categorizeReports(reports);
     }
 
     // New functionality: WIP summarize if summarize paramter === true
-    // if (req.query.summarize === 'true') {
-    //   reports = summarizeReports(reports);
-    // }
+    if (req.query.summarize === 'true') {
+      reports = await summarizeReports(reports);
+    }
 
     res.json({ success: true, reports: reports });
   } catch (error) {
@@ -164,7 +183,7 @@ router.get("/:reportId", async (req, res) => {
 router.put("/:reportId/users/:userId", async (req, res) => {
   //works on server
   const { reportId, userId } = req.params; // Extract reportId and userId from URL parameters
-  const { result, ...reportData } = req.body; // Extract the new transferData.result array and any other report data
+  const { result, categorized, ...reportData } = req.body; // Extract the new transferData.result array and any other report data
 
   try {
     let updatedReport;
@@ -182,6 +201,21 @@ router.put("/:reportId/users/:userId", async (req, res) => {
         { $set: reportData } // Ensure to use $set to update fields without replacing the entire document
       );
     }
+
+    
+    // if (categorized){
+    //   updatedReport = await dbconnect.updateReport(
+    //     { reportId, userId },
+    //     { $set: { "categorized": categorized } } // Update the entire transferData.result array
+    //   );
+    // }
+    // else {
+    //   // Otherwise, update the report with provided reportData
+    //   updatedReport = await dbconnect.updateReport(
+    //     { reportId, userId },
+    //     { $set: reportData } // Ensure to use $set to update fields without replacing the entire document
+    //   );
+    // }
 
     // If no report was found or updated, return a 404 not found
     if (!updatedReport) {
@@ -253,12 +287,21 @@ router.delete("/:reportId/users/:userId", async (req, res) => {
 async function findAllReports(query, res) {
   try {
     const reports = await dbconnect.getAllReportsWhere(query); // Corrected usage
-    if (reports.length === 0) {
+    if (!reports) {
       // Check if the reports array is empty
-      res
-        .status(404)
-        .json({ success: false, message: "No reports found for this user." });
-      return null;
+      const blankReport = {
+        userId: '',
+        reportId: '',
+        reportName: '',
+        subject: '',
+        gradeLevel: '',
+        status: '',
+        fileName: '',
+        fileType: '',
+      };
+      filesResponse.push(blankReport)
+     
+      return res.status(200).json(filesResponse);
     }
     return reports;
   } catch (error) {
@@ -348,7 +391,13 @@ async function categorizeReports(report){
       );
 
 
-      console.log(response.data);
+      //console.log(response.data);
+      report.categorized = response.data; // set response.categorized field to response
+
+      const updatedReport = await dbconnect.updateReport(
+        { reportId: report.reportId, userId: report.userId },
+        { $set: { "categorized": report.categorized } } 
+      );
       
     }
 
@@ -358,6 +407,42 @@ async function categorizeReports(report){
     }
   
   }
+  return report;
 }
+
+
+// async function summarizeReports(report){
+//   if (report.transferData.status === "finished") {
+//     // send a JSON of reports.transferData.result to endpoint
+
+//     try {
+//       // Sending the result for categorization
+//       console.log(report.transferData.result);
+//       const response = await axios.post(
+//         `${process.env.WORKSTATION_URL}/summarize`,
+//         report.transferData.result
+//       );
+
+
+//       console.log(response.data);
+
+//       report.summary = response.data; // set response.categorized field to response
+
+//       const updatedReport = await dbconnect.updateReport(
+//         { reportId: report.reportId, userId: report.userId },
+//         { $set: { "summary": report.summary } } 
+//       );
+      
+//     }
+
+//     catch (error) {
+//       console.error("Error during report categorization:", error);
+
+//     }
+  
+//   }
+//   return report;
+
+// }
 
 module.exports = router;
