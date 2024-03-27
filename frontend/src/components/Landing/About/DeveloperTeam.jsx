@@ -1,5 +1,6 @@
 import styles from "./about.module.css"; // Import the CSS file for styling
 import generic from "../../../images/genericprofile.jpg";
+import NagatoKadoya from "../../../images/NagatoKadoya.png";
 import TaylorGriffin from "../../../images/TaylorGriffin.png";
 import JohnHenryMejia from "../../../images/JohnHenryMejia.jpg";
 import JohnNguyen from "../../../images/johnheadshot2.jpeg";
@@ -34,7 +35,7 @@ export default function DeveloperTeam() {
       name: "Nagato Kadoya",
       role: "Developer",
       description: `A senior computer science student. Responsible for frontend written in react.js`,
-      imageUrl: generic,
+      imageUrl: NagatoKadoya,
     },
   ];
   return (

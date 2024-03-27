@@ -40,3 +40,27 @@
     width: 100%; /* Full width */
     z-index: 1000;
 }
+.navbar-toggler {
+    border: none;
+    padding: 0; /* Ensure there's no padding that might offset the icon */
+  }
+  
+  .navbar-toggler:focus,
+  .navbar-toggler:active {
+    outline: none;
+  }
+  
+  .navbar-toggler-icon {
+    display: block;
+    width: 30px; /* Width of the hamburger icon */
+    height: 3px; /* Height of the hamburger icon */
+    background-color: #fff; /* Color of the hamburger icon */
+    position: relative;
+    transition: all .3s ease-in-out;
+  }
+  
+  /* Remove the pseudo-elements for the icon */
+  .navbar-toggler-icon::before,
+  .navbar-toggler-icon::after {
+    content: none;
+  }
