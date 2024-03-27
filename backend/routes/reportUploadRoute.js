@@ -38,7 +38,7 @@ const upload = multer({
       cb(null, file.originalname); //file.fieldname + '-' + Date.now() + path.extname(file.originalname));
     },
   }),
-  limits: { fileSize: 5 * 1024 * 1024 * 1024 },
+  //limits: { fileSize: 5 * 1024 * 1024 * 1024 }, took out arbitrary file size limit
   fileFilter: (req, file, cb) => {
     cb(null, !!req.params.userId);
   },
@@ -126,15 +126,6 @@ router.post(
 
           response.transferStatus = "successful";
           const job_id = ytResponse.data.job_id; // Return job_id to the client for polling
-          //console.log('job id:',job_id);
-
-          //const yt_title = ytResponse.data.title;
-          //let job = await getInitialJobReq(process.env.WORKSTATION_URL, job_id);
-          
-          // let transcriptionData = {
-          //   ...job.transcriptionData.meta,
-          //   status: job.status 
-          // };
           
           response.data.job_id = job_id; // Return job_id to the client
           //console.log('response data:', response.data);
@@ -168,7 +159,7 @@ router.post(
 
       if (req.file) {
         response.uploadStatus = "pending";
-        const allowedTypes = [
+        const allowedTypes = [ //added video types from website
           "application/json",
           "text/csv",
           "application/pdf",
@@ -177,6 +168,11 @@ router.post(
           "audio/aac",
           "audio/ogg",
           "audio/webm",
+          "video/webm",
+          "video/mp2t",
+          "video/quicktime",
+          "video/mp4",
+          "application/mxf"
         ];
         if (!allowedTypes.includes(req.file.mimetype)) {
           await fsPromises.unlink(req.file.path);
@@ -208,7 +204,12 @@ router.post(
             "audio/aac",
             "audio/ogg",
             "audio/webm",
-          ].includes(req.file.mimetype)
+            "video/webm",
+            "video/mp2t",
+            "video/quicktime",
+            "video/mp4",
+            "application/mxf"
+          ].includes(req.file.mimetype) //add video types from webpage
         ) {
           try {
             const transferResponse = await handleFileTransfer(
@@ -257,9 +258,6 @@ router.post(
               "Error transfering file or updating report in the database:",
               error
             );
-            // Prepare an error response if updating the database fails
-            //response.flag = false;
-            //response.code = 500;
             response.message = "Failed to transfer file";
             response.transferStatus = "failure";
           }
