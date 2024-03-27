@@ -51,9 +51,10 @@ export default function QuestionCategorization({ reportId, userId, categorizedQu
     <>
       <div className="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto">
         <h1>Question Categorization</h1>
+        <h2>Based on Costa Level</h2>
         <div className="lead" style={{ backgroundColor: "white" }}>
           {isLoading ? (
-            <p>Categorizing...</p>
+            <p>Categorizing based on costa level...</p>
           ) : error ? (
             <p>Error: {error.message}</p>
           ) : categorizationDone ? (
@@ -93,7 +94,7 @@ export default function QuestionCategorization({ reportId, userId, categorizedQu
               </table>
             </div>
           ) : (
-            <p>Click the button above to categorize questions.</p>
+            <p>Click the button above to categorize questions based on costa level</p>
           )}
         </div>
       </div>

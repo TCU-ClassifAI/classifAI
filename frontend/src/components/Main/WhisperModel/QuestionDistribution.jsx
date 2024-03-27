@@ -20,7 +20,7 @@ export default function QuestionDistribution({ categorizedQuestions }) {
   const barChartProps = {
     options: {
       title: {
-        text: "Question Category Distribution",
+        text: "Question Costa Level Distribution",
         align: "left",
         style: {
           fontSize: "30px",
