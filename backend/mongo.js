@@ -66,7 +66,8 @@ const reportSchema = new mongoose.Schema({
     end_time: Number,
     question: String,
     level: Number
-  }]
+  }],
+  summary: String
 });
 
 // Define a schema and a model for storing users in MongoDB

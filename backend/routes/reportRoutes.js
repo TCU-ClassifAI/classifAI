@@ -363,7 +363,13 @@ async function categorizeReports(report){
       );
 
 
-      console.log(response.data);
+      //console.log(response.data);
+      report.categorized = response.data; // set response.categorized field to response
+
+      const updatedReport = await dbconnect.updateReport(
+        { reportId: report.reportId, userId: report.userId },
+        { $set: { "categorized": report.categorized } } 
+      );
       
     }
 
@@ -373,6 +379,7 @@ async function categorizeReports(report){
     }
   
   }
+  return report;
 }
 
 
@@ -390,6 +397,13 @@ async function summarizeReports(report){
 
 
       console.log(response.data);
+
+      report.summary = response.data; // set response.categorized field to response
+
+      const updatedReport = await dbconnect.updateReport(
+        { reportId: report.reportId, userId: report.userId },
+        { $set: { "summary": report.summary } } 
+      );
       
     }
 
@@ -399,6 +413,8 @@ async function summarizeReports(report){
     }
   
   }
+  return report;
+
 }
 
 module.exports = router;
