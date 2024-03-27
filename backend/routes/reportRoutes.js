@@ -124,9 +124,9 @@ router.get("/:reportId/users/:userId", async (req, res) => { //?categorize=true
     }
 
     // New functionality: WIP summarize if summarize paramter === true
-    // if (req.query.summarize === 'true') {
-    //   reports = summarizeReports(reports);
-    // }
+    if (req.query.summarize === 'true') {
+      reports = await summarizeReports(reports);
+    }
 
     res.json({ success: true, reports: reports });
   } catch (error) {
@@ -359,6 +359,32 @@ async function categorizeReports(report){
       console.log(report.transferData.result);
       const response = await axios.post(
         `${process.env.WORKSTATION_URL}/categorize/categorize_transcript`,
+        report.transferData.result
+      );
+
+
+      console.log(response.data);
+      
+    }
+
+    catch (error) {
+      console.error("Error during report categorization:", error);
+
+    }
+  
+  }
+}
+
+
+async function summarizeReports(report){
+  if (report.transferData.status === "finished") {
+    // send a JSON of reports.transferData.result to endpoint
+
+    try {
+      // Sending the result for categorization
+      console.log(report.transferData.result);
+      const response = await axios.post(
+        `${process.env.WORKSTATION_URL}/summarize`,
         report.transferData.result
       );
 
