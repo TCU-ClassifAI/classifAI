@@ -11,10 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main
-        uses: actions/checkout@v2
-
+        uses: actions/checkout@v4
+        
       - name: Deploy docs
         uses: mhausenblas/mkdocs-deploy-gh-pages@master
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            REQUIREMENTS: requirements.txt
+            REQUIREMENTS: .github/workflows/requirements.txt
