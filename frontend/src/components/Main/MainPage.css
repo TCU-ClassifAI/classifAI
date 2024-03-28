@@ -42,3 +42,22 @@
   flex-grow: 1;
   padding: 20px;
 }
+
+
+
+/* Adjusted CSS in NavbarHome.css */
+@media screen and (max-width: 768px) {
+  .navbar-collapse.show .side-menu {
+      display: block;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .side-menu {
+    display: none;
+  }
+
+  .main-content {
+    margin-left: 0; /* Set margin to 0 when the side menu is not displayed */
+  }
+}

@@ -1,15 +1,23 @@
-import React from "react"
-import {Outlet, Link} from "react-router-dom";
-import C2Image from '../../images/frogv2.png'
+import React, { useState, useEffect } from "react";
+import { Outlet, Link } from "react-router-dom";
+import C2Image from '../../images/frogv2.png';
 import { Auth } from "aws-amplify";
 import { useNavigate } from "react-router-dom";
 
 export default function NavbarHome() {
     let navigate = useNavigate();
-    const [isAuthenticated, setIsAuthenticated] = React.useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isNavCollapsed, setIsNavCollapsed] = useState(true);
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-    React.useEffect(() => {
+    useEffect(() => {
         checkUser();
+        function handleResize() {
+            setWindowWidth(window.innerWidth);
+        }
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
     }, []);
 
     async function checkUser() {
@@ -31,31 +39,47 @@ export default function NavbarHome() {
             console.log('error signing out: ', error);
         }
     }
-    
+
+    const closeNav = () => {
+        setIsNavCollapsed(true);
+    };
+
     return (
         <>
             <nav className="navbar navbar-expand-lg" id="main-nav">
-                <a className="navbar-brand" href="#home">
-                        <img
-                            src={C2Image}
-                            className="tcu-image"
-                            alt="" />
+                <a className="navbar-brand" href="/">
+                    <img src={C2Image} className="tcu-image" alt="" />
                     <span style={{ color: 'white', justifyContent: 'center', fontWeight: 'bold' }}>ClassifAI</span>
-
                 </a>
-
-                <div className="collapse navbar-collapse justify-content-end" id="navbarCollapse">
+                <button className="navbar-toggler" type="button" onClick={() => setIsNavCollapsed(!isNavCollapsed)} aria-expanded={!isNavCollapsed} aria-label="Toggle navigation">
+                    <span className="navbar-toggler-icon"></span>
+                </button>
+                <div className={"collapse navbar-collapse" + (!isNavCollapsed ? " show" : "")} id="navbarResponsive">
                     <ul className="navbar-nav">
-                        {/* It is ingonering if the user logged in or not for now */}
+                        {windowWidth <= 768 && (
                             <>
-                                {/* menu when user is signed in */}
                                 <li className="nav-item">
-                                    <Link to="account" className="nav-link text-light"> Account</Link>
+                                    <Link to="/home/analyze" className="nav-link text-light" onClick={closeNav}>Analyze</Link>
                                 </li>
                                 <li className="nav-item">
-                                    <a href="#home" className="nav-link text-light" onClick={(e) => signOut(e)} id='sign-out'>Sign Out</a>
+                                    <Link to="/home/myreports" className="nav-link text-light" onClick={closeNav}>My Reports</Link>
+                                </li>
+                                <li className="nav-item">
+                                    <Link to="/home/files" className="nav-link text-light" onClick={closeNav}>Export Data Files</Link>
+                                </li>
+                                <li className="nav-item">
+                                    <Link to="/home/transcribe" className="nav-link text-light" onClick={closeNav}>Legacy Analyze</Link>
                                 </li>
                             </>
+                        )}
+                    </ul>
+                    <ul className="navbar-nav ms-auto">
+                        <li className="nav-item">
+                            <Link to="/home/account" className="nav-link text-light" onClick={closeNav}>Account</Link>
+                        </li>
+                        <li className="nav-item">
+                            <a href="#home" className="nav-link text-light" onClick={(e) => { signOut(e); closeNav(); }} id='sign-out'>Sign Out</a>
+                        </li>
                     </ul>
                 </div>
             </nav>
@@ -63,5 +87,3 @@ export default function NavbarHome() {
         </>
     );
 }
-
-

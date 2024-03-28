@@ -1,6 +1,8 @@
-import { Auth } from 'aws-amplify';
 import React, { useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import { Auth } from 'aws-amplify';
 import "./signUp.css"
 
 const ConfirmRegister = () => {
@@ -14,7 +16,7 @@ const ConfirmRegister = () => {
     })
   }
 
-  async function confirmSignUp (event){
+  async function confirmSignUp(event) {
     event.preventDefault();
     try {
       await Auth.confirmSignUp(user.username, user.authenticationCode);
@@ -30,35 +32,36 @@ const ConfirmRegister = () => {
       <form className="row g-3" id="signup-form">
         <h3>Confirm Sign-Up</h3>
         <small>Check the email used to sign up for a confirmation code</small>
-          <div className="col-md-6">
-              <label htmlFor="inputEmail4" className="form-label">Email</label>
-              <input 
-              type="email" 
-              className="form-control" 
-              id="inputEmail4" 
-              value={user.username} 
-              placeholder="Email"
-              onChange={(e) => handleInputChange(e, 'username')}/>
-          </div>
-          <div className="col-md-6">
-              <label htmlFor="inputAddress" className="form-label">Confirmation Code</label>
-              <input 
-                type="text"
-                className="form-control" 
-                id="inputEmail4" 
-                value={user.authenticationCode} 
-                placeholder="Auth Code"
-                onChange={(e) => handleInputChange(e, 'authenticationCode')}/>
-          </div>
-          <div className="col-12">
-              <button
-              className='btn btn-primary'
-              onClick={(e) => confirmSignUp(e)}
-              >
-                Confirm Sign Up
-              </button>
-          </div>
-          <div>
+        <div className="col-md-6">
+          <TextField
+            label="Email"
+            variant="outlined"
+            fullWidth
+            value={user.username}
+            placeholder="Email"
+            onChange={(e) => handleInputChange(e, 'username')}
+          />
+        </div>
+        <div className="col-md-6">
+          <TextField
+            label="Confirmation Code"
+            variant="outlined"
+            fullWidth
+            value={user.authenticationCode}
+            placeholder="Auth Code"
+            onChange={(e) => handleInputChange(e, 'authenticationCode')}
+          />
+        </div>
+        <div className="col-12">
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={(e) => confirmSignUp(e)}
+          >
+            Confirm Sign Up
+          </Button>
+        </div>
+        <div>
           <Link
             to={{
               pathname: '/signup'
@@ -68,7 +71,7 @@ const ConfirmRegister = () => {
             Back
           </Link>
         </div>
-        </form>
+      </form>
     </div>
   )
 }

@@ -2,7 +2,11 @@ import './signUp.css';
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Auth } from "aws-amplify";
-
+import TextField from '@mui/material/TextField';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 export default function SignUp() {
     let navigate = useNavigate();
@@ -10,6 +14,7 @@ export default function SignUp() {
     const [badGrade, setBadGrade] = useState()
     const [badZip, setBadZip] = useState()
     const [badUserOrEmail, setBadUserOrEmail] = useState()
+    const [showPassword, setShowPassword] = useState(false);
     const [user, setUser] = useState({
         name: '',
         username: '',
@@ -27,7 +32,6 @@ export default function SignUp() {
             return {...user, [keyName]: event.target.value}
         })
     }
-
 
     function checkState(){
         const states = ['Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','District of Columbia','Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts','Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York','North Carolina','North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming']
@@ -63,8 +67,6 @@ export default function SignUp() {
         var goodState = checkState();
         var goodGrade = checkGrade();
         var goodZip = checkZip();
-        console.log(goodState)
-        console.log(goodGrade)
 
         if(goodState && goodGrade && goodZip){
             try{
@@ -91,14 +93,6 @@ export default function SignUp() {
         }
     }
 
-    function showPassword(){
-        var x = document.getElementById("password-input");
-        if (x.type === "password") {
-            x.type = "text";
-        } else {
-            x.type = "password";
-        }
-    }
     return(
         <div className="container">
             <form className="row g-3" id="signup-form">
@@ -123,73 +117,87 @@ export default function SignUp() {
                     </div>
                 ): null}
                 <div className="col-md-6">
-                    <label htmlFor="inputEmail4" className="form-label">Name*</label>
-                    <input 
-                    type="text" 
-                    className="form-control" 
-                    value={user.name} 
-                    placeholder="First name"
-                    onChange={(e) => handleInputChange(e, 'name')}/>
+                <TextField
+                        label="Name*"
+                        variant="outlined"
+                        fullWidth
+                        value={user.name}
+                        placeholder="Name"
+                        onChange={(e) => handleInputChange(e, 'name')}
+                    />
                 </div>
                 <div className="col-md-6">
-                    <label htmlFor="inputAddress" className="form-label">Email*</label>
-                    <input 
-                     type="text"
-                     className="form-control" 
-                     id="inputEmail4" 
-                     value={user.username} 
-                     placeholder="Email"
-                     onChange={(e) => handleInputChange(e, 'username')}/>
+                <TextField
+                        label="Email*"
+                        fullWidth
+                        variant="outlined"
+                        value={user.username}
+                        placeholder="Enter Email"
+                        onChange={(e) => handleInputChange(e, 'username')}
+                    />
                 </div>
                 <div className="col-md-4">
-                    <label className="form-label">School</label>
-                    <input 
-                    type="text" 
-                    className="form-control" 
-                    value={user.school} 
-                    placeholder="School"
-                    onChange={(e) => handleInputChange(e, 'school')}/>
+                    <TextField
+                        fullWidth
+                        variant="outlined"
+                        label="School"
+                        value={user.school}
+                        placeholder="School"
+                        onChange={(e) => handleInputChange(e, 'school')}
+                    />
                 </div>
                 <div className="col-md-4">
-                    <label className="form-label">Grade Level</label>
-                    <input 
-                    type="text" 
-                    className="form-control" 
-                    
-                    value={user.grade_level} 
-                    placeholder="Grade Level (e.g. fourth, second)"
-                    onChange={(e) => handleInputChange(e, 'grade_level')}/>
+                    <TextField
+                        fullWidth
+                        variant="outlined"
+                        label="Grade Level*"
+                        value={user.grade_level}
+                        placeholder="Grade Level (e.g. K, 1, ..., 12)"
+                        onChange={(e) => handleInputChange(e, 'grade_level')}
+                    />
                 </div>
                 <div className="col-md-4">
-                    <label htmlFor="inputAddress2" className="form-label">State</label>
-                    <input 
-                    type="text" 
-                    className="form-control" 
-                    
-                    value={user.state} 
-                    placeholder="State"
-                    onChange={(e) => handleInputChange(e, 'state')}/>
+                    <TextField
+                        fullWidth
+                        variant="outlined"
+                        label='State*'
+                        value={user.state}
+                        placeholder="State"
+                        onChange={(e) => handleInputChange(e, 'state')}
+                    />
                 </div>
                 <div className="col-md-6">
-                    <label  className="form-label">Zip Code</label>
-                    <input 
-                    type="text" 
-                    className="form-control" 
- 
-                    value={user.zip} 
-                    placeholder="Zip Code"
-                    onChange={(e) => handleInputChange(e, 'zip')}/>
+                    <TextField
+                        fullWidth
+                        variant="outlined"
+                        label="Zip Code"
+                        value={user.zip}
+                        placeholder="Zip Code"
+                        onChange={(e) => handleInputChange(e, 'zip')}
+                    />
                 </div>
                 <div className="col-md-6">
-                    <label htmlFor="inputAddress2" className="form-label">Password*</label>
-                    <input 
-                    type="password" 
-                    className="form-control" 
-                    id="password-input" 
-                    value={user.password} 
-                    placeholder="Password"
-                    onChange={(e) => handleInputChange(e, 'password')}/>
-                    <input type="checkbox" id="showPassword" onClick={() => showPassword()}></input><p>Show Password</p>
+                    <TextField
+                        fullWidth
+                        variant="outlined"
+                        label="Password*"
+                        type={showPassword ? 'text' : 'password'}
+                        value={user.password}
+                        placeholder="Password"
+                        onChange={(e) => handleInputChange(e, 'password')}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="toggle password visibility"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                    >
+                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
                 </div>
                 <div className="col-12">
                     <button type="submit" className="btn btn-primary" onClick={(e) => signUp(e)}>Sign Up</button>

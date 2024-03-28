@@ -59,23 +59,45 @@ hr {
     margin-top: 30px;
 }
 
-/* Media query for screens with a maximum width of 768px (typical for tablets and mobiles) */
 @media (max-width: 768px) {
     .container {
-        padding-bottom: 50px; /* Reduce padding on the container for smaller screens */
+        flex-direction: column; /* Stack the children vertically */
+        align-items: center; /* Align children to the center */
+        padding-top: 150px; /* Adjust padding as needed */
     }
 
-    .left-side, .right-side {
-        padding-bottom: 50px; /* Reduce padding on sides for smaller screens */
+    .left-side,
+    .right-side {
+        flex: none; /* Reset any flex settings */
+        width: 90%; /* Set the width to a percentage of the screen width */
+        justify-content: center;
+        padding: 20px; /* Add padding around the content */
+        margin-bottom: 30px; /* Add space between the stacked items */
     }
 
     #login-form {
-        margin-top: 50px;
+        width: 100%; /* Full width of its container */
     }
-}
 
+    .input-login {
+        width: 100%; /* Full width of its container */
+    }
 
-.icon {
-    font-size: 2em; /* Adjust the size as needed */ 
+    #submit-login {
+        width: 100%; /* Full width of the button */
+    }
+
+    .form-group {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .additional-info {
+        display: none; /* Hide additional info to reduce clutter */
+    }
+
+    .learn-more {
+        display: none; /* Hide the learn more button */
+    }
 }
 
