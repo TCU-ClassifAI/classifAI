@@ -150,7 +150,7 @@ export default function SignUp() {
                     <TextField
                         fullWidth
                         variant="outlined"
-                        label="Grade Level"
+                        label="Grade Level*"
                         value={user.grade_level}
                         placeholder="Grade Level (e.g. K, 1, ..., 12)"
                         onChange={(e) => handleInputChange(e, 'grade_level')}
@@ -160,7 +160,7 @@ export default function SignUp() {
                     <TextField
                         fullWidth
                         variant="outlined"
-                        label='State'
+                        label='State*'
                         value={user.state}
                         placeholder="State"
                         onChange={(e) => handleInputChange(e, 'state')}
