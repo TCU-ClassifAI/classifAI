@@ -163,10 +163,12 @@ router.post(
           "application/json",
           "text/csv",
           "application/pdf",
+          "audio/mp4",
           "audio/mpeg",
           "audio/wav",
           "audio/aac",
           "audio/ogg",
+          "audio/x-m4a", // Added to support m4a files
           "audio/webm",
           "video/webm",
           "video/mp2t",
@@ -204,6 +206,8 @@ router.post(
             "audio/aac",
             "audio/ogg",
             "audio/webm",
+            "audio/mp4",
+            "audio/x-m4a", // Added to support m4a files
             "video/webm",
             "video/mp2t",
             "video/quicktime",
