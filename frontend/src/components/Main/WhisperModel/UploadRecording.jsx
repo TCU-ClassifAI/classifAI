@@ -33,7 +33,7 @@ export default function UploadRecording({
   const [genericModalTitle, setGenericModalTitle] = useState("");
   const [youtubeMode, setYoutubeMode] = useState(false);
   const [youtubeUrl, setYoutubeUrl] = useState("");
-  const [analysisStatusMsg, setAnalysisStatusMsg] = useState("");
+  const [analysisStatusMsg, setAnalysisStatusMsg] = useState("Starting");
 
   useEffect(() => {
     if (location.state && location.state.reportId) {
@@ -119,6 +119,12 @@ export default function UploadRecording({
       setSubject(reportSubject);
       setReportName(reportName);
 
+      if(status === "failed") {
+        setProgress(0);
+        setAnalysisStatusMsg("failed");
+        return;
+      }
+
       if (progress === "finished" || progress === "completed" || status === "completed") {
         setIsAnalyzing(false); // Stop analysis once completed
         const transcription = response.data.reports[0].transferData.result;
@@ -139,6 +145,8 @@ export default function UploadRecording({
       else {
         setProgress(0);
       }
+
+      
     } catch (error) {
       console.log("Error checking analysis status!", error);
       setGenericModalMsg("Error checking analysis status!");
