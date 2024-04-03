@@ -38,7 +38,7 @@ const upload = multer({
       cb(null, file.originalname); //file.fieldname + '-' + Date.now() + path.extname(file.originalname));
     },
   }),
-  //limits: { fileSize: 5 * 1024 * 1024 * 1024 }, took out arbitrary file size limit
+  limits: { fileSize: 2 * 1024 * 1024 * 1024 }, //2gb
   fileFilter: (req, file, cb) => {
     cb(null, !!req.params.userId);
   },

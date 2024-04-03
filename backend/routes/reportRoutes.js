@@ -143,9 +143,9 @@ router.get("/:reportId/users/:userId", async (req, res) => { //?categorize=true
     }
 
     // New functionality: WIP summarize if summarize paramter === true
-    if (req.query.summarize === 'true') {
-      reports = await summarizeReports(reports);
-    }
+    // if (req.query.summarize === 'true') {
+    //   reports = await summarizeReports(reports);
+    // }
 
     res.json({ success: true, reports: reports });
   } catch (error) {
@@ -378,70 +378,76 @@ async function updateTransferDataStatus(reports) {
 }
 
 
-async function categorizeReports(report){
-  if (report.transferData.status === "finished") {
-    // send a JSON of reports.transferData.result to endpoint
+async function categorizeReports(reports){
+  for (let report of reports) {
+    console.log(report.transferData.status)
+    if (report.transferData.status === "finished") {
+      // send a JSON of reports.transferData.result to endpoint
 
-    try {
-      // Sending the result for categorization
-      console.log(report.transferData.result);
-      const response = await axios.post(
-        `${process.env.WORKSTATION_URL}/categorize/categorize_transcript`,
-        report.transferData.result
-      );
+      try {
+        // Sending the result for categorization
+        console.log(report.transferData.result);
+        const response = await axios.post(
+          `${process.env.WORKSTATION_URL}/categorize/categorize_transcript`,
+          report.transferData.result
+        );
 
 
-      //console.log(response.data);
-      report.categorized = response.data; // set response.categorized field to response
+        //console.log(response.data);
+        report.categorized = response.data; // set response.categorized field to response
 
-      const updatedReport = await dbconnect.updateReport(
-        { reportId: report.reportId, userId: report.userId },
-        { $set: { "categorized": report.categorized } } 
-      );
-      
+        const updatedReport = await dbconnect.updateReport(
+          { reportId: report.reportId, userId: report.userId },
+          { $set: { "categorized": report.categorized } } 
+        );
+        
+      }
+
+      catch (error) {
+        console.error("Error during report categorization:", error);
+
+      }
+    
     }
-
-    catch (error) {
-      console.error("Error during report categorization:", error);
-
-    }
-  
+    return reports;
   }
-  return report;
 }
 
-async function summarizeReports(report){
-  if (report.transferData.status === "finished") {
-    // send a JSON of reports.transferData.result to endpoint
+// async function summarizeReports(reports){
+//   for (let report of reports) {
+//     //console.log('report status: ',report.transferData.status);  it succesfully sees the report
+//     if (report.transferData.status === "finished") {
+//       // send a JSON of reports.transferData.result to endpoint
 
-    try {
-      // Sending the result for categorization
-      console.log(report.transferData.result);
-      const response = await axios.post(
-        `${process.env.WORKSTATION_URL}/summarize`,
-        report.transferData.result
-      );
+//       try {
+//         // Sending the result for categorization
+//         //console.log(report.transferData.result);
+//         const response = await axios.post(
+//           `${process.env.WORKSTATION_URL}/summarize`,
+//           report.transferData.result
+//         );
 
 
-      console.log(response.data);
+//         console.log('summary response:',response); // llm giving 500 internal server error
 
-      report.summary = response.data; // set response.summary field to response
+//         report.summary = response.data; // set response.summary field to response
 
-      const updatedReport = await dbconnect.updateReport(
-        { reportId: report.reportId, userId: report.userId },
-        { $set: { "summary": report.summary } } 
-      );
-      
-    }
+//         const updatedReport = await dbconnect.updateReport(
+//           { reportId: report.reportId, userId: report.userId },
+//           { $set: { "summary": report.summary } } 
+//         );
+        
+//       }
 
-    catch (error) {
-      console.error("Error during report categorization:", error);
+//       catch (error) {
+//         console.error("Error during report categorization:", error);
 
-    }
-  
-  }
-  return report;
-
-}
+//       }
+    
+//     }
+//     return reports;
+//   }
+// }
 
 module.exports = router;
+
