@@ -133,19 +133,10 @@ router.get("/:reportId/users/:userId", async (req, res) => { //?categorize=true
     let reports = await findAllReports(query, res);
 
     if (!reports) return;
-    // New functionality: Query workstation for "in progress" transfers and update
+
+    // Query workstation for "in progress" transfers and update
     // Returns llm info
     reports = await updateTransferDataStatus(reports);
-
-    // New functionality: WIP question categorization if categorize paramter === true
-    if (req.query.categorize === 'true') {
-      reports = await categorizeReports(reports);
-    }
-
-    // New functionality: WIP summarize if summarize paramter === true
-    // if (req.query.summarize === 'true') {
-    //   reports = await summarizeReports(reports);
-    // }
 
     res.json({ success: true, reports: reports });
   } catch (error) {
@@ -177,51 +168,43 @@ router.get("/:reportId", async (req, res) => {
 
 //////////////// PUT
 
-//TODO: check if transcript update
 // Update a specific report for a specific user
-// working 3/12
 router.put("/:reportId/users/:userId", async (req, res) => {
-  //works on server
   const { reportId, userId } = req.params; // Extract reportId and userId from URL parameters
-  const { result, categorized, ...reportData } = req.body; // Extract the new transferData.result array and any other report data
+  // working 4/8 const { result, categorized, summary, ...reportData } = req.body; // Extract the new transferData.result array and any other report data
 
-  try {
-    let updatedReport;
+  const updates = req.body;
 
-    if (result) {
-      // If a new transferData.result array is provided, update it directly
-      updatedReport = await dbconnect.updateReport(
-        { reportId, userId },
-        { $set: { "transferData.result": result } } // Update the entire transferData.result array
-      );
+  // Initialize an object to construct the $set operation
+  let updateOperations = {};
+
+  // Iterate through the keys of the updates object to handle nested updates
+  for (const [key, value] of Object.entries(updates)) {
+    // If the key indicates a nested field (e.g., "transferData.status"), 
+    // we directly use it in the $set operation
+    if (key.includes('.')) {
+      updateOperations[key] = value;
     } else {
-      // Otherwise, update the report with provided reportData
-      updatedReport = await dbconnect.updateReport(
-        { reportId, userId },
-        { $set: reportData } // Ensure to use $set to update fields without replacing the entire document
-      );
+      // For top-level fields, prepend the key with the parent object 
+      // if it's meant to update a nested field within transferData
+      if (key.startsWith("transferData")) {
+        updateOperations[`transferData.${key}`] = value;
+      } else {
+        // For other top-level updates, just set them as they are
+        updateOperations[key] = value;
+      }
     }
+  }
 
-    
-    // if (categorized){
-    //   updatedReport = await dbconnect.updateReport(
-    //     { reportId, userId },
-    //     { $set: { "categorized": categorized } } // Update the entire transferData.result array
-    //   );
-    // }
-    // else {
-    //   // Otherwise, update the report with provided reportData
-    //   updatedReport = await dbconnect.updateReport(
-    //     { reportId, userId },
-    //     { $set: reportData } // Ensure to use $set to update fields without replacing the entire document
-    //   );
-    // }
+  try {    
+    const updatedReport = await dbconnect.updateReport(
+      { reportId, userId },
+      { $set: updateOperations }
+    );
 
-    // If no report was found or updated, return a 404 not found
+
     if (!updatedReport) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Report not found." });
+      return res.status(404).json({ success: false, message: "Report not found." });
     }
 
     // Return the updated report
@@ -321,7 +304,7 @@ async function updateTransferDataStatus(reports) {
     if (report.transferData.status != "finished") {
       try {
         const response = await axios.get(
-          `${process.env.WORKSTATION_URL}/transcription/get_transcription_status`,
+          `${process.env.WORKSTATION_URL}/analyze`,//transcription/get_transcription_status`,
           {
             params: {
               job_id: report.transferData.job_id,
@@ -329,21 +312,25 @@ async function updateTransferDataStatus(reports) {
           }
         );
 
+
+        // Update report.transferData with the new response structure
         if (response.data.meta) {
-          // Dynamically update transfer object based on response fields
-          for (const [key, value] of Object.entries(response.data.meta)) {
-            report.transferData[key] = value;
-            //(report.transferData[key]);
-          }
-
-        }
-        // Handling for status which is outside meta
-        if (response.data.status) {
-          report.transferData["status"] = response.data.status;
+          report.transferData = { ...report.transferData, ...response.data.meta };
         }
 
+        // Store these in report.transferData.categorized   or .summary  or .transcript
         if (response.data.result) {
-          report.transferData["result"] = response.data.result;
+          // Update categorized, summary, and result (transcript) fields.
+          await dbconnect.updateReport(
+            { reportId: report.reportId, userId: report.userId },
+            {
+              $set: {
+                "transferData.categorized": response.data.result.questions,
+                "transferData.summary": response.data.result.summary,
+                "transferData.result": response.data.result.transcript
+              }
+            }
+          );
         }
 
         if (response.data.meta.title){
@@ -378,40 +365,40 @@ async function updateTransferDataStatus(reports) {
 }
 
 
-async function categorizeReports(reports){
-  for (let report of reports) {
-    console.log(report.transferData.status)
-    if (report.transferData.status === "finished") {
-      // send a JSON of reports.transferData.result to endpoint
+// async function categorizeReports(reports){
+//   for (let report of reports) {
+//     //console.log(report.transferData.status)
+//     if (report.transferData.status === "finished") {
+//       // send a JSON of reports.transferData.result to endpoint
 
-      try {
-        // Sending the result for categorization
-        console.log(report.transferData.result);
-        const response = await axios.post(
-          `${process.env.WORKSTATION_URL}/categorize/categorize_transcript`,
-          report.transferData.result
-        );
+//       try {
+//         // Sending the result for categorization
+//         //console.log(report.transferData.result);
+//         const response = await axios.post(
+//           `${process.env.WORKSTATION_URL}/categorize/categorize_transcript`,
+//           report.transferData.result
+//         );
 
 
-        //console.log(response.data);
-        report.categorized = response.data; // set response.categorized field to response
+//         console.log(response.data);
+//         report.categorized = response.data; // set response.categorized field to response
 
-        const updatedReport = await dbconnect.updateReport(
-          { reportId: report.reportId, userId: report.userId },
-          { $set: { "categorized": report.categorized } } 
-        );
+//         const updatedReport = await dbconnect.updateReport(
+//           { reportId: report.reportId, userId: report.userId },
+//           { $set: { "categorized": report.categorized } } 
+//         );
         
-      }
+//       }
 
-      catch (error) {
-        console.error("Error during report categorization:", error);
+//       catch (error) {
+//         console.error("Error during report categorization:", error);
 
-      }
+//       }
     
-    }
-    return reports;
-  }
-}
+//     }
+//     return reports;
+//   }
+// }
 
 // async function summarizeReports(reports){
 //   for (let report of reports) {
@@ -421,14 +408,14 @@ async function categorizeReports(reports){
 
 //       try {
 //         // Sending the result for categorization
-//         //console.log(report.transferData.result);
+//         console.log('before api call');
 //         const response = await axios.post(
 //           `${process.env.WORKSTATION_URL}/summarize`,
 //           report.transferData.result
 //         );
 
 
-//         console.log('summary response:',response); // llm giving 500 internal server error
+//         console.log('after api call, summary response:',response); // llm giving 500 internal server error
 
 //         report.summary = response.data; // set response.summary field to response
 

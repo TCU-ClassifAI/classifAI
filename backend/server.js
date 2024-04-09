@@ -8,7 +8,6 @@ const fs = require('node:fs');
 
 
 const fileUploadRoute = require('./routes/fileUploadRoute.js');
-//const transcriptionRoutes = require('./routes/transcriptionRoutes.js'); // Adjust the path as necessary
 const reportRoutes = require('./routes/reportRoutes.js');
 const fileRoutes = require('./routes/fileRoutes.js');
 const reportUploadRoute = require('./routes/reportUploadRoute.js');
@@ -45,9 +44,6 @@ https.createServer(options, app).listen(PORT, () => {
 //   console.log("Server Running sucessfully.");
 // });
 
-
-// TODO transcription routes?
-//app.use('/transcript', transcriptionRoutes); // transcriptionRoutes is in routes/transcriptionRoutes.js
 
 app.use('/backend/reports',reportRoutes);
 app.use('/backend/reports',reportUploadRoute); //WIP

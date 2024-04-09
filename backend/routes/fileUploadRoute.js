@@ -64,6 +64,7 @@ router.post("/reports/:reportId/users/:userId",
     try {
       const { reportId, userId } = req.params;
       const providedFileName = req.body.fileName;
+      const model_name = req.body.model_name || 'large-v3'; // Default model_name if not provided
 
       if (!req.file) {
         response.message = "File is required";
@@ -159,8 +160,9 @@ router.post("/reports/:reportId/users/:userId",
 
       if (audioTypes.includes(fileType)) {
         const transferResponse = await handleFileTransfer(
-          `${process.env.WORKSTATION_URL}/transcription/transcribe`, //changed from start transcription
+          `${process.env.WORKSTATION_URL}/analyze`,//transcription/transcribe`, //changed from start transcription
           newPath,
+          model_name,
           reportId
         );
         const job_id = transferResponse.data.job_id; // Return job_id to the client for polling
@@ -189,11 +191,6 @@ router.post("/reports/:reportId/users/:userId",
             fileName: providedFileName || path.basename(newPath),
           };
 
-          //const existingIndex = report.transferData.findIndex(data => data.fileName === (providedFileName || path.basename(newPath)));
-          //if (existingIndex !== -1) {
-          //} else {
-          //report.transferData.push({ ...transferData, fileName: providedFileName || path.basename(newPath) });
-          //}
           await dbconnect.updateReport(
             { userId, reportId },
             {
@@ -287,10 +284,11 @@ const handleFileUpload = async (
 };
 
 // Function to handle file transfer to flask backend
-const handleFileTransfer = async (workstation, newPath, reportId) => {
+const handleFileTransfer = async (workstation, newPath, model_name, reportId) => {
   const formData = new FormData();
   formData.append("file", fs.createReadStream(newPath));
   formData.append("reportId", String(reportId));
+  formData.append("model_name", String(model_name));
 
   try {
     const response = await axios.post(workstation, formData, {
@@ -310,7 +308,7 @@ async function getInitialJobReq(workstationUrl, job_id) {
   let transcriptionData = null;
 
   const response = await axios.get(
-    `${workstationUrl}/transcription/get_transcription_status`,
+    `${workstationUrl}/analyze`,//transcription/get_transcription_status`,
     {
       params: {
         job_id: job_id,
