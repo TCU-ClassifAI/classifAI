@@ -118,29 +118,27 @@ export default function UploadRecording({
         }/reports/${reportId}/users/${userId}/`
       );
 
-      const status = response.data.reports[0].transferData.status;
-      const progress = response.data.reports[0].transferData.progress;
-      const message = response.data.reports[0].transferData.message;
+      if (!response.data.reports[0]) {
+        setProgress(3);
+        setAnalysisStatusMsg("Uploading Audio to Database")
+        return; // report might still be uploading, check later
+      }
+      let status, progress, message;
+      if(response.data.reports[0].transferData) {
+        status = response.data.reports[0].transferData.status;
+        progress = response.data.reports[0].transferData.progress;
+        message = response.data.reports[0].transferData.message;
+      } else {
+        status = "started";
+        progress = "started";
+        message = "";
+      }
+
+      
       const grade = response.data.reports[0].gradeLevel;
       const reportSubject = response.data.reports[0].subject;
       const reportName = response.data.reports[0].reportName;
       console.log(response);
-      let categorizedQuestions;
-    if (response.data.reports[0].transferData.categorized) {
-      categorizedQuestions =
-        response.data.reports[0].transferData.categorized.map((question) => ({
-          ...question,
-          level: question.level !== null ? question.level : 0,
-        }));
-      setCategorizedQuestions(categorizedQuestions);
-      console.log(categorizedQuestions);
-    }
-    if (response.data.reports[0].transferData.summary) {
-      let summary = response.data.reports[0].transferData.summary;
-      console.log(summary);
-      setSummary(summary);
-    }
-
       if (progress) {
         setAnalysisStatus(progress);
       } else {
@@ -166,6 +164,7 @@ export default function UploadRecording({
         const transcription = response.data.reports[0].transferData.result;
         console.log(transcription);
         setTranscription(transcription);
+        checkIfCategorizedAndSummarized(response);
         setProgress(100);
       } else if (progress === "start_transcribing") {
         setProgress(10);
