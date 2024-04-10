@@ -324,7 +324,7 @@ async function updateTransferDataStatus(reports) {
 
         // Update report.transferData with the new response structure
         if (response.data.meta) {
-          console.log(response.data.meta);
+          //console.log(response.data.meta);
           report.transferData = { ...report.transferData, ...response.data.meta };
         }
 
