@@ -23,6 +23,13 @@ export default function CsvOptions({
   const [errorModalMsg, setErrorModalMsg] = useState("");
   const [selected, setSelected] = useState("fullTranscript");
 
+  const levelLabels = {
+    3: "High",
+    2: "Medium",
+    1: "Low",
+    0: "NA",
+  };
+
   const handleSelectAllTranscript = () => {
     setAllSelected(!allSelected);
     setStartTimeBox(true);
@@ -82,13 +89,15 @@ export default function CsvOptions({
       csvColumns.push("Text");
     }
 
+    if (levelBox) {
+      csvColumns.push("Level");
+    }
+
     if (questionBox) {
       csvColumns.push("Question");
     }
 
-    if (levelBox) {
-      csvColumns.push("Level");
-    }
+    
 
     return csvColumns.join(", ");
   }
@@ -112,13 +121,16 @@ export default function CsvOptions({
       data.push(`"${line.text.trim().replace(/"/g, '""')}"`);
     }
 
+    if (levelBox) {
+      // Map the level integer to its string value using levelLabels
+      data.push(levelLabels[line.level]);
+    }
+
     if (questionBox) {
       data.push(`"${String(line.question).trim().replace(/"/g, '""')}"`);
     }
 
-    if (levelBox) {
-      data.push(line.level);
-    }
+
 
     return data;
   }
@@ -311,14 +323,6 @@ export default function CsvOptions({
               />
             </label>
             <label className={styles.checkbox}>
-              Question
-              <input
-                type="checkbox"
-                checked={questionBox}
-                onChange={() => setQuestionBox(!questionBox)}
-              />
-            </label>
-            <label className={styles.checkbox}>
               Level
               <input
                 type="checkbox"
@@ -326,6 +330,15 @@ export default function CsvOptions({
                 onChange={() => setLevelBox(!levelBox)}
               />
             </label>
+            <label className={styles.checkbox}>
+              Question
+              <input
+                type="checkbox"
+                checked={questionBox}
+                onChange={() => setQuestionBox(!questionBox)}
+              />
+            </label>
+            
           </div>
         )}
 
