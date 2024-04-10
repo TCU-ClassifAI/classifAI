@@ -3,12 +3,13 @@ const express = require("express");
 const cors = require("cors");
 const https = require("https");
 const fs = require('node:fs');
+const bodyParser = require('body-parser');  //added to fix payload
+
 
 
 
 
 const fileUploadRoute = require('./routes/fileUploadRoute.js');
-//const transcriptionRoutes = require('./routes/transcriptionRoutes.js'); // Adjust the path as necessary
 const reportRoutes = require('./routes/reportRoutes.js');
 const fileRoutes = require('./routes/fileRoutes.js');
 const reportUploadRoute = require('./routes/reportUploadRoute.js');
@@ -24,6 +25,10 @@ const PORT = 5002; // env
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// fix payload error
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 
 const options = {
   key: fs.readFileSync('/etc/letsencrypt/live/classifai.tcu.edu/privkey.pem'),
@@ -45,9 +50,6 @@ https.createServer(options, app).listen(PORT, () => {
 //   console.log("Server Running sucessfully.");
 // });
 
-
-// TODO transcription routes?
-//app.use('/transcript', transcriptionRoutes); // transcriptionRoutes is in routes/transcriptionRoutes.js
 
 app.use('/backend/reports',reportRoutes);
 app.use('/backend/reports',reportUploadRoute); //WIP

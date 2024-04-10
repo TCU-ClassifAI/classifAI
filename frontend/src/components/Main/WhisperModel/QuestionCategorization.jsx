@@ -38,7 +38,8 @@ export default function QuestionCategorization({ reportId, userId, categorizedQu
 
   const handleLevelChange = (index, event) => {
     const newCategorizedQuestions = [...categorizedQuestions];
-    newCategorizedQuestions[index].level = parseInt(event.target.value);
+    const selectedLevel = parseInt(event.target.value);
+    newCategorizedQuestions[index].level = selectedLevel !== null ? selectedLevel : 0; // Set to 0 if selectedLevel is null
     setCategorizedQuestions(newCategorizedQuestions);
     setChangeAlert(true);
   };
@@ -59,7 +60,7 @@ export default function QuestionCategorization({ reportId, userId, categorizedQu
             <p>Error: {error.message}</p>
           ) : categorizationDone ? (
             <div>
-              <button className="btn btn-primary" onClick={handleRecategorize}>Recategorize Questions</button>
+              {/* <button className="btn btn-primary" onClick={handleRecategorize}>Recategorize Questions</button> */}
               <table className="table">
                 <thead>
                   <tr>
@@ -82,10 +83,10 @@ export default function QuestionCategorization({ reportId, userId, categorizedQu
                           value={question.level}
                           onChange={(event) => handleLevelChange(index, event)}
                         >
-                          <option value={0}>0</option>
-                          <option value={1}>1</option>
-                          <option value={2}>2</option>
-                          <option value={3}>3</option>
+                          <option value={0}>NA</option>
+                          <option value={1}>Low Level</option>
+                          <option value={2}>Medium Level</option>
+                          <option value={3}>High Level</option>
                         </select>
                       </td>
                     </tr>

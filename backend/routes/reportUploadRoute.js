@@ -38,7 +38,7 @@ const upload = multer({
       cb(null, file.originalname); //file.fieldname + '-' + Date.now() + path.extname(file.originalname));
     },
   }),
-  //limits: { fileSize: 5 * 1024 * 1024 * 1024 }, took out arbitrary file size limit
+  limits: { fileSize: 2 * 1024 * 1024 * 1024 }, //2gb
   fileFilter: (req, file, cb) => {
     cb(null, !!req.params.userId);
   },
@@ -65,6 +65,8 @@ router.post(
       const providedFileName = req.body.fileName;
       const providedReportName = req.body.reportName;
       const url = req.body.url; //added 3/5
+      const model_name = req.body.model_name || 'large-v3'; // Default model_name if not provided
+
 
       if (!reportId) {
         response.message = "reportId is required";
@@ -118,9 +120,16 @@ router.post(
       if (url) {
         // Send youtubeUrl
         try {
-          const ytResponse = await axios.get(
-            `${process.env.WORKSTATION_URL}/transcription/transcribe_yt?url=${url}`
+          const ytResponse = await axios.post(
+            `${process.env.WORKSTATION_URL}/analyze`, // Endpoint
+            {
+              url: url, // Passing URL to analyze in the request body
+              model_name: model_name, // Including model_name
+            }
           );
+          //axios.get(
+          //   `${process.env.WORKSTATION_URL}/transcription/transcribe_yt?url=${url}` // change to post analyze
+          // );
           // Handle success response from YouTube transcription start
           response.url = url;
 
@@ -136,17 +145,14 @@ router.post(
 
           // Update transferData for newest audioFile transfer
           report.transferData = {
-            //...transcriptionData,
             job_id: job_id,
             fileName: url, //providedFileName || path.basename(newPath),
           };
 
-          //('transfer data:' ,report.transferData);
           await dbconnect.updateReport(
             { userId, reportId },
             {
               transferData: report.transferData,
-              //status: job.data.status,
               audioFile: url, //providedFileName || path.basename(newPath),
             }
           );
@@ -163,10 +169,12 @@ router.post(
           "application/json",
           "text/csv",
           "application/pdf",
+          "audio/mp4",
           "audio/mpeg",
           "audio/wav",
           "audio/aac",
           "audio/ogg",
+          "audio/x-m4a", // Added to support m4a files
           "audio/webm",
           "video/webm",
           "video/mp2t",
@@ -204,6 +212,8 @@ router.post(
             "audio/aac",
             "audio/ogg",
             "audio/webm",
+            "audio/mp4",
+            "audio/x-m4a", // Added to support m4a files
             "video/webm",
             "video/mp2t",
             "video/quicktime",
@@ -213,8 +223,9 @@ router.post(
         ) {
           try {
             const transferResponse = await handleFileTransfer(
-              `${process.env.WORKSTATION_URL}/transcription/transcribe`, //changed from start_transcription
+              `${process.env.WORKSTATION_URL}/analyze`,//transcription/transcribe`, //changed from start_transcription
               newPath,
+              model_name,
               reportId
             );
             response.transferStatus = "successful";
@@ -338,10 +349,11 @@ const handleFileUpload = async (
 };
 
 // Function to handle file transfer to flask backend
-const handleFileTransfer = async (workstation, newPath, reportId) => {
+const handleFileTransfer = async (workstation, newPath, reportId, model_name) => {
   const formData = new FormData();
   formData.append("file", fs.createReadStream(newPath));
   formData.append("reportId", String(reportId));
+  formData.append("model_name", String(model_name));
 
   try {
     const response = await axios.post(workstation, formData, {
@@ -361,7 +373,7 @@ async function getInitialJobReq(workstationUrl, job_id) {
   let transcriptionData = null;
 
   const response = await axios.get(
-    `${workstationUrl}/transcription/get_transcription_status`,
+    `${workstationUrl}/analyze`,//transcription/get_transcription_status`,
     {
       params: {
         job_id: job_id,

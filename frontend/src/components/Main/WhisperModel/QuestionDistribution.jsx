@@ -44,10 +44,10 @@ export default function QuestionDistribution({ categorizedQuestions }) {
           },
         },
         categories: [
-          "Level 0: NA",
-          "Level 1",
-          "Level 2",
-          "Level 3",
+          "NA",
+          "Low Level",
+          "Medium Level",
+          "High Level",
         ],
       },
       tooltip: {
@@ -58,25 +58,25 @@ export default function QuestionDistribution({ categorizedQuestions }) {
       {
         data: [
           {
-            x: "Level 0: NA",
+            x: "NA",
             y: levels[0],
             fillColor: "#0000FF",
             strokeColor: "#000000",
           },
           {
-            x: "Level 1",
+            x: "Low Level",
             y: levels[1],
             fillColor: "#D42AC8",
             strokeColor: "#C23829",
           },
           {
-            x: "Level 2",
+            x: "Medium Level",
             y: levels[2],
             fillColor: "#009400",
             strokeColor: "#C23829",
           },
           {
-            x: "Level 3",
+            x: "High Level",
             y: levels[3],
             fillColor: "#FF7300",
             strokeColor: "#C23829",

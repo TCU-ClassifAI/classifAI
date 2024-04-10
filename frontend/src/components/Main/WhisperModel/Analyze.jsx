@@ -10,6 +10,7 @@ import QuestionCategorization from "./QuestionCategorization";
 import QuestionDistribution from "./QuestionDistribution";
 import CollapsedTimeline from "./CollapsedTimeline";
 import TeacherQuestionTimeline from "./TeacherQuestionTimeline";
+import Summarization from "./Summarization";
 import styles from "./Analyze.module.css";
 import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
@@ -32,6 +33,7 @@ export default function Analyze() {
   const [showCsvModal, setShowCsvModal] = useState(false);
   const [speakers, setSpeakers] = useState();
   const [categorizedQuestions, setCategorizedQuestions] = useState([]);
+  const [summary, setSummary] = useState("");
   const wordCloudRef = useRef(null);
   const location = useLocation();
 
@@ -107,13 +109,25 @@ export default function Analyze() {
 
   return (
     <>
-      {changeAlert && analysisStatus === "finished" && (
-        <div>
-          <Alert severity="warning">
-            There are unsaved changes. Use 'Save Changes' to save them.
-          </Alert>
-        </div>
-      )}
+      {changeAlert &&
+        (analysisStatus === "finished" || analysisStatus === "completed") && (
+          <div>
+            <Alert severity="warning">
+              There are unsaved changes. Use 'Save Changes' to save them.
+            </Alert>
+            <SaveChanges
+              reportName={reportName}
+              subject={subject}
+              gradeLevel={gradeLevel}
+              reportId={reportId}
+              userId={userId}
+              setChangeAlert={setChangeAlert}
+              transcription={transcription}
+              categorizedQuestions={categorizedQuestions}
+            />
+          </div>
+        )}
+
       {userId && (
         <ReportInfo
           key={`${reportName}-${gradeLevel}-${subject}`}
@@ -126,7 +140,8 @@ export default function Analyze() {
           setChangeAlert={setChangeAlert}
         />
       )}
-      {analysisStatus !== "finished" && (
+
+      {!(analysisStatus === "finished" || analysisStatus === "completed") && (
         <UploadRecording
           reportName={reportName}
           gradeLevel={gradeLevel}
@@ -142,6 +157,7 @@ export default function Analyze() {
           analysisStatus={analysisStatus}
           location={location}
           setCategorizedQuestions={setCategorizedQuestions}
+          setSummary={setSummary}
         />
       )}
 
@@ -178,6 +194,9 @@ export default function Analyze() {
                 )}
               </ParentSize>
             </Tab>
+            <Tab eventKey="summary" title="Summarization">
+              <Summarization summary={summary} />
+            </Tab>
             <Tab eventKey="categorization" title="Question Categorization">
               <QuestionCategorization
                 userId={userId}
@@ -192,15 +211,13 @@ export default function Analyze() {
                 categorizedQuestions={categorizedQuestions}
               />
             </Tab>
-            <Tab eventKey="collapsedTimeline" title="Collapsed Timeline">
-                <CollapsedTimeline 
-                  categorizedQuestions={categorizedQuestions}
-                />
+            <Tab eventKey="teacherTimeline" title="Question Timeline">
+              <TeacherQuestionTimeline
+                categorizedQuestions={categorizedQuestions}
+              />
             </Tab>
-            <Tab eventKey="teacherTimeline" title="Teacher Question Timeline">
-                <TeacherQuestionTimeline 
-                  categorizedQuestions={categorizedQuestions}
-                />
+            <Tab eventKey="collapsedTimeline" title="Collapsed Timeline">
+              <CollapsedTimeline categorizedQuestions={categorizedQuestions} />
             </Tab>
           </Tabs>
 

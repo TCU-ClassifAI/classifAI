@@ -18,7 +18,8 @@ export default function UploadRecording({
   setReportName,
   analysisStatus,
   location,
-  setCategorizedQuestions
+  setCategorizedQuestions,
+  setSummary,
 }) {
   const [isAudio, setIsAudio] = useState(false);
   const [isVideo, setIsVideo] = useState(false);
@@ -33,7 +34,7 @@ export default function UploadRecording({
   const [genericModalTitle, setGenericModalTitle] = useState("");
   const [youtubeMode, setYoutubeMode] = useState(false);
   const [youtubeUrl, setYoutubeUrl] = useState("");
-  const [analysisStatusMsg, setAnalysisStatusMsg] = useState("");
+  const [analysisStatusMsg, setAnalysisStatusMsg] = useState("Starting");
 
   useEffect(() => {
     if (location.state && location.state.reportId) {
@@ -70,7 +71,9 @@ export default function UploadRecording({
       formData.append("subject", subject);
 
       const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_SERVER}/reports/${reportId}/users/${userId}`,
+        `${
+          import.meta.env.VITE_BACKEND_SERVER
+        }/reports/${reportId}/users/${userId}`,
         formData, // Pass formData directly as data
         {
           headers: {
@@ -89,10 +92,30 @@ export default function UploadRecording({
     }
   }
 
+  function checkIfCategorizedAndSummarized(response) {
+    let categorizedQuestions;
+    if (response.data.reports[0].transferData.categorized) {
+      categorizedQuestions =
+        response.data.reports[0].transferData.categorized.map((question) => ({
+          ...question,
+          level: question.level !== null ? question.level : 0,
+        }));
+      setCategorizedQuestions(categorizedQuestions);
+      console.log(categorizedQuestions);
+    }
+    if (response.data.reports[0].transferData.summary) {
+      let summary = response.data.reports[0].transferData.summary;
+      console.log(summary);
+      setSummary(summary);
+    }
+  }
+
   async function checkAnalysisStatus() {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_SERVER}/reports/${reportId}/users/${userId}/`
+        `${
+          import.meta.env.VITE_BACKEND_SERVER
+        }/reports/${reportId}/users/${userId}/`
       );
 
       const status = response.data.reports[0].transferData.status;
@@ -101,17 +124,26 @@ export default function UploadRecording({
       const grade = response.data.reports[0].gradeLevel;
       const reportSubject = response.data.reports[0].subject;
       const reportName = response.data.reports[0].reportName;
-      let categorizedQuestions;
       console.log(response);
-      if (response.data.reports[0].categorized)
-      {
-        categorizedQuestions = response.data.reports[0].categorized;
-        setCategorizedQuestions(categorizedQuestions);
-      }
+      let categorizedQuestions;
+    if (response.data.reports[0].transferData.categorized) {
+      categorizedQuestions =
+        response.data.reports[0].transferData.categorized.map((question) => ({
+          ...question,
+          level: question.level !== null ? question.level : 0,
+        }));
+      setCategorizedQuestions(categorizedQuestions);
+      console.log(categorizedQuestions);
+    }
+    if (response.data.reports[0].transferData.summary) {
+      let summary = response.data.reports[0].transferData.summary;
+      console.log(summary);
+      setSummary(summary);
+    }
+
       if (progress) {
         setAnalysisStatus(progress);
-      }
-      else {
+      } else {
         setAnalysisStatus(status);
       }
       setAnalysisStatusMsg(message);
@@ -119,24 +151,43 @@ export default function UploadRecording({
       setSubject(reportSubject);
       setReportName(reportName);
 
-      if (progress === "finished" || progress === "completed" || status === "completed") {
+      if (status === "failed") {
+        setProgress(0);
+        setAnalysisStatusMsg("failed");
+        return;
+      }
+
+      if (
+        progress === "finished" ||
+        progress === "completed" ||
+        status === "completed"
+      ) {
         setIsAnalyzing(false); // Stop analysis once completed
         const transcription = response.data.reports[0].transferData.result;
         console.log(transcription);
         setTranscription(transcription);
         setProgress(100);
+      } else if (progress === "start_transcribing") {
+        setProgress(10);
       } else if (progress === "splitting") {
         setProgress(20);
       } else if (progress === "loading-nemo") {
-        setProgress(40);
+        setProgress(30);
       } else if (progress === "transcribing") {
-        setProgress(60);
+        setProgress(40);
       } else if (progress === "aligning") {
+        setProgress(50);
+      } else if (progress === "extracting_questions") {
+        setProgress(60);
+      } else if (progress === "categorizing_questions") {
+        setProgress(70);
+      } else if (progress === "summarizing") {
         setProgress(80);
+      } else if (progress === "combining results") {
+        setProgress(90);
       } else if (progress === "started" || progress === "queued") {
         setProgress(5);
-      }
-      else {
+      } else {
         setProgress(0);
       }
     } catch (error) {
@@ -245,7 +296,7 @@ export default function UploadRecording({
         />
       </div>
 
-      {(youtubeMode && analysisStatus !== "finished") && (
+      {youtubeMode && analysisStatus !== "finished" && (
         <div>
           <YoutubeUpload
             youtubeUrl={youtubeUrl}

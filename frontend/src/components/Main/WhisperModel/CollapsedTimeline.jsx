@@ -46,8 +46,19 @@ export default function CollapsedTimeline({ categorizedQuestions }) {
           x: "Questions",
           y: [questionList[i].start_time / 1000, endTime],
           fillColor: labelColors[questionList[i].level],
+          label: {
+            text: questionList[i].level === 0 ? "NA" : `Level ${questionList[i].level}`,
+            style: {
+              color: "#fff",
+              background: labelColors[questionList[i].level],
+              fontSize: '12px',
+              borderRadius: '3px',
+              padding: '3px 6px'
+            }
+          }
         };
         timeData.push(entry);
+        
       }
     }
     return timeData;
