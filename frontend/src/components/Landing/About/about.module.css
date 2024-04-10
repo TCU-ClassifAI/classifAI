@@ -64,3 +64,67 @@
 .role {
   font-weight: bold;
 }
+
+@media screen and (max-width: 600px) {
+  .developerContainer {
+    grid-template-columns: 1fr; /* Display in a single column on smaller screens */
+    padding-left: 20px; /* Adjust padding to fit the screen */
+    padding-right: 20px; /* Adjust padding to fit the screen */
+    gap: 10px; /* Reduce gap between items */
+  }
+
+  .teamMember {
+    /* Adjust team member styles for mobile if needed */
+  }
+
+  .circularImage {
+    width: 80px; /* Adjust the size of the image if necessary */
+    height: 80px; /* Adjust the size of the image if necessary */
+    margin: 0 auto; /* Center the image within the column */
+  }
+
+  .title {
+    padding-top: 20px; /* Adjust the top padding for the title */
+    text-align: center; /* Center-align the title */
+  }
+
+  .titleContainer {
+    padding: 10px; /* Adjust the padding for the title container */
+  }
+}
+
+.role {
+  font-weight: bold;
+}
+
+@media screen and (max-width: 600px) {
+  .researcherContainer {
+    grid-template-columns: 1fr; /* Display in a single column on smaller screens */
+    padding-left: 20px; /* Adjust padding to fit the screen */
+    padding-right: 20px; /* Adjust padding to fit the screen */
+    gap: 10px; /* Reduce gap between items */
+  }
+
+  .teamMember {
+    /* Adjust team member styles for mobile if needed */
+  }
+
+  .circularImage {
+    width: 80px; /* Adjust the size of the image if necessary */
+    height: 80px; /* Adjust the size of the image if necessary */
+    margin: 0 auto; /* Center the image within the column */
+  }
+
+  .title {
+    padding-top: 20px; /* Adjust the top padding for the title */
+    text-align: center; /* Center-align the title */
+  }
+
+  .titleContainer {
+    padding: 10px; /* Adjust the padding for the title container */
+  }
+}
+
+.role {
+  font-weight: bold;
+}

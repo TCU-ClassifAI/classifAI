@@ -1,13 +1,13 @@
-import React from 'react'
-import './login.css'
-import './landing.css'
-import { Link, useNavigate } from 'react-router-dom'
-import { useState } from 'react'
-import { Auth } from 'aws-amplify'
-import logo from '../../images/frogv2.png'
+import React from 'react';
+import './login.css';
+import './landing.css';
+import { Link, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { Auth } from 'aws-amplify';
+import logo from '../../images/frogv2.png';
 import { faCheckCircle, faDatabase, faCogs} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
+import TextField from '@mui/material/TextField'; // Import TextField from Material-UI
 
 export default function Login(){
     let navigate = useNavigate();
@@ -15,14 +15,14 @@ export default function Login(){
     const [user, setUser] = useState({
         username: '',
         password: ''
-    })
+    });
 
     const handleInputChange = (event, keyName) => {
         event.persist();
         setUser((user) => {
             return {...user, [keyName]: event.target.value}
-        })
-    }
+        });
+    };
 
     async function signIn(event) {
         event.preventDefault();
@@ -30,16 +30,16 @@ export default function Login(){
             const test = await Auth.signIn({username: user.username, password: user.password});
             console.log(test);
             setBadSignIn(false);
-            navigate("/home/analyze")
+            navigate("/home/analyze");
         }catch(error){
             setBadSignIn(true);
-            console.log(error)
+            console.log(error);
         }
     }
 
     function learnMore(event) {
         event.preventDefault();
-        navigate("/")
+        navigate("/");
     }
 
     return (
@@ -81,39 +81,43 @@ export default function Login(){
                 <form id='login-form'>
                 <h2 id='title'>Log In</h2>
                 <div className="form-group">
-                    <label>Email address</label>
                     <div className='input-login'>
-                        <input 
-                        type="email" 
-                        className="form-control" 
-                        id="exampleInputEmail1" 
-                        aria-describedby="emailHelp" 
-                        placeholder="Enter email"
-                        value={user.username}
-                        onChange={(e) => handleInputChange(e, 'username')}/>
+                        <TextField
+                            variant='outlined'
+                            label="Email Address"
+                            type="email"
+                            className="form-control"
+                            id="exampleInputEmail1"
+                            aria-describedby="emailHelp"
+                            placeholder="Enter email"
+                            value={user.username}
+                            onChange={(e) => handleInputChange(e, 'username')}
+                        />
                     </div>
                 </div>
                 <div className="form-group">
-                    <label>Password</label>
                     <div className='input-login'>
-                        <input 
-                        type="password" 
-                        className="form-control" 
-                        placeholder="Enter password"
-                        value={user.password}
-                        onChange={(e) => handleInputChange(e, 'password')}/>
+                        <TextField
+                            variant='outlined'
+                            label='Password'
+                            type="password"
+                            className="form-control"
+                            placeholder="Enter password"
+                            value={user.password}
+                            onChange={(e) => handleInputChange(e, 'password')}
+                        />
                     </div>
                     {badSignIn ? (
                         <div className='alert alert-danger' id='password-alert'>Username or password is incorrect</div>
                     ): null}
                 </div>
-                <button 
-                className="btn btn-primary" 
-                id='submit-login'
-                onClick={(e) => signIn(e)}
-                >Log In
+                <button
+                    className="btn btn-primary"
+                    id='submit-login'
+                    onClick={(e) => signIn(e)}
+                >
+                    Log In
                 </button>
-                {/* <button className="nav-link text-light" onClick={(e) => signOut(e)} id='sign-out'>Check</button> */}
                 <div className="w-full">
                     <hr />
                     <p className="text-gray-700 pb-2 pt-2 text-sm">Don't have an account?</p>
@@ -131,4 +135,3 @@ export default function Login(){
         </div>
     )
 };
-

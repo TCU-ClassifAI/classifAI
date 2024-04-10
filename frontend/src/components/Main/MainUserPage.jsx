@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Routes, Route, Outlet } from "react-router-dom";
 import SideMenu from "./SideMenu";
 import Transcribe from "./Transcribe/Transcribe";
@@ -9,9 +9,13 @@ import MyReports from "./MyReports/MyReports";
 import "./MainPage.css";
 
 export default function Main() {
+    const [isNavCollapsed, setIsNavCollapsed] = useState(true);
+
     return (
         <div className="main-layout">
+
             <SideMenu />
+
             <div className="main-content">
                 <Routes>
                     <Route path="analyze" element={<Analyze />} /> 

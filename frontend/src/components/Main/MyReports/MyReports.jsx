@@ -7,7 +7,6 @@ import ReactPaginate from "react-paginate";
 import ErrorModal from "../../Common/ErrorModal";
 import Alert from "@mui/material/Alert";
 
-
 export default function MyReports() {
   const [files, setFiles] = useState([]);
   const [userId, setUserId] = useState(null);
@@ -50,29 +49,29 @@ export default function MyReports() {
       );
       console.log(response);
       const reports = response.data;
-      const filtered_reports = reports.map(report => {
-          let fileExtension;
-          let fileName = report.transferData ? String(report.transferData.fileName) : null;
+      const filtered_reports = reports.map((report) => {
+        let fileExtension;
+        let fileName = report.transferData ? String(report.audioFile) : null;
 
-          if (fileName && fileName.toLowerCase().includes("youtube")) {
-              fileExtension = "youtube";
-          } else {
-              fileExtension = fileName.split(".").pop();
-              fileName = fileName.split(".").shift();
-          }
-          return {
-              userId: report.userId,
-              reportId: report.reportId,
-              reportName: report.reportName,
-              subject: report.subject,
-              gradeLevel: report.gradeLevel,
-              status: report.transferData ? report.transferData.status : null,
-              fileName: fileName,
-              fileType: fileExtension,
-              isEditing: false
-          };
+        if (fileName && fileName.toLowerCase().includes("youtube")) {
+          fileExtension = "youtube";
+        } else {
+          fileExtension = fileName.split(".").pop();
+          fileName = fileName.split(".").shift();
+        }
+        return {
+          userId: report.userId,
+          reportId: report.reportId,
+          reportName: report.reportName,
+          subject: report.subject,
+          gradeLevel: report.gradeLevel,
+          status: report.transferData ? report.transferData.status : null,
+          fileName: fileName,
+          fileType: fileExtension,
+          isEditing: false,
+        };
       });
-      
+
       setFiles(filtered_reports.reverse());
     } catch (error) {
       console.error("Error fetching user reports:", error);
@@ -96,7 +95,7 @@ export default function MyReports() {
     );
     setFiles(updatedFiles);
   };
-  
+
   const handleSubjectChange = (event, key) => {
     const updatedFiles = files.map((file) =>
       file.reportId === key ? { ...file, subject: event.target.value } : file
@@ -119,7 +118,7 @@ export default function MyReports() {
     setFiles(updatedFiles);
   };
 
-  const handleSaveClick = async (key) => {
+  const handleSaveClick = async (key, fileType) => {
     const updatedFiles = files.map((file) =>
       file.reportId === key ? { ...file, isEditing: false } : file
     );
@@ -132,42 +131,57 @@ export default function MyReports() {
       reportName: newReportName,
     } = fileToUpdate;
     const oldFileName = oldFileNameEditing || newFileName;
-
-    try {
-      await axios.put(
-        `${import.meta.env.VITE_BACKEND_SERVER}/files/${oldFileName}/reports/${reportId}/users/${userId}`,
-        {
-          fileName: newFileName,
-        }
-      );
-
-      setFiles(updatedFiles);
-      setEditSaveSuccess(true);
-      setAlertMsg("Successful update to report name!");
-      fetchUserFiles();
-    } catch (error) {
-      console.error("Error updating file name:", error);
-      setErrorModalMsg("Error updating file name");
-      setShowErrorModal(true);
+    if (fileType !== "youtube") {
+      try {
+        await axios.put(
+          `${import.meta.env.VITE_BACKEND_SERVER}/files/${oldFileName}/reports/${reportId}/users/${userId}`,
+          {
+            fileName: newFileName,
+          }
+        );
+  
+        setFiles(updatedFiles);
+        setEditSaveSuccess(true);
+        setAlertMsg("Successful update to file name!");
+        fetchUserFiles();
+      } catch (error) {
+        console.error("Error updating file name:", error);
+        setErrorModalMsg("Error updating file name");
+        setShowErrorModal(true);
+      }
     }
-
+    let audioFileUpdate;
+    if (fileType !== "youtube") {
+      audioFileUpdate = newFileName + "." + fileType;
+    }
+    else {
+      audioFileUpdate = newFileName
+    }
+    
     try {
       await axios.put(
-        `${import.meta.env.VITE_BACKEND_SERVER}/reports/${reportId}/users/${userId}`,
+        `${
+          import.meta.env.VITE_BACKEND_SERVER
+        }/reports/${reportId}/users/${userId}`,
         {
           reportName: newReportName,
           gradeLevel: gradeLevel,
-          subject: subject
+          subject: subject,
+          audioFile: audioFileUpdate,
         }
       );
 
       setFiles(updatedFiles);
       setEditSaveSuccess(true);
-      setAlertMsg("Report Id: " + reportId + " report name, subject, or grade updated successfully!");
+      setAlertMsg(
+        "Report Id: " +
+          reportId +
+          " report name, subject, grade, or audio file updated successfully!"
+      );
       fetchUserFiles();
     } catch (error) {
-      console.error("Error updating report name, subject, or grade:", error);
-      setErrorModalMsg("Error updating report name, subject, or grade:");
+      console.error("Error updating report name, subject, grade, or audio file:", error);
+      setErrorModalMsg("Error updating report name, subject, grade, or audio file:");
       setShowErrorModal(true);
     }
   };
@@ -182,14 +196,15 @@ export default function MyReports() {
 
       try {
         await axios.delete(
-          `${import.meta.env.VITE_BACKEND_SERVER}/reports/${reportId}/users/${userId}`
+          `${
+            import.meta.env.VITE_BACKEND_SERVER
+          }/reports/${reportId}/users/${userId}`
         );
 
         const updatedFiles = files.filter((file) => file.reportId !== key);
         setFiles(updatedFiles);
         setEditSaveSuccess(true);
-        setAlertMsg("Report Id: " + reportId + " deleted successfully!")
-
+        setAlertMsg("Report Id: " + reportId + " deleted successfully!");
       } catch (error) {
         console.error("Error deleting file:", error);
         setErrorModalMsg("Error deleting file");
@@ -201,7 +216,9 @@ export default function MyReports() {
   const handleDownloadClick = async (reportId, fileName, fileType) => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_SERVER}/files/${fileName}/reports/${reportId}/users/${userId}?download=true`,
+        `${
+          import.meta.env.VITE_BACKEND_SERVER
+        }/files/${fileName}/reports/${reportId}/users/${userId}?download=true`,
         {
           responseType: "blob", // Set response type to blob
         }
@@ -252,11 +269,11 @@ export default function MyReports() {
         showErrorModal={showErrorModal}
         handleCloseErrorModal={handleCloseErrorModal}
       />
-      {editSaveSuccess && (<div>
-          <Alert severity="success">
-            {alertMsg}
-          </Alert>
-      </div>)}
+      {editSaveSuccess && (
+        <div>
+          <Alert severity="success">{alertMsg}</Alert>
+        </div>
+      )}
       <div className={styles.tableContainer}>
         <h2>My Reports</h2>
         <table className={styles.prettyTable}>
@@ -296,7 +313,9 @@ export default function MyReports() {
                     <input
                       type="text"
                       value={file.subject}
-                      onChange={(event) => handleSubjectChange(event, file.reportId)}
+                      onChange={(event) =>
+                        handleSubjectChange(event, file.reportId)
+                      }
                     />
                   ) : (
                     file.subject
@@ -307,14 +326,16 @@ export default function MyReports() {
                     <input
                       type="text"
                       value={file.gradeLevel}
-                      onChange={(event) => handleGradeChange(event, file.reportId)}
+                      onChange={(event) =>
+                        handleGradeChange(event, file.reportId)
+                      }
                     />
                   ) : (
                     file.gradeLevel
                   )}
                 </td>
                 <td>
-                  {file.isEditing ? (
+                  {file.isEditing && file.fileType !== "youtube" ? ( // Check if fileType is not "youtube"
                     <input
                       type="text"
                       value={file.fileName}
@@ -332,7 +353,7 @@ export default function MyReports() {
                     <>
                       <button
                         className={styles.saveButton}
-                        onClick={() => handleSaveClick(file.reportId)}
+                        onClick={() => handleSaveClick(file.reportId, file.fileType)}
                       >
                         Save
                       </button>
@@ -387,7 +408,11 @@ export default function MyReports() {
                 </td>
                 <td>
                   <button
-                    className={styles.downloadButton}
+                    className={`${
+                      file.fileType === "youtube"
+                        ? styles.disabledDownloadButton
+                        : styles.downloadButton
+                    }`}
                     onClick={() =>
                       handleDownloadClick(
                         file.reportId,

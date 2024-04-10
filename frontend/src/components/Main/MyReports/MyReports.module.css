@@ -89,6 +89,7 @@
 .cancelButton,
 .deleteButton,
 .downloadButton,
+.disabledDownloadButton,
 .loadButton {
   color: white;
   padding: 8px 16px;
@@ -132,6 +133,15 @@
 
 .loadButton {
   background-color: #FFD700;
+}
+
+
+.disabledDownloadButton {
+  background-color: #cccccc /* Gray color */
+}
+
+.disabledDownloadButton:hover {
+  filter: brightness(100%); /* Disable hover effect */
 }
 
 
