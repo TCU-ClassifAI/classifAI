@@ -1,13 +1,34 @@
+import React, { useEffect, useState } from 'react';
 import Chart from "react-apexcharts";
 import { convertMsToTime } from "../../../utils/convertMsToTime";
 
 export default function TeacherQuestionTimeline({ categorizedQuestions }) {
+  const [timeChart, setTimeChart] = useState([]);
+  console.log(categorizedQuestions);
+
   const labelColors = {
-    0: "#0000FF",
-    1: "#D42AC8",
-    2: "#009400",
     3: "#FF7300",
+    2: "#009400",
+    1: "#D42AC8",
+    0: "#0000FF",
   };
+
+  const levelLabels = {
+    3: "High",
+    2: "Medium",
+    1: "Low",
+    0: "NA",
+  };
+
+  const reversedCategories = Object.values(levelLabels).reverse();
+
+
+
+  useEffect(() => {
+    if (categorizedQuestions) {
+      setTimeChart(setTimeChartData());
+    }
+  }, [categorizedQuestions]);
 
   function setTimeChartData() {
     let timeData = [];
@@ -28,19 +49,21 @@ export default function TeacherQuestionTimeline({ categorizedQuestions }) {
     const entryWidthPercentage = 0.04; // Adjust this value as needed
     const constantWidth = totalTimeRange * entryWidthPercentage;
 
-    for (let label in labelColors) {
+
+    for (let label of reversedCategories) {
       let initialEntry = {
         x: label,
         y: [0, 0],
-        fillColor: labelColors[label],
+        fillColor: labelColors[levelLabels[label]],
       };
       timeData.push(initialEntry);
     }
 
     for (let i = 0; i < questionList.length; i++) {
       if (labelColors.hasOwnProperty(String(questionList[i].level))) {
+        // Use reversedLevelLabels for mapping
         let entry = {
-          x: String(questionList[i].level),
+          x: levelLabels[questionList[i].level],
           y: [
             questionList[i].start_time,
             questionList[i].start_time + constantWidth * 1000,
@@ -51,15 +74,16 @@ export default function TeacherQuestionTimeline({ categorizedQuestions }) {
       }
     }
     //console.log("timeData:");
-    timeData.sort((a, b) => a.x - b.x); //sort it based on 0-3
-    return timeData.reverse(); // reverse it so 0 is on the bottom of y axis
+    // timeData.sort((a, b) => a.x - b.x); //sort it based on 0-3
+    console.log("timeData:", timeData);
+    return timeData; // reverse it so 0 is on the bottom of y axis
   }
 
   function getTimeChartProps() {
     return {
       series: [
         {
-          data: setTimeChartData(),
+          data: timeChart,
         },
       ],
       options: {
@@ -95,34 +119,44 @@ export default function TeacherQuestionTimeline({ categorizedQuestions }) {
               fontSize: "20px",
             },
           },
-          categories: ["0", "1", "2", "3"],
+          categories: reversedCategories, // Use the mapped labels
         },
         tooltip: {
           enabled: true,
           custom: function ({ seriesIndex, dataPointIndex, w }) {
-            //because 6 init entries
-            let tooltipIndex = dataPointIndex - 6;
-            let questionList = categorizedQuestions;
+            // Adjust the tooltip index to account for the initial entries
+            let tooltipIndex = dataPointIndex - reversedCategories.length;
+        
+            // Ensure categorizedQuestions is not null or undefined
+            let questionList = categorizedQuestions || [];
+        
+            // Access the question based on the tooltipIndex
             let question = questionList[tooltipIndex];
-            return (
-              '<div class="arrow_box">' +
-              "<span><strong>Speaker " +
-              question.speaker +
-              ": </strong>" +
-              question.text +
-              "</span><br>" +
-              "<span>" +
-              convertMsToTime(question.start) +
-              "-" +
-              convertMsToTime(question.end) +
-              "</span>" +
-              "</div>"
-            );
+        
+            // Check if the question exists
+            if (question) {
+              return (
+                '<div class="arrow_box">' +
+                "<span><strong>Speaker " +
+                question.speaker +
+                ": </strong>" +
+                question.question +
+                "</span><br>" +
+                "<span>" +
+                convertMsToTime(question.start_time) +
+                "-" +
+                convertMsToTime(question.end_time) +
+                "</span>" +
+                "</div>"
+              );
+            }
           },
         },
+        
       },
     };
   }
+
   return (
     <>
       <div className="card-deck mb-3 text-center">
