@@ -300,7 +300,6 @@ async function findAllReports(query, res) {
 // Helper function to update the status of transferData objects
 async function updateTransferDataStatus(reports) {
   for (let report of reports) {
-    //for (let transfer of report.transferData) {
     if (report.transferData.status != "finished") {
       try {
         const response = await axios.get(
@@ -312,26 +311,19 @@ async function updateTransferDataStatus(reports) {
           }
         );
 
-
         // Update report.transferData with the new response structure
         if (response.data.meta) {
+          console.log(response.data.meta);
           report.transferData = { ...report.transferData, ...response.data.meta };
         }
 
         // Store these in report.transferData.categorized   or .summary  or .transcript
         if (response.data.result) {
-          // Update categorized, summary, and result (transcript) fields.
-          await dbconnect.updateReport(
-            { reportId: report.reportId, userId: report.userId },
-            {
-              $set: {
-                "transferData.categorized": response.data.result.questions,
-                "transferData.summary": response.data.result.summary,
-                "transferData.result": response.data.result.transcript
-              }
-            }
-          );
+          report.transferData["categorized"] = response.data.result.questions;
+          report.transferData["result"] = response.data.result.transcript;
+          report.transferData["summary"] = response.data.result.summary;          
         }
+
 
         if (response.data.meta.title){
           report.audioFile = response.data.meta.title +' YouTube';
@@ -365,76 +357,6 @@ async function updateTransferDataStatus(reports) {
 }
 
 
-// async function categorizeReports(reports){
-//   for (let report of reports) {
-//     //console.log(report.transferData.status)
-//     if (report.transferData.status === "finished") {
-//       // send a JSON of reports.transferData.result to endpoint
-
-//       try {
-//         // Sending the result for categorization
-//         //console.log(report.transferData.result);
-//         const response = await axios.post(
-//           `${process.env.WORKSTATION_URL}/categorize/categorize_transcript`,
-//           report.transferData.result
-//         );
-
-
-//         console.log(response.data);
-//         report.categorized = response.data; // set response.categorized field to response
-
-//         const updatedReport = await dbconnect.updateReport(
-//           { reportId: report.reportId, userId: report.userId },
-//           { $set: { "categorized": report.categorized } } 
-//         );
-        
-//       }
-
-//       catch (error) {
-//         console.error("Error during report categorization:", error);
-
-//       }
-    
-//     }
-//     return reports;
-//   }
-// }
-
-// async function summarizeReports(reports){
-//   for (let report of reports) {
-//     //console.log('report status: ',report.transferData.status);  it succesfully sees the report
-//     if (report.transferData.status === "finished") {
-//       // send a JSON of reports.transferData.result to endpoint
-
-//       try {
-//         // Sending the result for categorization
-//         console.log('before api call');
-//         const response = await axios.post(
-//           `${process.env.WORKSTATION_URL}/summarize`,
-//           report.transferData.result
-//         );
-
-
-//         console.log('after api call, summary response:',response); // llm giving 500 internal server error
-
-//         report.summary = response.data; // set response.summary field to response
-
-//         const updatedReport = await dbconnect.updateReport(
-//           { reportId: report.reportId, userId: report.userId },
-//           { $set: { "summary": report.summary } } 
-//         );
-        
-//       }
-
-//       catch (error) {
-//         console.error("Error during report categorization:", error);
-
-//       }
-    
-//     }
-//     return reports;
-//   }
-// }
 
 module.exports = router;
 
