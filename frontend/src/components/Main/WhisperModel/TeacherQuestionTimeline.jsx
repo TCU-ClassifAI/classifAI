@@ -67,7 +67,7 @@ export default function TeacherQuestionTimeline({ categorizedQuestions }) {
           type: "rangeBar",
         },
         title: {
-          text: "Teacher Question Timeline",
+          text: "Question Timeline",
           align: "left",
           style: {
             fontSize: "30px",
