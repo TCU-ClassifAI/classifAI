@@ -171,7 +171,7 @@ router.get("/:reportId", async (req, res) => {
 // Update a specific report for a specific user
 router.put("/:reportId/users/:userId", async (req, res) => {
   const { reportId, userId } = req.params; // Extract reportId and userId from URL parameters
-  // working 4/8 const { result, categorized, summary, ...reportData } = req.body; // Extract the new transferData.result array and any other report data
+  //const { result, categorized, summary, ...reportData } = req.body; // Extract the new transferData.result array and any other report data
 
   const updates = req.body;
 
@@ -187,9 +187,20 @@ router.put("/:reportId/users/:userId", async (req, res) => {
     } else {
       // For top-level fields, prepend the key with the parent object 
       // if it's meant to update a nested field within transferData
+      // not pretty
       if (key.startsWith("transferData")) {
         updateOperations[`transferData.${key}`] = value;
-      } else {
+      } 
+      else if(key.startsWith("result")){
+        updateOperations[`transferData.result`] = value;
+      }
+      else if(key.startsWith("categorized")){
+        updateOperations[`transferData.categorized`] = value;
+      }
+      else if(key.startsWith("summary")){
+        updateOperations[`transferData.summary`] = value;
+      }
+      else {
         // For other top-level updates, just set them as they are
         updateOperations[key] = value;
       }
