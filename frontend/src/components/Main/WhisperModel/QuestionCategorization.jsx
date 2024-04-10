@@ -22,11 +22,11 @@ export default function QuestionCategorization({ reportId, userId, categorizedQu
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_SERVER}/reports/${reportId}/users/${userId}?categorize=true`
       );
-      if (!response.data.reports[0].categorized) {
+      if (!response.data.reports[0].transferData.categorized) {
         setIsLoading(false);
         setCategorizedQuestions([]); // Set empty array if no categorized questions are returned
       } else {
-        setCategorizedQuestions(response.data.reports[0].categorized);
+        setCategorizedQuestions(response.data.reports[0].transferData.categorized);
         setCategorizationDone(true);
         setIsLoading(false);
       }
