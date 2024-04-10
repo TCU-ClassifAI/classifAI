@@ -336,7 +336,12 @@ async function updateTransferDataStatus(reports) {
         }
 
 
-        if (response.data.meta.title){
+        // if youtube then add youtube at the end,
+        // right now this adds youtube to all files
+
+        // if report.transferData.fileName includes youtube.com then add youtube to audioFile like this report.audioFile = response.data.meta.title +' YouTube';
+        //console.log(report.transferData.fileName);
+        if(report.transferData.fileName.includes('youtube.com')){
           report.audioFile = response.data.meta.title +' YouTube';
 
           // if not already existing, then push to mongo db report.files[]
@@ -347,6 +352,19 @@ async function updateTransferDataStatus(reports) {
             fileType: 'YouTube',
           };
         }
+
+
+        // if (response.data.meta.title){
+        //   report.audioFile = response.data.meta.title +' YouTube';
+
+        //   // if not already existing, then push to mongo db report.files[]
+
+        //   report.files[0]={
+        //     fileName: response.data.meta.title,
+        //     filePath: 'testLink',
+        //     fileType: 'YouTube',
+        //   };
+        // }
 
 
       } catch (error) {
