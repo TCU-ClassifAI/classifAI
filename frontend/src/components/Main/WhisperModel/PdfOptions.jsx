@@ -22,9 +22,9 @@ const PdfOptions = ({
   const [transcriptBox, setTranscriptBox] = useState(false);
   const [talkDistBox, setTalkDistBox] = useState(false);
   const [wordCloudBox, setWordCloudBox] = useState(false);
-  const [questDistBox, setQuestDistBox] = useState(false);
-  const [collapseBox, setCollapseBox] = useState(false);
-  const [timeLineBox, setTimelineBox] = useState(false);
+  // const [questDistBox, setQuestDistBox] = useState(false);
+  // const [collapseBox, setCollapseBox] = useState(false);
+  // const [timeLineBox, setTimelineBox] = useState(false);
   const [showPdfModal, setShowPdfModal] = useState(false);
   const [pdfName, setPdfName] = useState(generateDefaultFileName()); // State for PDF name
   const [allSelected, setAllSelected] = useState(false);
@@ -72,9 +72,9 @@ const PdfOptions = ({
     setTranscriptBox(true);
     setTalkDistBox(true);
     setWordCloudBox(true);
-    setQuestDistBox(true);
-    setCollapseBox(true);
-    setTimelineBox(true);
+    // setQuestDistBox(true);
+    // setCollapseBox(true);
+    // setTimelineBox(true);
   }
 
   const handleDeselectAll = () => {
@@ -82,9 +82,9 @@ const PdfOptions = ({
     setTranscriptBox(false);
     setTalkDistBox(false);
     setWordCloudBox(false);
-    setQuestDistBox(false);
-    setCollapseBox(false);
-    setTimelineBox(false);
+    // setQuestDistBox(false);
+    // setCollapseBox(false);
+    // setTimelineBox(false);
     
   }
  
@@ -159,26 +159,29 @@ const PdfOptions = ({
       talkDist = talkingDistributionComponent();
     }
     
-    if (questDistBox) {
-      questDist = questionDistributionComponent();
-    }
+    // if (questDistBox) {
+    //   questDist = questionDistributionComponent();
+    // }
 
-    if (collapseBox) {
-      collapsed = collapseTimelineComponent();
-    }
+    // if (collapseBox) {
+    //   collapsed = collapseTimelineComponent();
+    // }
 
-    if (timeLineBox) {
-      timeline = teacherQuestionTimelineComponent();
-    }
+    // if (timeLineBox) {
+    //   timeline = teacherQuestionTimelineComponent();
+    // }
 
     return (
       <>
         {wordCloud}
         {transcript}
         {talkDist}
-        {questDist}
-        {collapsed}
-        {timeline}
+        {/*
+         {questDist}
+         {collapsed}
+         {timeline}
+        */}
+       
       </>
     );
   };
@@ -231,6 +234,7 @@ const PdfOptions = ({
                 onChange={() => setWordCloudBox(!wordCloudBox)}
               />
             </label>
+            {/*
             <label className={styles.checkbox}>
               Question Distribution
               <input
@@ -255,6 +259,7 @@ const PdfOptions = ({
                 onChange={() => setTimelineBox(!timeLineBox)}
               />
             </label>
+          */}
             <div>
               <label>PDF Name:</label>
               <input
