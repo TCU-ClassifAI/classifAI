@@ -106,7 +106,7 @@ export default function CollapsedTimeline({ categorizedQuestions }) {
             let questionList = categorizedQuestions || [];
 
             let question = questionList[tooltipIndex];
-            if (question.speaker) {
+            if (question) {
               return (
                 '<div class="arrow_box">' +
                 "<span><strong>Speaker " +

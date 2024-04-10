@@ -245,6 +245,7 @@ export default function Analyze() {
               {
                 <CsvOptions
                   transcription={transcription}
+                  categorizedQuestions={categorizedQuestions}
                   reportId={reportId}
                   userId={userId}
                 />
@@ -297,6 +298,27 @@ export default function Analyze() {
                 />
               </div>
             )}
+            questionDistributionComponent={()=> {
+              <div>
+                <QuestionDistribution
+                categorizedQuestions={categorizedQuestions}
+              />
+              </div>
+            }}
+            collapseTimelineComponent={() => {
+              <div>
+                <CollapsedTimeline 
+                  categorizedQuestions={categorizedQuestions}
+                />
+              </div>
+            }}
+            teacherQuestionTimelineComponent={()=> {
+              <div>
+                <TeacherQuestionTimeline 
+                  categorizedQuestions={categorizedQuestions}
+                />
+              </div>
+            }}
             reportId={reportId}
             userId={userId}
           />
