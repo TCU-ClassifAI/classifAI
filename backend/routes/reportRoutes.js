@@ -311,7 +311,7 @@ async function findAllReports(query, res) {
 // Helper function to update the status of transferData objects
 async function updateTransferDataStatus(reports) {
   for (let report of reports) {
-    if (report.transferData.status != "finished") {
+    if (report.transferData.progress != "completed") {  //changed from status to progress
       try {
         const response = await axios.get(
           `${process.env.WORKSTATION_URL}/analyze`,//transcription/get_transcription_status`,

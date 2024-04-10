@@ -3,6 +3,8 @@ const express = require("express");
 const cors = require("cors");
 const https = require("https");
 const fs = require('node:fs');
+const bodyParser = require('body-parser');  //added to fix payload
+
 
 
 
@@ -23,6 +25,10 @@ const PORT = 5002; // env
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// fix payload error
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 
 const options = {
   key: fs.readFileSync('/etc/letsencrypt/live/classifai.tcu.edu/privkey.pem'),
