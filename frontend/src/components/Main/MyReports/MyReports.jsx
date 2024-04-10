@@ -65,7 +65,7 @@ export default function MyReports() {
           reportName: report.reportName,
           subject: report.subject,
           gradeLevel: report.gradeLevel,
-          status: report.transferData ? report.transferData.status : null,
+          status: report.transferData.status ? report.transferData.status : report.transferData.progress,
           fileName: fileName,
           fileType: fileExtension,
           isEditing: false,
