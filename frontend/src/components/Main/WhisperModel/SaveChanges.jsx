@@ -43,7 +43,7 @@ export default function SaveChanges({
   const saveTranscript = async () => {
     try {
       const formData = new FormData();
-      formData.append('result', JSON.stringify(transcription));
+      formData.append('result', transcription);
   
       await axios.put(
         `${import.meta.env.VITE_BACKEND_SERVER}/reports/${reportId}/users/${userId}`,
@@ -67,7 +67,7 @@ export default function SaveChanges({
   const saveCategorization = async () => {
     try {
       const formData = new FormData();
-      formData.append('categorized', JSON.stringify(categorizedQuestions));
+      formData.append('categorized', categorizedQuestions);
   
       await axios.put(
         `${import.meta.env.VITE_BACKEND_SERVER}/reports/${reportId}/users/${userId}`,
@@ -86,6 +86,7 @@ export default function SaveChanges({
       setShowErrorModal(true);
     }
   };
+  
   
 
   const handleSave = async () => {
