@@ -45,7 +45,7 @@ export default function SaveChanges({
       const formData = new FormData();
       formData.append('result', transcription);
   
-      await axios.put(
+      const response = await axios.put(
         `${import.meta.env.VITE_BACKEND_SERVER}/reports/${reportId}/users/${userId}`,
         formData,
         {
@@ -54,7 +54,7 @@ export default function SaveChanges({
           },
         }
       );
-  
+      console.log(response);
       console.log("Transcript saved successfully");
     } catch (error) {
       console.error("Error updating transcript", error);
