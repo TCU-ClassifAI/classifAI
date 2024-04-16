@@ -52,9 +52,11 @@ export default function MyReports() {
       const filtered_reports = reports.map((report) => {
         let fileExtension;
         let fileName = report.transferData ? String(report.audioFile) : null;
+        let link = "";
 
         if (fileName && fileName.toLowerCase().includes("youtube")) {
           fileExtension = "youtube";
+          link = report.transferData.fileName;
         } else {
           fileExtension = fileName.split(".").pop();
           fileName = fileName.split(".").shift();
@@ -65,10 +67,13 @@ export default function MyReports() {
           reportName: report.reportName,
           subject: report.subject,
           gradeLevel: report.gradeLevel,
-          status: report.transferData.status ? report.transferData.status : report.transferData.progress,
+          status: report.transferData.status
+            ? report.transferData.status
+            : report.transferData.progress,
           fileName: fileName,
           fileType: fileExtension,
           isEditing: false,
+          link: link,
         };
       });
 
@@ -134,12 +139,14 @@ export default function MyReports() {
     if (fileType !== "youtube") {
       try {
         await axios.put(
-          `${import.meta.env.VITE_BACKEND_SERVER}/files/${oldFileName}/reports/${reportId}/users/${userId}`,
+          `${
+            import.meta.env.VITE_BACKEND_SERVER
+          }/files/${oldFileName}/reports/${reportId}/users/${userId}`,
           {
             fileName: newFileName,
           }
         );
-  
+
         setFiles(updatedFiles);
         setEditSaveSuccess(true);
         setAlertMsg("Successful update to file name!");
@@ -153,11 +160,10 @@ export default function MyReports() {
     let audioFileUpdate;
     if (fileType !== "youtube") {
       audioFileUpdate = newFileName + "." + fileType;
+    } else {
+      audioFileUpdate = newFileName;
     }
-    else {
-      audioFileUpdate = newFileName
-    }
-    
+
     try {
       await axios.put(
         `${
@@ -180,8 +186,13 @@ export default function MyReports() {
       );
       fetchUserFiles();
     } catch (error) {
-      console.error("Error updating report name, subject, grade, or audio file:", error);
-      setErrorModalMsg("Error updating report name, subject, grade, or audio file:");
+      console.error(
+        "Error updating report name, subject, grade, or audio file:",
+        error
+      );
+      setErrorModalMsg(
+        "Error updating report name, subject, grade, or audio file:"
+      );
       setShowErrorModal(true);
     }
   };
@@ -288,7 +299,7 @@ export default function MyReports() {
               <th>Edit</th>
               <th>Delete</th>
               <th>Load Report</th>
-              <th>Download Audio</th>
+              <th>Download Audio/Link</th>
             </tr>
           </thead>
           <tbody>
@@ -353,7 +364,9 @@ export default function MyReports() {
                     <>
                       <button
                         className={styles.saveButton}
-                        onClick={() => handleSaveClick(file.reportId, file.fileType)}
+                        onClick={() =>
+                          handleSaveClick(file.reportId, file.fileType)
+                        }
                       >
                         Save
                       </button>
@@ -407,23 +420,31 @@ export default function MyReports() {
                   </button>
                 </td>
                 <td>
-                  <button
-                    className={`${
-                      file.fileType === "youtube"
-                        ? styles.disabledDownloadButton
-                        : styles.downloadButton
-                    }`}
-                    onClick={() =>
-                      handleDownloadClick(
-                        file.reportId,
-                        file.fileName,
-                        file.fileType
-                      )
-                    }
-                    disabled={file.fileType === "youtube"}
-                  >
-                    Download
-                  </button>
+                  <td>
+                    {file.fileType === "youtube" ? (
+                      <a
+                        href={file.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.downloadButton}
+                      >
+                        Youtube
+                      </a>
+                    ) : (
+                      <button
+                        className={styles.downloadButton}
+                        onClick={() =>
+                          handleDownloadClick(
+                            file.reportId,
+                            file.fileName,
+                            file.fileType
+                          )
+                        }
+                      >
+                        Download
+                      </button>
+                    )}
+                  </td>
                 </td>
               </tr>
             ))}
