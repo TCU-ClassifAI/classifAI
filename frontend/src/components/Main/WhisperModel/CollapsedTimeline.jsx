@@ -20,26 +20,23 @@ export default function CollapsedTimeline({ categorizedQuestions }) {
 
   function setTimeLineData() {
     let timeData = [];
-
     let questionList = categorizedQuestions;
-
-    const minTime = Math.min(
-      ...categorizedQuestions.map((q) => q.start_time / 1000)
-    );
-    const maxTime = Math.max(
-      ...categorizedQuestions.map((q) => q.start_time / 1000)
-    );
+  
+    const minTime = Math.min(...categorizedQuestions.map((q) => q.start_time / 1000));
+    const maxTime = Math.max(...categorizedQuestions.map((q) => q.start_time / 1000));
     const totalTimeRange = maxTime - minTime;
-    const entryWidthPercentage = 0.04;
+    
+    // Adjust the constant width percentage as needed
+    const entryWidthPercentage = 0.01;
     const constantWidth = totalTimeRange * entryWidthPercentage;
-
+  
     let initialEntry = {
       x: "Questions",
       y: [0, maxTime],
       fillColor: "#FFFFFF",
     };
     timeData.push(initialEntry);
-
+  
     for (let i = 0; i < questionList.length; i++) {
       if (labelColors.hasOwnProperty(questionList[i].level)) {
         let endTime;
@@ -51,6 +48,11 @@ export default function CollapsedTimeline({ categorizedQuestions }) {
         } else {
           endTime = questionList[i].start_time / 1000 + constantWidth;
         }
+  
+        let duration = endTime - questionList[i].start_time / 1000;
+        let relativeWidth = (duration / totalTimeRange) * 100; // Calculate relative width as a percentage
+        let barWidth = Math.max(relativeWidth, constantWidth); // Ensure bar width is at least the minimum width
+  
         let entry = {
           x: "Questions",
           y: [questionList[i].start_time / 1000, endTime],
@@ -64,15 +66,18 @@ export default function CollapsedTimeline({ categorizedQuestions }) {
               borderRadius: '3px',
               padding: '3px 6px'
             }
-          }
+          },
+          options: {
+            barWidth: barWidth + '%', // Set bar width dynamically
+          },
         };
         timeData.push(entry);
-        
       }
     }
     console.log("timeData:", timeData);
     return timeData;
   }
+  
 
   function getTimeLineProps() {
     return {

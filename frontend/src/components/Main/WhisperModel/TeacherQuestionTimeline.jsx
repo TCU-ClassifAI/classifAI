@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import Chart from "react-apexcharts";
 import { convertMsToTime } from "../../../utils/convertMsToTime";
 
@@ -21,8 +21,6 @@ export default function TeacherQuestionTimeline({ categorizedQuestions }) {
   };
 
   const reversedCategories = Object.values(levelLabels).reverse();
-
-
 
   useEffect(() => {
     if (categorizedQuestions) {
@@ -47,8 +45,7 @@ export default function TeacherQuestionTimeline({ categorizedQuestions }) {
 
     // Define the percentage of the total time range to use as the constant width for the entries
     const entryWidthPercentage = 0.04; // Adjust this value as needed
-    const constantWidth = totalTimeRange * entryWidthPercentage;
-
+    const constantWidth = totalTimeRange * entryWidthPercentage + 7000;
 
     for (let label of reversedCategories) {
       let initialEntry = {
@@ -59,20 +56,28 @@ export default function TeacherQuestionTimeline({ categorizedQuestions }) {
       timeData.push(initialEntry);
     }
 
+    const minimumBarWidth = 1000; // Set your desired minimum width here
+
     for (let i = 0; i < questionList.length; i++) {
       if (labelColors.hasOwnProperty(String(questionList[i].level))) {
-        // Use reversedLevelLabels for mapping
+        let duration = questionList[i].end_time - questionList[i].start_time;
+        let relativeWidth = (duration / totalTimeRange) * 100; // Calculate relative width as a percentage
+        let barWidth = Math.max(relativeWidth, minimumBarWidth); // Ensure bar width is at least the minimum width
         let entry = {
           x: levelLabels[questionList[i].level],
           y: [
             questionList[i].start_time,
-            questionList[i].start_time + constantWidth * 1000,
+            questionList[i].start_time + duration + 7000, // Use duration directly
           ],
           fillColor: labelColors[String(questionList[i].level)],
+          options: {
+            barWidth: barWidth + "%", // Set bar width dynamically
+          },
         };
         timeData.push(entry);
       }
     }
+
     //console.log("timeData:");
     // timeData.sort((a, b) => a.x - b.x); //sort it based on 0-3
     console.log("timeData:", timeData);
@@ -126,13 +131,13 @@ export default function TeacherQuestionTimeline({ categorizedQuestions }) {
           custom: function ({ seriesIndex, dataPointIndex, w }) {
             // Adjust the tooltip index to account for the initial entries
             let tooltipIndex = dataPointIndex - reversedCategories.length;
-        
+
             // Ensure categorizedQuestions is not null or undefined
             let questionList = categorizedQuestions || [];
-        
+
             // Access the question based on the tooltipIndex
             let question = questionList[tooltipIndex];
-        
+
             // Check if the question exists
             if (question) {
               return (
@@ -152,7 +157,6 @@ export default function TeacherQuestionTimeline({ categorizedQuestions }) {
             }
           },
         },
-        
       },
     };
   }

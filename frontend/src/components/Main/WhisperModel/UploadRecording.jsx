@@ -170,19 +170,25 @@ export default function UploadRecording({
         setProgress(10);
       } else if (progress === "splitting") {
         setProgress(20);
-      } else if (progress === "loading-nemo") {
+      } else if (progress === "loading_nemo") {
         setProgress(30);
       } else if (progress === "transcribing") {
         setProgress(40);
+      } else if (progress === "loading_align_model") {
+        setProgress(45)
       } else if (progress === "aligning") {
         setProgress(50);
+      } else if (progress === "diarizing") {
+        setProgress(55);
+      } else if (progress === "transcription_finished") {
+        setProgress(57);
       } else if (progress === "extracting_questions") {
         setProgress(60);
       } else if (progress === "categorizing_questions") {
         setProgress(70);
       } else if (progress === "summarizing") {
         setProgress(80);
-      } else if (progress === "combining results") {
+      } else if (progress === "combining_results") {
         setProgress(90);
       } else if (progress === "started" || progress === "queued") {
         setProgress(5);
