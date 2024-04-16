@@ -42,19 +42,18 @@ export default function SaveChanges({
 
   const saveTranscript = async () => {
     try {
-      const formData = new FormData();
-      formData.append('result', transcription);
-  
-      await axios.put(
-        `${import.meta.env.VITE_BACKEND_SERVER}/reports/${reportId}/users/${userId}`,
-        formData,
+      const response = await axios.put(
+        `${
+          import.meta.env.VITE_BACKEND_SERVER
+        }/reports/${reportId}/users/${userId}`,
+        JSON.stringify({ result: transcription }), // Convert to JSON string
         {
           headers: {
-            'Content-Type': 'multipart/form-data', // Set content type to multipart/form-data
+            "Content-Type": "application/json", // Set content type to application/json
           },
         }
       );
-  
+      console.log(response);
       console.log("Transcript saved successfully");
     } catch (error) {
       console.error("Error updating transcript", error);
@@ -62,23 +61,21 @@ export default function SaveChanges({
       setShowErrorModal(true);
     }
   };
-  
-  
+
   const saveCategorization = async () => {
     try {
-      const formData = new FormData();
-      formData.append('categorized', categorizedQuestions);
-  
       await axios.put(
-        `${import.meta.env.VITE_BACKEND_SERVER}/reports/${reportId}/users/${userId}`,
-        formData,
+        `${
+          import.meta.env.VITE_BACKEND_SERVER
+        }/reports/${reportId}/users/${userId}`,
+        JSON.stringify({ categorized: categorizedQuestions }), // Convert to JSON string
         {
           headers: {
-            'Content-Type': 'multipart/form-data', // Set content type to multipart/form-data
+            "Content-Type": "application/json", // Set content type to application/json
           },
         }
       );
-  
+
       console.log("Categorization saved successfully");
     } catch (error) {
       console.error("Error updating categorization", error);
@@ -86,8 +83,6 @@ export default function SaveChanges({
       setShowErrorModal(true);
     }
   };
-  
-  
 
   const handleSave = async () => {
     // investigate why these only work when separated, might be due to different content types
