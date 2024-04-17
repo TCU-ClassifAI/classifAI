@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import YoutubeUpload from "./YoutubeUpload";
 import axios from "axios";
 import styles from "./UploadRecording.module.css";
+import dayjs from 'dayjs';
+
 
 export default function UploadRecording({
   reportName,
@@ -11,6 +13,7 @@ export default function UploadRecording({
   subject,
   userId,
   reportId,
+  dateTime,
   setGradeLevel,
   setTranscription,
   setSubject,
@@ -20,6 +23,7 @@ export default function UploadRecording({
   location,
   setCategorizedQuestions,
   setSummary,
+  setDateTime
 }) {
   const [isAudio, setIsAudio] = useState(false);
   const [isVideo, setIsVideo] = useState(false);
@@ -69,6 +73,7 @@ export default function UploadRecording({
       formData.append("reportName", reportName);
       formData.append("gradeLevel", gradeLevel);
       formData.append("subject", subject);
+      formData.append("audioDate", dateTime);
 
       const response = await axios.post(
         `${
@@ -138,6 +143,7 @@ export default function UploadRecording({
       const grade = response.data.reports[0].gradeLevel;
       const reportSubject = response.data.reports[0].subject;
       const reportName = response.data.reports[0].reportName;
+      const audioDate = response.data.reports[0].audioDate;
       console.log(response);
       if (progress) {
         setAnalysisStatus(progress);
@@ -148,6 +154,9 @@ export default function UploadRecording({
       setGradeLevel(grade);
       setSubject(reportSubject);
       setReportName(reportName);
+      if (audioDate) {
+        setDateTime(dayjs(audioDate));
+      }
 
       if (status === "failed") {
         setProgress(0);

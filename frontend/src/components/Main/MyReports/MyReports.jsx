@@ -53,6 +53,7 @@ export default function MyReports() {
         let fileExtension;
         let fileName = report.transferData ? String(report.audioFile) : null;
         let link = "";
+        let audioDate = report.audioDate ? report.audioDate : null
 
         if (fileName && fileName.toLowerCase().includes("youtube")) {
           fileExtension = "youtube";
@@ -74,6 +75,7 @@ export default function MyReports() {
           fileType: fileExtension,
           isEditing: false,
           link: link,
+          audioDate: audioDate
         };
       });
 
@@ -290,8 +292,8 @@ export default function MyReports() {
         <table className={styles.prettyTable}>
           <thead>
             <tr>
-              <th>Report ID</th>
               <th>Report Name</th>
+              <th>Audio Date</th>
               <th>Subject</th>
               <th>Grade</th>
               <th>Audio File</th>
@@ -305,7 +307,6 @@ export default function MyReports() {
           <tbody>
             {currentItems.map((file, index) => (
               <tr key={file.reportId}>
-                <td>{file.reportId}</td>
                 <td>
                   {file.isEditing ? (
                     <input
@@ -319,6 +320,7 @@ export default function MyReports() {
                     file.reportName
                   )}
                 </td>
+                <td>{file.audioDate}</td>
                 <td>
                   {file.isEditing ? (
                     <input
