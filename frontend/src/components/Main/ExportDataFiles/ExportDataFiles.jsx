@@ -45,10 +45,14 @@ export default function ExportDataFiles() {
         obj.file.forEach((file, index) => {
           const lastDotIndex = file.lastIndexOf(".");
           const fileExtension = file.substring(lastDotIndex + 1);
+          let audioDate = obj.audioDate ? obj.audioDate : null;
           acc.push({
             key: `${obj.reportId}_${index}`, // Use reportId and index as a key
             userId: obj.userId,
             reportId: obj.reportId,
+            subject: obj.subject,
+            grade: obj.gradeLevel,
+            audioDate: audioDate,
             reportName: obj.reportName,
             fileName: obj.fileName[index],
             fileType: fileExtension,
@@ -194,8 +198,10 @@ export default function ExportDataFiles() {
         <table className={styles.prettyTable}>
           <thead>
             <tr>
-              <th>Report ID</th>
               <th>Report Name</th>
+              <th>Audio Date</th>
+              <th>Subject</th>
+              <th>Grade</th>
               <th>File Name</th>
               <th>File Type</th>
               <th>Edit</th>
@@ -206,8 +212,10 @@ export default function ExportDataFiles() {
           <tbody>
             {currentItems.map((file, index) => (
               <tr key={file.key}>
-                <td>{file.reportId}</td>
                 <td>{file.reportName}</td>
+                <td>{file.audioDate}</td>
+                <td>{file.subject}</td>
+                <td>{file.grade}</td>
                 <td>
                   {file.isEditing ? (
                     <input

@@ -18,12 +18,15 @@ import { Auth } from "aws-amplify";
 import { Tab, Tabs, Modal, Button } from "react-bootstrap";
 import Alert from "@mui/material/Alert";
 import ParentSize from "@visx/responsive/lib/components/ParentSize";
+import dayjs from 'dayjs';
+
 
 export default function Analyze() {
   const [userId, setUserId] = useState("");
   const [reportId, setReportId] = useState("");
   const [gradeLevel, setGradeLevel] = useState("");
   const [subject, setSubject] = useState("");
+  const [dateTime, setDateTime] = useState(dayjs());
   const [transcription, setTranscription] = useState([]);
   const [analysisStatus, setAnalysisStatus] = useState("");
   const [reportName, setReportName] = useState("");
@@ -120,6 +123,7 @@ export default function Analyze() {
               subject={subject}
               gradeLevel={gradeLevel}
               reportId={reportId}
+              dateTime={dateTime}
               userId={userId}
               setChangeAlert={setChangeAlert}
               transcription={transcription}
@@ -134,10 +138,12 @@ export default function Analyze() {
           gradeLevel={gradeLevel}
           subject={subject}
           reportName={reportName}
+          dateTime={dateTime}
           setReportName={setReportName}
           setGradeLevel={setGradeLevel}
           setSubject={setSubject}
           setChangeAlert={setChangeAlert}
+          setDateTime={setDateTime}
         />
       )}
 
@@ -147,12 +153,14 @@ export default function Analyze() {
           gradeLevel={gradeLevel}
           subject={subject}
           reportId={reportId}
+          dateTime={dateTime}
           setSubject={setSubject}
           userId={userId}
           transcription={transcription}
           setReportName={setReportName}
           setTranscription={setTranscription}
           setGradeLevel={setGradeLevel}
+          setDateTime={setDateTime}
           setAnalysisStatus={setAnalysisStatus}
           analysisStatus={analysisStatus}
           location={location}
@@ -328,6 +336,7 @@ export default function Analyze() {
             subject={subject}
             gradeLevel={gradeLevel}
             reportId={reportId}
+            dateTime={dateTime}
             userId={userId}
             setChangeAlert={setChangeAlert}
             transcription={transcription}

@@ -7,6 +7,7 @@ export default function SaveChanges({
   reportName,
   subject,
   gradeLevel,
+  dateTime,
   reportId,
   userId,
   transcription,
@@ -22,6 +23,7 @@ export default function SaveChanges({
   };
 
   const saveMetaInfo = async () => {
+    console.log(dateTime);
     try {
       await axios.put(
         `${
@@ -31,25 +33,29 @@ export default function SaveChanges({
           reportName: reportName,
           gradeLevel: gradeLevel,
           subject: subject,
+          audioDate: dateTime.format('MM-DD-YYYY HH:mm:ss')
         }
       );
     } catch (error) {
-      console.error("Error updating report name, grade or subject", error);
-      setErrorMsg("Error updating report name, grade or subject");
+      console.error("Error updating report name, grade, subject or datetime", error);
+      setErrorMsg("Error updating report name, grade, subject or datetime");
       setShowErrorModal(true);
     }
   };
 
   const saveTranscript = async () => {
     try {
+      const formData = new FormData(); // Create a FormData object
+      formData.append("result", transcription); // Append the transcription data
+      console.log(formData);
       const response = await axios.put(
         `${
           import.meta.env.VITE_BACKEND_SERVER
         }/reports/${reportId}/users/${userId}`,
-        JSON.stringify({ result: transcription }), // Convert to JSON string
+        formData, // Use formData instead of JSON.stringify({ result: transcription })
         {
           headers: {
-            "Content-Type": "application/json", // Set content type to application/json
+            "Content-Type": "multipart/form-data", // Set content type to multipart/form-data
           },
         }
       );
@@ -61,6 +67,7 @@ export default function SaveChanges({
       setShowErrorModal(true);
     }
   };
+  
 
   const saveCategorization = async () => {
     try {
