@@ -4,6 +4,7 @@ const router = express.Router();
 const fsPromises = require("fs").promises;
 const path = require("path");
 const axios = require("axios"); // Import axios for HTTP requests
+const multer = require("multer");
 
 //////////////// GET
 
@@ -170,70 +171,102 @@ router.get("/:reportId", async (req, res) => {
 ////////////////////////////////
 
 //////////////// PUT
+// Initialize multer without handling files
+const upload = multer({ limits: { fileSize: 2 * 1024 * 1024 * 1024 } });
 
+// look into multipart?
 // Update a specific report for a specific user
-router.put("/:reportId/users/:userId", async (req, res) => {
+router.put("/:reportId/users/:userId", upload.none(), async (req, res) => {
   const { reportId, userId } = req.params; // Extract reportId and userId from URL parameters
-  //const { result, categorized, summary, ...reportData } = req.body; // Extract the new transferData.result array and any other report data
+  
+  //const updates = req.body;
 
-  const updates = req.body;
+  // if multipart then process multipart, else if json, const updates = req.body;
+  try {
+    let updates;
+    if (req.headers['content-type'].includes('multipart/form-data')) {
+      if(req.body.result){
+        updates = JSON.parse(req.body.result);
+        console.log('multipart incoming:', updates);
+      }
+      if(req.body.categorized){
+        updates = JSON.parse(req.body.categorized);
+        console.log('multipart incoming:', updates);
+      }
+      if(req.body.summary){
+        updates = JSON.parse(req.body.summary);
+        console.log('multipart incoming:', updates);
+      }
+    }
+    else if (req.headers['content-type'].includes('application/json')){
+      updates = req.body;
+      console.log('json incoming:', updates);
+    }
 
-  // Initialize an object to construct the $set operation
-  let updateOperations = {};
+    
+    // Initialize an object to construct the $set operation
+    let updateOperations = {};
 
-  // Iterate through the keys of the updates object to handle nested updates
-  for (const [key, value] of Object.entries(updates)) {
-    // If the key indicates a nested field (e.g., "transferData.status"), 
-    // we directly use it in the $set operation
-    if (key.includes('.')) {
-      updateOperations[key] = value;
-    } else {
-      // For top-level fields, prepend the key with the parent object 
-      // if it's meant to update a nested field within transferData
-      // not pretty
-      if (key.startsWith("transferData")) {
-        updateOperations[`transferData.${key}`] = value;
-      } 
-      else if(key.startsWith("result")){
-        updateOperations[`transferData.result`] = value;
-      }
-      else if(key.startsWith("categorized")){
-        updateOperations[`transferData.categorized`] = value;
-      }
-      else if(key.startsWith("summary")){
-        updateOperations[`transferData.summary`] = value;
-      }
-      else {
-        // For other top-level updates, just set them as they are
+    // Iterate through the keys of the updates object to handle nested updates
+    for (const [key, value] of Object.entries(updates)) {
+      // If the key indicates a nested field (e.g., "transferData.status"), 
+      // we directly use it in the $set operation
+      if (key.includes('.')) {
         updateOperations[key] = value;
+      } else {
+        // For top-level fields, prepend the key with the parent object 
+        // if it's meant to update a nested field within transferData
+        // not pretty
+        if (key.startsWith("transferData")) {
+          updateOperations[`transferData.${key}`] = value;
+        } 
+        else if(key.startsWith("result")){
+          updateOperations[`transferData.result`] = value;
+        }
+        else if(key.startsWith("categorized")){
+          updateOperations[`transferData.categorized`] = value;
+        }
+        else if(key.startsWith("summary")){
+          updateOperations[`transferData.summary`] = value;
+        }
+        else {
+          // For other top-level updates, just set them as they are
+          updateOperations[key] = value;
+        }
       }
     }
-  }
 
-  try {    
-    const updatedReport = await dbconnect.updateReport(
-      { reportId, userId },
-      { $set: updateOperations }
-    );
+    try {    
+      const updatedReport = await dbconnect.updateReport(
+        { reportId, userId },
+        { $set: updateOperations }
+      );
 
 
-    if (!updatedReport) {
-      return res.status(404).json({ success: false, message: "Report not found." });
+      if (!updatedReport) {
+        return res.status(404).json({ success: false, message: "Report not found." });
+      }
+
+      // Return the updated report
+      res.json({
+        success: true,
+        message: "Report updated successfully.",
+        report: updatedReport,
+      });
+    } catch (error) {
+      console.error("Error updating report:", error);
+      res.status(500).json({
+        success: false,
+        message: "An error occurred while updating the report.",
+      });
     }
 
-    // Return the updated report
-    res.json({
-      success: true,
-      message: "Report updated successfully.",
-      report: updatedReport,
-    });
-  } catch (error) {
-    console.error("Error updating report:", error);
-    res.status(500).json({
-      success: false,
-      message: "An error occurred while updating the report.",
-    });
-  }
+    }
+    catch(error) {
+      res.status(400).json({ success: false, error: error.toString() });
+    }
+
+  
 });
 ////////////////////////////////
 
@@ -357,17 +390,7 @@ async function updateTransferDataStatus(reports) {
         }
 
 
-        // if (response.data.meta.title){
-        //   report.audioFile = response.data.meta.title +' YouTube';
-
-        //   // if not already existing, then push to mongo db report.files[]
-
-        //   report.files[0]={
-        //     fileName: response.data.meta.title,
-        //     filePath: 'testLink',
-        //     fileType: 'YouTube',
-        //   };
-        // }
+        
 
 
       } catch (error) {
@@ -391,3 +414,4 @@ async function updateTransferDataStatus(reports) {
 
 
 module.exports = router;
+
