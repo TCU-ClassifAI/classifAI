@@ -50,24 +50,6 @@ export default function ReportInfo({
                             onBlur={handleReportNameChange} // Update on blur
                         />
                     </Grid>
-                    <Grid item xs={3}>
-                        <TextField 
-                            variant="outlined" 
-                            label="Grade Level (optional)" 
-                            fullWidth 
-                            defaultValue={gradeLevel}
-                            onBlur={handleGradeLevelChange} // Update on blur
-                        />
-                    </Grid>
-                    <Grid item xs={3}>
-                        <TextField 
-                            variant="outlined" 
-                            label="Subject (optional)" 
-                            fullWidth 
-                            defaultValue={subject}
-                            onBlur={handleSubjectChange} // Update on blur
-                        />
-                    </Grid>
                     <Grid item xs={3} style={{ marginTop: 7, paddingTop: 0 }}>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DemoContainer components={['DateTimePicker']}>
@@ -79,6 +61,24 @@ export default function ReportInfo({
                                 />
                             </DemoContainer>
                         </LocalizationProvider>
+                    </Grid>
+                    <Grid item xs={3}>
+                        <TextField 
+                            variant="outlined" 
+                            label="Subject (optional)" 
+                            fullWidth 
+                            defaultValue={subject}
+                            onBlur={handleSubjectChange} // Update on blur
+                        />
+                    </Grid>
+                    <Grid item xs={3}>
+                        <TextField 
+                            variant="outlined" 
+                            label="Grade Level (optional)" 
+                            fullWidth 
+                            defaultValue={gradeLevel}
+                            onBlur={handleGradeLevelChange} // Update on blur
+                        />
                     </Grid>
                 </Grid>
             </div>

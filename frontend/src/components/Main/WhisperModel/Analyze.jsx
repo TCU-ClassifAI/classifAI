@@ -18,8 +18,7 @@ import { Auth } from "aws-amplify";
 import { Tab, Tabs, Modal, Button } from "react-bootstrap";
 import Alert from "@mui/material/Alert";
 import ParentSize from "@visx/responsive/lib/components/ParentSize";
-import dayjs from 'dayjs';
-
+import dayjs from "dayjs";
 
 export default function Analyze() {
   const [userId, setUserId] = useState("");
@@ -306,27 +305,27 @@ export default function Analyze() {
                 />
               </div>
             )}
-            questionDistributionComponent={()=> {
+            questionDistributionComponent={() => (
               <div>
                 <QuestionDistribution
-                categorizedQuestions={categorizedQuestions}
-              />
-              </div>
-            }}
-            collapseTimelineComponent={() => {
-              <div>
-                <CollapsedTimeline 
                   categorizedQuestions={categorizedQuestions}
                 />
               </div>
-            }}
-            teacherQuestionTimelineComponent={()=> {
+            )}
+            collapseTimelineComponent={() => (
               <div>
-                <TeacherQuestionTimeline 
+                <CollapsedTimeline
                   categorizedQuestions={categorizedQuestions}
                 />
               </div>
-            }}
+            )}
+            teacherQuestionTimelineComponent={() => (
+              <div>
+                <TeacherQuestionTimeline
+                  categorizedQuestions={categorizedQuestions}
+                />
+              </div>
+            )}
             reportId={reportId}
             userId={userId}
           />
