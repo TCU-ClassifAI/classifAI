@@ -176,7 +176,14 @@ const upload = multer({ limits: { fileSize: 2 * 1024 * 1024 * 1024 } });
 // Update a specific report for a specific user
 router.put("/:reportId/users/:userId", upload.none(), async (req, res) => {
   const { reportId, userId } = req.params; // Extract reportId and userId from URL parameters
-  const updates = req.body;
+  
+  //const updates = req.body;
+  try {
+    const updates = JSON.parse(req.body.data);
+  }
+  catch(error) {
+    res.status(400).json({ success: false, message: "Invalid JSON format", error: error.toString() });
+  }
 
   console.log('multipart incoming:', updates);
   // Initialize an object to construct the $set operation
