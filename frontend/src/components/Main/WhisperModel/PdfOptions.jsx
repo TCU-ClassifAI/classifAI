@@ -6,7 +6,6 @@ import axios from "axios"; // Import Axios
 import styles from "./PdfOptions.module.css";
 import Alert from "@mui/material/Alert";
 
-
 const PdfOptions = ({
   wordCloudComponent,
   transcriptComponent,
@@ -15,24 +14,22 @@ const PdfOptions = ({
   collapseTimelineComponent,
   teacherQuestionTimelineComponent,
   reportId,
-  userId
+  userId,
 }) => {
   const componentRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
   const [transcriptBox, setTranscriptBox] = useState(false);
   const [talkDistBox, setTalkDistBox] = useState(false);
   const [wordCloudBox, setWordCloudBox] = useState(false);
-  // const [questDistBox, setQuestDistBox] = useState(false);
-  // const [collapseBox, setCollapseBox] = useState(false);
-  // const [timeLineBox, setTimelineBox] = useState(false);
+  const [questDistBox, setQuestDistBox] = useState(false);
+  const [collapseBox, setCollapseBox] = useState(false);
+  const [timeLineBox, setTimelineBox] = useState(false);
   const [showPdfModal, setShowPdfModal] = useState(false);
   const [pdfName, setPdfName] = useState(generateDefaultFileName()); // State for PDF name
   const [allSelected, setAllSelected] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState("error");
   const [alertMsg, setAlertMsg] = useState("");
-
-  
 
   useEffect(() => {
     if (isVisible) {
@@ -50,7 +47,7 @@ const PdfOptions = ({
             pdf.save(pdfName);
 
             // Convert PDF to blob
-            const pdfBlob = pdf.output('blob');
+            const pdfBlob = pdf.output("blob");
 
             // Call API to save the PDF
             savePdfToApi(pdfBlob);
@@ -69,25 +66,24 @@ const PdfOptions = ({
 
   const handleSelectAll = () => {
     setAllSelected(!allSelected);
-    setTranscriptBox(true);
+    // setTranscriptBox(true);
     setTalkDistBox(true);
     setWordCloudBox(true);
-    // setQuestDistBox(true);
-    // setCollapseBox(true);
-    // setTimelineBox(true);
-  }
+    setQuestDistBox(true);
+    setCollapseBox(true);
+    setTimelineBox(true);
+  };
 
   const handleDeselectAll = () => {
     setAllSelected(false);
     setTranscriptBox(false);
     setTalkDistBox(false);
     setWordCloudBox(false);
-    // setQuestDistBox(false);
-    // setCollapseBox(false);
-    // setTimelineBox(false);
-    
-  }
- 
+    setQuestDistBox(false);
+    setCollapseBox(false);
+    setTimelineBox(false);
+  };
+
   function generateDefaultFileName() {
     const date = new Date();
     let day = date.getDate();
@@ -98,33 +94,36 @@ const PdfOptions = ({
     let sec = date.getSeconds();
 
     let currentDate = `${month}_${day}_${year}_${hour}_${min}_${sec}`;
-    return currentDate.concat("Transcript");
+    return currentDate.concat("Report");
   }
 
   const savePdfToApi = (pdfBlob) => {
-
     const formData = new FormData();
     formData.append("file", pdfBlob, `${pdfName}.pdf`);
     // Make API call using Axios to save the PDF
-    axios.post(`${import.meta.env.VITE_BACKEND_SERVER}/files/reports/${reportId}/users/${userId}`, 
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    )
-    .then(response => {
-      setAlertMsg("PDF Saved to database!");
-      setAlertSeverity("success");
-      setShowAlert(true);
-    })
-    .catch(error => {
-      console.error('Error saving PDF:', error);
-      setAlertMsg("Error saving PDF to database!");
-      setAlertSeverity("error");
-      setShowAlert(true);
-    });
+    axios
+      .post(
+        `${
+          import.meta.env.VITE_BACKEND_SERVER
+        }/files/reports/${reportId}/users/${userId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      )
+      .then((response) => {
+        setAlertMsg("PDF Saved to database!");
+        setAlertSeverity("success");
+        setShowAlert(true);
+      })
+      .catch((error) => {
+        console.error("Error saving PDF:", error);
+        setAlertMsg("Error saving PDF to database!");
+        setAlertSeverity("error");
+        setShowAlert(true);
+      });
   };
 
   const handleOpenModal = () => {
@@ -141,55 +140,57 @@ const PdfOptions = ({
   };
 
   const componentToCapture = () => {
-    let wordCloud;
-    let transcript;
-    let talkDist;
-    let questDist;
-    let collapsed;
-    let timeline;
-    if (wordCloudBox) {
-      wordCloud = wordCloudComponent();
+    const componentsPerPage = 4; // Number of components per page
+    const components = [];
+    let currentPage = 1;
+    let currentComponentIndex = 0;
+  
+    // Push components to each page
+    while (currentComponentIndex < 6) { // Assuming you have 6 components
+      const pageComponents = [];
+      for (let i = 0; i < componentsPerPage && currentComponentIndex < 6; i++) {
+        switch (currentComponentIndex) {
+          case 0:
+            if (wordCloudBox) pageComponents.push(wordCloudComponent());
+            break;
+          case 1:
+            if (transcriptBox) pageComponents.push(transcriptComponent());
+            break;
+          case 2:
+            if (talkDistBox) pageComponents.push(talkingDistributionComponent());
+            break;
+          case 3:
+            if (questDistBox) pageComponents.push(questionDistributionComponent());
+            break;
+          case 4:
+            if (collapseBox) pageComponents.push(collapseTimelineComponent());
+            break;
+          case 5:
+            if (timeLineBox) pageComponents.push(teacherQuestionTimelineComponent());
+            break;
+          default:
+            break;
+        }
+        currentComponentIndex++;
+      }
+      components.push(pageComponents);
+      currentPage++;
     }
-
-    if (transcriptBox) {
-      transcript = transcriptComponent();
-    }
-
-    if (talkDistBox) {
-      talkDist = talkingDistributionComponent();
-    }
-    
-    // if (questDistBox) {
-    //   questDist = questionDistributionComponent();
-    // }
-
-    // if (collapseBox) {
-    //   collapsed = collapseTimelineComponent();
-    // }
-
-    // if (timeLineBox) {
-    //   timeline = teacherQuestionTimelineComponent();
-    // }
-
-    return (
-      <>
-        {wordCloud}
-        {transcript}
-        {talkDist}
-        {/*
-         {questDist}
-         {collapsed}
-         {timeline}
-        */}
-       
-      </>
-    );
+  
+    return components.map((pageComponents, index) => (
+      <div key={index} ref={componentRef}>
+        {pageComponents}
+      </div>
+    ));
   };
+  
 
   return (
     <div>
       {isVisible && <div ref={componentRef}>{componentToCapture()}</div>}
-      <button onClick={handleOpenModal} className="btn btn-primary">Save & Download PDF</button>
+      <button onClick={handleOpenModal} className="btn btn-primary">
+        Save & Download PDF
+      </button>
       <Modal
         show={showPdfModal}
         onHide={() => {
@@ -201,14 +202,14 @@ const PdfOptions = ({
         </Modal.Header>
         <Modal.Body>
           <div className={styles.checkboxGroup}>
-          <label className={styles.checkbox}>
-            Select All
-            <input
-              type="checkbox"
-              checked={allSelected}
-              onChange={allSelected ? handleDeselectAll : handleSelectAll}
-            />
-          </label>
+            <label className={styles.checkbox}>
+              Select All
+              <input
+                type="checkbox"
+                checked={allSelected}
+                onChange={allSelected ? handleDeselectAll : handleSelectAll}
+              />
+            </label>
             {/* Currently this copies the transcript to an image but it doesnt capture the whole table 
             <label className={styles.checkbox}>
               Transcript
@@ -234,21 +235,12 @@ const PdfOptions = ({
                 onChange={() => setWordCloudBox(!wordCloudBox)}
               />
             </label>
-            {/*
             <label className={styles.checkbox}>
               Question Distribution
               <input
                 type="checkbox"
                 checked={questDistBox}
                 onChange={() => setQuestDistBox(!questDistBox)}
-              />
-            </label>
-            <label className={styles.checkbox}>
-              Collapsed Timeline
-              <input
-                type="checkbox"
-                checked={collapseBox}
-                onChange={() => setCollapseBox(!collapseBox)}
               />
             </label>
             <label className={styles.checkbox}>
@@ -259,7 +251,14 @@ const PdfOptions = ({
                 onChange={() => setTimelineBox(!timeLineBox)}
               />
             </label>
-          */}
+            <label className={styles.checkbox}>
+              Collapsed Timeline
+              <input
+                type="checkbox"
+                checked={collapseBox}
+                onChange={() => setCollapseBox(!collapseBox)}
+              />
+            </label>
             <div>
               <label>PDF Name:</label>
               <input
@@ -269,7 +268,9 @@ const PdfOptions = ({
               />
             </div>
           </div>
-          <button onClick={handleDownloadPDF} className="btn btn-primary">Save & Download PDF</button>
+          <button onClick={handleDownloadPDF} className="btn btn-primary">
+            Save & Download PDF
+          </button>
         </Modal.Body>
         <Modal.Footer>
           <Button
@@ -283,12 +284,17 @@ const PdfOptions = ({
         </Modal.Footer>
       </Modal>
       {showAlert && (
-            <div>
-              <Alert severity={alertSeverity} onClose={() => {setShowAlert(false)}}>
-                {alertMsg}
-              </Alert>
-            </div>
-          )}
+        <div>
+          <Alert
+            severity={alertSeverity}
+            onClose={() => {
+              setShowAlert(false);
+            }}
+          >
+            {alertMsg}
+          </Alert>
+        </div>
+      )}
     </div>
   );
 };
