@@ -46,7 +46,7 @@ export default function SaveChanges({
   const saveTranscript = async () => {
     try {
       const formData = new FormData(); // Create a FormData object
-      formData.append("result", transcription); // Append the transcription data
+      formData.append("result", JSON.stringify(transcription)); // Append the transcription data
       console.log(formData);
       const response = await axios.put(
         `${
@@ -71,25 +71,27 @@ export default function SaveChanges({
 
   const saveCategorization = async () => {
     try {
+      const formData = new FormData();
+      formData.append('categorized', JSON.stringify(categorizedQuestions));
+  
       await axios.put(
-        `${
-          import.meta.env.VITE_BACKEND_SERVER
-        }/reports/${reportId}/users/${userId}`,
-        JSON.stringify({ categorized: categorizedQuestions }), // Convert to JSON string
+        `${import.meta.env.VITE_BACKEND_SERVER}/reports/${reportId}/users/${userId}`,
+        formData,
         {
           headers: {
-            "Content-Type": "application/json", // Set content type to application/json
+            'Content-Type': 'multipart/form-data', // Set content type to multipart/form-data
           },
         }
       );
-
-      console.log("Categorization saved successfully");
+  
+      console.log('Categorization saved successfully');
     } catch (error) {
-      console.error("Error updating categorization", error);
-      setErrorMsg("Error updating categorization");
+      console.error('Error updating categorization', error);
+      setErrorMsg('Error updating categorization');
       setShowErrorModal(true);
     }
   };
+  
 
   const handleSave = async () => {
     // investigate why these only work when separated, might be due to different content types
