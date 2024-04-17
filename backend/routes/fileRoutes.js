@@ -57,6 +57,8 @@ router.get("/", async (req, res) => {
           gradeLevel: report.gradeLevel,
           subject: report.subject,
           fileName: filteredFiles.map((file) => file.fileName),
+          audioDate: report.audioDate
+
         });
       }
 
@@ -136,6 +138,8 @@ router.get("/users/:userId", async (req, res) => {
           gradeLevel: report.gradeLevel,
           subject: report.subject,
           fileName: filteredFiles.map((file) => file.fileName),
+          audioDate: report.audioDate
+
         });
       }
 
@@ -216,6 +220,8 @@ router.get("/reports/:reportId/users/:userId", async (req, res) => {
           gradeLevel: report.gradeLevel,
           subject: report.subject,
           fileName: filteredFiles.map((file) => file.fileName),
+          audioDate: report.audioDate
+
         });
       }
 
@@ -317,6 +323,8 @@ router.get("/:fileName/reports/:reportId/users/:userId", async (req, res) => {
         ],
         gradeLevel: report.gradeLevel,
         subject: report.subject,
+        audioDate: report.audioDate
+
       };
       res.status(200).json(filesResponse);
     }

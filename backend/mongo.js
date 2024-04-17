@@ -18,7 +18,7 @@ mongo.once('open', function() {
 const reportSchema = new mongoose.Schema({                           
    
     audioFile: String,
-    date: String,
+    audioDate: String,
 
     files: [{   //added 1/23
       fileName: String,
