@@ -182,11 +182,7 @@ router.put("/:reportId/users/:userId", upload.none(), async (req, res) => {
     const updates = JSON.parse(req.body.data);
     console.log('multipart incoming:', updates);
 
-  }
-  catch(error) {
-    res.status(400).json({ success: false, message: "Invalid JSON format", error: error.toString() });
-  }
-
+    
   // Initialize an object to construct the $set operation
   let updateOperations = {};
 
@@ -243,6 +239,13 @@ router.put("/:reportId/users/:userId", upload.none(), async (req, res) => {
       message: "An error occurred while updating the report.",
     });
   }
+
+  }
+  catch(error) {
+    res.status(400).json({ success: false, message: "Invalid JSON format", error: error.toString() });
+  }
+
+  
 });
 ////////////////////////////////
 
