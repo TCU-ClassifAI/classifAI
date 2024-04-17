@@ -36,31 +36,47 @@ const PdfOptions = ({
       // Capture component after it has been rendered
       setTimeout(() => {
         html2canvas(componentRef.current)
-          .then((canvas) => {
-            const imgData = canvas.toDataURL("image/png");
-            const pdf = new jsPDF();
-            const width = pdf.internal.pageSize.getWidth();
-            const height = (canvas.height * width) / canvas.width;
-            pdf.addImage(imgData, "PNG", 0, 0, width, height);
+  .then((canvas) => {
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF();
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const imgWidth = canvas.width;
+    const imgHeight = canvas.height;
+    const maxImgHeightPerPage = pageHeight - 20; // Adjust for margins or padding
+    const maxImgWidthPerPage = pageWidth - 20; // Adjust for margins or padding
+    let yPos = 0;
+    let scale;
 
-            // Save PDF with the specified name
-            pdf.save(pdfName);
+    if (imgWidth > imgHeight) {
+      scale = maxImgWidthPerPage / imgWidth;
+    } else {
+      scale = maxImgHeightPerPage / imgHeight;
+    }
 
-            // Convert PDF to blob
-            const pdfBlob = pdf.output("blob");
+    pdf.addImage(imgData, "PNG", 0, 0, imgWidth * scale, imgHeight * scale);
 
-            // Call API to save the PDF
-            savePdfToApi(pdfBlob);
+    // Save PDF with the specified name
+    pdf.save(pdfName);
 
-            // Hide the component after a delay
-            setTimeout(() => {
-              setIsVisible(false);
-            }, 1000); // 1000 milliseconds = 1 second
-          })
-          .catch((error) => {
-            console.error("Error generating PDF:", error);
-          });
-      }, 1000);
+    // Convert PDF to blob
+    const pdfBlob = pdf.output("blob");
+
+    // Call API to save the PDF
+    savePdfToApi(pdfBlob);
+
+    // Hide the component after a delay
+    setTimeout(() => {
+      setIsVisible(false);
+    }, 1000); // 1000 milliseconds = 1 second
+  })
+  .catch((error) => {
+    console.error("Error generating PDF:", error);
+  });
+
+
+      
+      }, 1500);
     }
   }, [isVisible, pdfName]);
 
@@ -144,9 +160,10 @@ const PdfOptions = ({
     const components = [];
     let currentPage = 1;
     let currentComponentIndex = 0;
-  
+
     // Push components to each page
-    while (currentComponentIndex < 6) { // Assuming you have 6 components
+    while (currentComponentIndex < 6) {
+      // Assuming you have 6 components
       const pageComponents = [];
       for (let i = 0; i < componentsPerPage && currentComponentIndex < 6; i++) {
         switch (currentComponentIndex) {
@@ -157,16 +174,19 @@ const PdfOptions = ({
             if (transcriptBox) pageComponents.push(transcriptComponent());
             break;
           case 2:
-            if (talkDistBox) pageComponents.push(talkingDistributionComponent());
+            if (talkDistBox)
+              pageComponents.push(talkingDistributionComponent());
             break;
           case 3:
-            if (questDistBox) pageComponents.push(questionDistributionComponent());
+            if (questDistBox)
+              pageComponents.push(questionDistributionComponent());
             break;
           case 4:
             if (collapseBox) pageComponents.push(collapseTimelineComponent());
             break;
           case 5:
-            if (timeLineBox) pageComponents.push(teacherQuestionTimelineComponent());
+            if (timeLineBox)
+              pageComponents.push(teacherQuestionTimelineComponent());
             break;
           default:
             break;
@@ -176,14 +196,13 @@ const PdfOptions = ({
       components.push(pageComponents);
       currentPage++;
     }
-  
+
     return components.map((pageComponents, index) => (
       <div key={index} ref={componentRef}>
         {pageComponents}
       </div>
     ));
   };
-  
 
   return (
     <div>
@@ -244,7 +263,7 @@ const PdfOptions = ({
               />
             </label>
             <label className={styles.checkbox}>
-              Teacher Question Timeline
+              Question Timeline
               <input
                 type="checkbox"
                 checked={timeLineBox}
