@@ -73,7 +73,7 @@ export default function UploadRecording({
       formData.append("reportName", reportName);
       formData.append("gradeLevel", gradeLevel);
       formData.append("subject", subject);
-      formData.append("audioDate", dateTime);
+      formData.append("audioDate", dateTime.format('MM-DD-YYYY HH:mm:ss'));
 
       const response = await axios.post(
         `${
