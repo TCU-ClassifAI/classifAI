@@ -27,8 +27,8 @@ app.use(cors());
 app.use(express.json());
 
 // fix payload error
-app.use(bodyParser.json({ limit: '10mb' }));
-app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json({ limit: '500mb' }));
+app.use(express.urlencoded({ extended: true, limit: '5000mb' }));
 
 const options = {
   key: fs.readFileSync('/etc/letsencrypt/live/classifai.tcu.edu/privkey.pem'),
