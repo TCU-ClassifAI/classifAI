@@ -184,18 +184,35 @@ router.put("/:reportId/users/:userId", upload.none(), async (req, res) => {
   // if multipart then process multipart, else if json, const updates = req.body;
   try {
     let updates;
+    let updatedReport;
+    
     if (req.headers['content-type'].includes('multipart/form-data')) {
       if(req.body.result){
         updates = JSON.parse(req.body.result);
+
         console.log('multipart incoming:', updates);
+        // set the report.transferData.result = updates
+        updatedReport = await dbconnect.updateReport(
+          { reportId, userId },
+          { $set: { "transferData.result": updates } }
+        );
       }
       if(req.body.categorized){
         updates = JSON.parse(req.body.categorized);
         console.log('multipart incoming:', updates);
+        updatedReport = await dbconnect.updateReport(
+          { reportId, userId },
+          { $set: { "transferData.categorized": updates } }
+        );
       }
       if(req.body.summary){
         updates = JSON.parse(req.body.summary);
         console.log('multipart incoming:', updates);
+        updatedReport = await dbconnect.updateReport(
+          { reportId, userId },
+          { $set: { "transferData.summary": updates } }
+        );
+        
       }
     }
     else if (req.headers['content-type'].includes('application/json')){
@@ -237,7 +254,7 @@ router.put("/:reportId/users/:userId", upload.none(), async (req, res) => {
     }
 
     try {    
-      const updatedReport = await dbconnect.updateReport(
+      updatedReport = await dbconnect.updateReport(
         { reportId, userId },
         { $set: updateOperations }
       );
