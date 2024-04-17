@@ -55,6 +55,8 @@ router.get("/", async (req, res) => {
             subject: report.subject,
             fileName: filteredFiles.map((file) => file.fileName),
             transferData: report.transferData, //added 2/5
+            audioDate: report.audioDate
+
           });
         }
       });
@@ -106,6 +108,7 @@ router.get("/users/:userId", async (req, res) => {
           fileName: filteredFiles.map((file) => file.fileName),
           transferData: report.transferData,
           audioFile: report.audioFile,
+          audioDate: report.audioDate
         });
       }
     });
@@ -388,4 +391,3 @@ async function updateTransferDataStatus(reports) {
 
 
 module.exports = router;
-
