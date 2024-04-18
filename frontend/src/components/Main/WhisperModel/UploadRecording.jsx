@@ -87,7 +87,9 @@ export default function UploadRecording({
         }
       );
       console.log(response);
-
+      setGenericModalMsg("Audio Uploaded and Report Entry Created! You may wait until completion or You may leave this page and load it back in My Reports.");
+      setGenericModalTitle("Upload Success");
+      setShowGenericModal(true);
       console.log("Upload and transfer success!");
     } catch (error) {
       console.log("Error uploading or transferring to engine!");
@@ -307,6 +309,7 @@ export default function UploadRecording({
           checked={youtubeMode}
           onChange={handleSwitchChange}
           id="useYoutubeLinkSwitch"
+          disabled={analysisStatus !== ""}
         />
       </div>
 
@@ -345,7 +348,7 @@ export default function UploadRecording({
         <div>
           <p>
             Our Engine is analyzing audio in the background. You may wait until
-            completion or you may leave this page and load it back in the 'My
+            completion or you may leave this page <strong>after being notified of a successful upload</strong> and load it back in the 'My
             Reports' page!
           </p>
           <ProgressBar

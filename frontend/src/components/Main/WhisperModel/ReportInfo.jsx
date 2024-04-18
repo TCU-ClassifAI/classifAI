@@ -15,8 +15,12 @@ export default function ReportInfo({
     setSubject,
     setReportName,
     setChangeAlert,
-    setDateTime
+    setDateTime,
+    analysisStatus
 }) {
+
+    const disableFields = analysisStatus !== 'finished' && analysisStatus !== 'completed' && analysisStatus !== '';
+
     const handleReportNameChange = (event) => {
         setReportName(event.target.value);
         setChangeAlert(true);
@@ -48,6 +52,7 @@ export default function ReportInfo({
                             fullWidth 
                             defaultValue={reportName}
                             onBlur={handleReportNameChange} // Update on blur
+                            disabled={disableFields}
                         />
                     </Grid>
                     <Grid item xs={3} style={{ marginTop: 7, paddingTop: 0 }}>
@@ -58,6 +63,7 @@ export default function ReportInfo({
                                     value={dateTime} // Set value from dateTime state
                                     onChange={(value) => handleDateTimeChange(value)}
                                     ampm={false}
+                                    disabled={disableFields}
                                 />
                             </DemoContainer>
                         </LocalizationProvider>
@@ -69,6 +75,7 @@ export default function ReportInfo({
                             fullWidth 
                             defaultValue={subject}
                             onBlur={handleSubjectChange} // Update on blur
+                            disabled={disableFields}
                         />
                     </Grid>
                     <Grid item xs={3}>
@@ -78,6 +85,7 @@ export default function ReportInfo({
                             fullWidth 
                             defaultValue={gradeLevel}
                             onBlur={handleGradeLevelChange} // Update on blur
+                            disabled={disableFields}
                         />
                     </Grid>
                 </Grid>
