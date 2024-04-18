@@ -31,7 +31,6 @@ export default function UploadRecording({
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [selectedFile, setSelectedFile] = useState("");
   const [fileContent, setFileContent] = useState();
-  const [isFileSelected, setIsFileSelected] = useState(false);
   const [progress, setProgress] = useState(0);
   const [showGenericModal, setShowGenericModal] = useState(false);
   const [genericModalMsg, setGenericModalMsg] = useState("");
@@ -61,15 +60,36 @@ export default function UploadRecording({
     }
   }, [isAnalyzing]);
 
+  function validateYoutubeLink(link) {
+    // Regular expression to match YouTube URL patterns
+    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
+    return youtubeRegex.test(link);
+  }
+  
+
   async function handleSubmission() {
-    setIsAnalyzing(true);
+    
     try {
       const formData = new FormData();
       if (youtubeMode) {
+        if(!validateYoutubeLink(youtubeUrl)) {
+          setShowGenericModal(true);
+          setGenericModalMsg("Invalid Youtube Link. Please paste a valid youtube link.");
+          setGenericModalTitle("Error");
+          return;
+        }
         formData.append("url", youtubeUrl);
       } else {
-        formData.append("file", selectedFile);
+        if(!validateFileType(selectedFile)) {
+          setShowGenericModal(true);
+          setGenericModalMsg("Invalid file type. Please upload a valid audio or video file.");
+          setGenericModalTitle("Error");
+          return;
+        }
+        formData.append("file", selectedFile);  
       }
+      setIsAnalyzing(true);
+
       formData.append("reportName", reportName);
       formData.append("gradeLevel", gradeLevel);
       formData.append("subject", subject);
@@ -177,6 +197,8 @@ export default function UploadRecording({
         setTranscription(transcription);
         checkIfCategorizedAndSummarized(response);
         setProgress(100);
+      } else if (progress === "downloading") {
+        setProgress(7);
       } else if (progress === "start_transcribing") {
         setProgress(10);
       } else if (progress === "splitting") {
@@ -235,8 +257,24 @@ export default function UploadRecording({
       setIsVideo(false);
       setIsNeither(true);
     }
-    setIsFileSelected(!fileContent);
   }
+
+  const validateFileType = (file) => {
+    const acceptedTypes = [
+      "audio/mpeg",
+      "audio/mp4",
+      "audio/x-m4a",
+      "audio/aac",
+      "audio/ogg",
+      "audio/wav",
+      "audio/webm",
+      "video/mp4",
+      "video/x-matroska",
+      "video/webm",
+      "audio/mp3"
+    ];
+    return acceptedTypes.includes(file.type);
+  };
 
   const renderMediaElement = (tag) => (
     <div>
@@ -265,12 +303,10 @@ export default function UploadRecording({
       <label className="form-label" htmlFor="customFile">
         <h4>Please upload an audio or video recording for transcription</h4>
         <p>
-          Accepted AUDIO file types: .mp3, .m4a, .aac, .oga, .ogg, .flac, .wav,
-          .wv, .aiff
+          Accepted AUDIO file types: .mp3
         </p>
         <p>
-          Accepted VIDEO file types: .webm, .MTS, .M2TS, .TS, .mov, .mp2, .mp4,
-          .m4v, .mxf
+          Accepted VIDEO file types: .mp4
         </p>
       </label>
       <div>
@@ -338,7 +374,7 @@ export default function UploadRecording({
             className="btn btn-primary"
             id="submission-main"
             onClick={() => handleSubmission({ selectedFile })}
-            disabled={!isFileSelected && !youtubeUrl}
+            disabled={!selectedFile && !youtubeUrl}
           >
             Analyze Recording
           </button>
