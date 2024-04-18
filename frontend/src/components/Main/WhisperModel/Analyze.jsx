@@ -143,6 +143,7 @@ export default function Analyze() {
           setSubject={setSubject}
           setChangeAlert={setChangeAlert}
           setDateTime={setDateTime}
+          analysisStatus={analysisStatus}
         />
       )}
 
