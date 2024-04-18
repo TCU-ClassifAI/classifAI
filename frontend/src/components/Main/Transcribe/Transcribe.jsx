@@ -7,7 +7,6 @@ import { evaluateArray } from "../../../expertArrays/evaluate";
 import { createArray } from "../../../expertArrays/create";
 import { convertMsToTime } from "../../../utils/convertMsToTime";
 import { Auth } from "aws-amplify";
-import Modal from 'react-modal';
 import CsvOptions from "./CsvOptions";
 import QuestionCategoryDistribution from "./QuestionCategoryDistribution";
 import TalkingDistribution from "./TalkingDistribution";
@@ -496,6 +495,8 @@ export default function Transcribe() {
 
   return (
     <div>
+      <h4>Legacy Analyze is no longer officially supported. You may generate a report and download its .csv but the report will not be saved.</h4>
+      <br />
       {uploadRecordingVisible && (
         <UploadRecording
           userReportToLoad={userReportToLoad}
