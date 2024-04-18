@@ -87,7 +87,7 @@ export default function UploadRecording({
         }
       );
       console.log(response);
-      setGenericModalMsg("Audio Uploaded and Report Entry Created! You may wait until completion or You may leave this page and load it back in My Reports.");
+      setGenericModalMsg("Audio Uploaded and Report Entry Created! Please remain on this page until our engine completes its analysis.");
       setGenericModalTitle("Upload Success");
       setShowGenericModal(true);
       console.log("Upload and transfer success!");
@@ -347,9 +347,7 @@ export default function UploadRecording({
       {isAnalyzing && (
         <div>
           <p>
-            Our Engine is analyzing audio in the background. You may wait until
-            completion or you may leave this page <strong>after being notified of a successful upload</strong> and load it back in the 'My
-            Reports' page!
+            Our Engine is analyzing audio in the background. <strong>Please stay on this page and wait until completion.</strong> Upon completion, you may leave and load this report from <strong>'My Reports'</strong>.
           </p>
           <ProgressBar
             animated
