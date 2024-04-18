@@ -303,12 +303,10 @@ export default function UploadRecording({
       <label className="form-label" htmlFor="customFile">
         <h4>Please upload an audio or video recording for transcription</h4>
         <p>
-          Accepted AUDIO file types: .mp3, .m4a, .aac, .oga, .ogg, .flac, .wav,
-          .wv, .aiff
+          Accepted AUDIO file types: .mp3
         </p>
         <p>
-          Accepted VIDEO file types: .webm, .MTS, .M2TS, .TS, .mov, .mp2, .mp4,
-          .m4v, .mxf
+          Accepted VIDEO file types: .mp4
         </p>
       </label>
       <div>
