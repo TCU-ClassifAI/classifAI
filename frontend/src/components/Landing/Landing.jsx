@@ -4,6 +4,7 @@ import Features from "./Features/Features";
 import Divider from "../Common/Divider";
 import Footer from "../Common/Footer/Footer";
 import About from "./About/About";
+import CostaLevel from "./CostaLevel/CostaLevel";
 
 export default function Landing() {
   useEffect(() => {
@@ -32,6 +33,8 @@ export default function Landing() {
       <Introduction id="home" />
       <Divider />
       <Features id="features" />
+      <Divider />
+      <CostaLevel id="costalevel" />
       <Divider />
       <About id="about" />
       <Divider />

@@ -1,0 +1,82 @@
+
+
+.title {
+  padding-top: 100px;
+  padding-bottom: 50px; 
+}
+
+.title h1 {
+  font-family: 'Roboto', sans-serif; 
+  font-weight: bold;
+  color: orange;
+  text-align: center;
+}
+
+.costaLevel-text p {
+  font-size: 18px; 
+  line-height: 1.6;
+}
+
+.costaLevel-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 100px 15px;
+}
+
+.costaLevel-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  width: 100%;
+  gap: 55px;
+}
+
+.costaLevel-text {
+  flex-basis: 45%;
+  font-family: 'Roboto', sans-serif; /* Apply the custom font */
+  h3 {
+    margin-bottom: 10px;
+    color: #09283D;
+    font-weight: bold;
+  }
+  p {
+    font-style: italic;
+  }
+}
+
+.costaLevel-image {
+  flex-basis: 55%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.costaLevel-image img {
+  max-width: 100%;
+  height: auto;
+  width: auto;
+  max-height: 500px; 
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .costaLevel-content {
+    flex-direction: column; 
+    text-align: center; 
+  }
+
+  .costaLevel-text, .costaLevel-image {
+    flex-basis: auto; 
+  }
+
+  .costaLevel-image img {
+    max-height: 350px; 
+  }
+
+  .costaLevel-container {
+    padding: 50px 15px; 
+  }
+}
