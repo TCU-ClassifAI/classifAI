@@ -12,6 +12,7 @@ import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 
+const states = ['Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','District of Columbia','Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts','Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York','North Carolina','North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming'];
 export default function SignUp() {
     let navigate = useNavigate();
     const [badState, setBadState] = useState()
@@ -176,14 +177,20 @@ export default function SignUp() {
                 </div>
 
                 <div className="col-md-4">
-                    <TextField
-                        fullWidth
-                        variant="outlined"
-                        label='State*'
-                        value={user.state}
-                        placeholder="State"
-                        onChange={(e) => handleInputChange(e, 'state')}
-                    />
+                <FormControl fullWidth variant="outlined">
+                        <InputLabel id="state-label">State*</InputLabel>
+                        <Select
+                            labelId="state-label"
+                            id="state-select"
+                            value={user.state}
+                            label="State*"
+                            onChange={(e) => handleInputChange(e, 'state')}
+                        >
+                            {states.map((state) => (
+                                <MenuItem key={state} value={state}>{state}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
                 </div>
                 <div className="col-md-6">
                     <TextField
