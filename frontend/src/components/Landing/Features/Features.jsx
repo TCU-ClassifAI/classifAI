@@ -14,7 +14,7 @@ export default function Features() {
       icon: faMicrochip,
       title: "Summarization",
       description:
-       "Condense class lectures into succinct summaries using AI-driven technology. Enhanced by WhisperX, it distills key points for quick, efficient review and comprehension.",
+       "Condense class lectures into succinct summaries using AI-driven technology. The model distills key points for quick, efficient review and comprehension.",
     },
     {
       icon: faQuestion,

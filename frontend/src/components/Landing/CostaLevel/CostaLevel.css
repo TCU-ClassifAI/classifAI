@@ -36,6 +36,15 @@
 
 .costaLevel-text {
   flex-basis: 45%;
+  font-family: 'Roboto', sans-serif; /* Apply the custom font */
+  h3 {
+    margin-bottom: 10px;
+    color: #09283D;
+    font-weight: bold;
+  }
+  p {
+    font-style: italic;
+  }
 }
 
 .costaLevel-image {
