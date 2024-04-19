@@ -1,0 +1,54 @@
+/* CostaLevel.css */
+.costaLevel-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 100px 15px;
+  }
+  
+  .costaLevel-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    width: 100%;
+    gap: 45px;
+  }
+  
+  .costaLevel-text {
+    flex-basis: 45%;
+  }
+  
+  .costaLevel-image {
+    flex-basis: 55%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .costaLevel-image img {
+    max-width: 100%;
+    height: auto;
+    width: auto;
+    max-height: 400px;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .costaLevel-content {
+      flex-direction: column; 
+      text-align: center; 
+    }
+  
+    .costaLevel-text, .costaLevel-image {
+      flex-basis: auto; 
+    }
+  
+    .costaLevel-image img {
+      max-height: 300px; 
+    }
+  
+    .costaLevel-container {
+      padding: 30px 15px; 
+    }
+  }
