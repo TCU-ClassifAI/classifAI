@@ -7,7 +7,12 @@ import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 
+const states = ['Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','District of Columbia','Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts','Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York','North Carolina','North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming'];
 export default function SignUp() {
     let navigate = useNavigate();
     const [badState, setBadState] = useState()
@@ -27,7 +32,6 @@ export default function SignUp() {
     })
 
     const handleInputChange = (event, keyName) => {
-        event.persist();
         setUser((user) => {
             return {...user, [keyName]: event.target.value}
         })
@@ -147,24 +151,46 @@ export default function SignUp() {
                     />
                 </div>
                 <div className="col-md-4">
-                    <TextField
-                        fullWidth
-                        variant="outlined"
-                        label="Grade Level*"
+                    <FormControl fullWidth variant="outlined">
+                        <InputLabel id="grade-level-label">Grade Level*</InputLabel>
+                        <Select
+                        id="grade-level-select"
                         value={user.grade_level}
-                        placeholder="Grade Level (e.g. K, 1, ..., 12)"
+                        label="Grade Level*"
                         onChange={(e) => handleInputChange(e, 'grade_level')}
-                    />
+                        >
+                        <MenuItem value={'K'}>K</MenuItem>
+                        <MenuItem value={'1'}>1</MenuItem>
+                        <MenuItem value={'2'}>2</MenuItem>
+                        <MenuItem value={'3'}>3</MenuItem>
+                        <MenuItem value={'4'}>4</MenuItem>
+                        <MenuItem value={'5'}>5</MenuItem>
+                        <MenuItem value={'6'}>6</MenuItem>
+                        <MenuItem value={'7'}>7</MenuItem>
+                        <MenuItem value={'8'}>8</MenuItem>
+                        <MenuItem value={'9'}>9</MenuItem>
+                        <MenuItem value={'10'}>10</MenuItem>
+                        <MenuItem value={'11'}>11</MenuItem>
+                        <MenuItem value={'12'}>12</MenuItem>
+                        </Select>
+                    </FormControl>
                 </div>
+
                 <div className="col-md-4">
-                    <TextField
-                        fullWidth
-                        variant="outlined"
-                        label='State*'
-                        value={user.state}
-                        placeholder="State"
-                        onChange={(e) => handleInputChange(e, 'state')}
-                    />
+                <FormControl fullWidth variant="outlined">
+                        <InputLabel id="state-label">State*</InputLabel>
+                        <Select
+                            labelId="state-label"
+                            id="state-select"
+                            value={user.state}
+                            label="State*"
+                            onChange={(e) => handleInputChange(e, 'state')}
+                        >
+                            {states.map((state) => (
+                                <MenuItem key={state} value={state}>{state}</MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
                 </div>
                 <div className="col-md-6">
                     <TextField
