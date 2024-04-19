@@ -12,9 +12,9 @@ export default function Features() {
     },
     {
       icon: faMicrochip,
-      title: "WhisperX",
+      title: "Summarization",
       description:
-        "Powered by WhisperX, an extenstion to OpenAI's Whisper, an automatic speech recognition model with diarization, batched interference, better timestamps and more!",
+       "Condense class lectures into succinct summaries using AI-driven technology. Enhanced by WhisperX, it distills key points for quick, efficient review and comprehension.",
     },
     {
       icon: faQuestion,

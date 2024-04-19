@@ -33,6 +33,7 @@ export default function Landing() {
       <Introduction id="home" />
       <Divider />
       <Features id="features" />
+      <Divider />
       <CostaLevel id="costalevel" />
       <Divider />
       <About id="about" />
