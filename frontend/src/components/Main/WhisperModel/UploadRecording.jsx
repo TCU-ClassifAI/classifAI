@@ -4,8 +4,7 @@ import { useState, useEffect } from "react";
 import YoutubeUpload from "./YoutubeUpload";
 import axios from "axios";
 import styles from "./UploadRecording.module.css";
-import dayjs from 'dayjs';
-
+import dayjs from "dayjs";
 
 export default function UploadRecording({
   reportName,
@@ -23,7 +22,7 @@ export default function UploadRecording({
   location,
   setCategorizedQuestions,
   setSummary,
-  setDateTime
+  setDateTime,
 }) {
   const [isAudio, setIsAudio] = useState(false);
   const [isVideo, setIsVideo] = useState(false);
@@ -61,39 +60,42 @@ export default function UploadRecording({
   }, [isAnalyzing]);
 
   function validateYoutubeLink(link) {
-    // Regular expression to match YouTube URL patterns
-    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
+    // Regular expression to match YouTube URL patterns allowing both with and without "m." for mobile
+    const youtubeRegex =
+      /^(https?:\/\/)?(www\.)?(m\.)?(youtube\.com|youtu\.?be)\/.+$/;
     return youtubeRegex.test(link);
   }
-  
 
   async function handleSubmission() {
-    
     try {
       const formData = new FormData();
       if (youtubeMode) {
-        if(!validateYoutubeLink(youtubeUrl)) {
+        if (!validateYoutubeLink(youtubeUrl)) {
           setShowGenericModal(true);
-          setGenericModalMsg("Invalid Youtube Link. Please paste a valid youtube link.");
+          setGenericModalMsg(
+            "Invalid Youtube Link. Please paste a valid youtube link."
+          );
           setGenericModalTitle("Error");
           return;
         }
         formData.append("url", youtubeUrl);
       } else {
-        if(!validateFileType(selectedFile)) {
+        if (!validateFileType(selectedFile)) {
           setShowGenericModal(true);
-          setGenericModalMsg("Invalid file type. Please upload a valid audio or video file.");
+          setGenericModalMsg(
+            "Invalid file type. Please upload a valid audio or video file."
+          );
           setGenericModalTitle("Error");
           return;
         }
-        formData.append("file", selectedFile);  
+        formData.append("file", selectedFile);
       }
       setIsAnalyzing(true);
 
       formData.append("reportName", reportName);
       formData.append("gradeLevel", gradeLevel);
       formData.append("subject", subject);
-      formData.append("audioDate", dateTime.format('MM-DD-YYYY HH:mm:ss'));
+      formData.append("audioDate", dateTime.format("MM-DD-YYYY HH:mm:ss"));
 
       const response = await axios.post(
         `${
@@ -107,7 +109,9 @@ export default function UploadRecording({
         }
       );
       console.log(response);
-      setGenericModalMsg("Audio Uploaded and Report Entry Created! Please remain on this page until our engine completes its analysis.");
+      setGenericModalMsg(
+        "Audio Uploaded and Report Entry Created! Please remain on this page until our engine completes its analysis."
+      );
       setGenericModalTitle("Upload Success");
       setShowGenericModal(true);
       console.log("Upload and transfer success!");
@@ -147,11 +151,11 @@ export default function UploadRecording({
 
       if (!response.data.reports[0]) {
         setProgress(3);
-        setAnalysisStatusMsg("Uploading Audio to Database")
+        setAnalysisStatusMsg("Uploading Audio to Database");
         return; // report might still be uploading, check later
       }
       let status, progress, message;
-      if(response.data.reports[0].transferData) {
+      if (response.data.reports[0].transferData) {
         status = response.data.reports[0].transferData.status;
         progress = response.data.reports[0].transferData.progress;
         message = response.data.reports[0].transferData.message;
@@ -161,7 +165,6 @@ export default function UploadRecording({
         message = "";
       }
 
-      
       const grade = response.data.reports[0].gradeLevel;
       const reportSubject = response.data.reports[0].subject;
       const reportName = response.data.reports[0].reportName;
@@ -208,7 +211,7 @@ export default function UploadRecording({
       } else if (progress === "transcribing") {
         setProgress(40);
       } else if (progress === "loading_align_model") {
-        setProgress(45)
+        setProgress(45);
       } else if (progress === "aligning") {
         setProgress(50);
       } else if (progress === "diarizing") {
@@ -271,7 +274,7 @@ export default function UploadRecording({
       "video/mp4",
       "video/x-matroska",
       "video/webm",
-      "audio/mp3"
+      "audio/mp3",
     ];
     return acceptedTypes.includes(file.type);
   };
@@ -303,11 +306,10 @@ export default function UploadRecording({
       <label className="form-label" htmlFor="customFile">
         <h4>Please upload an audio or video recording for transcription</h4>
         <p>
-          Accepted AUDIO file types: .mp3, .m4a, .aac, .ogg, .flac, .avr, cdda, .aiff, .au, .amr, .mp2, .ac3
+          Accepted AUDIO file types: .mp3, .m4a, .aac, .ogg, .flac, .avr, cdda,
+          .aiff, .au, .amr, .mp2, .ac3
         </p>
-        <p>
-          Accepted VIDEO file types: .mp4, .avi, .wmv, .mpeg
-        </p>
+        <p>Accepted VIDEO file types: .mp4, .avi, .wmv, .mpeg</p>
       </label>
       <div>
         <input
@@ -383,7 +385,10 @@ export default function UploadRecording({
       {isAnalyzing && (
         <div>
           <p>
-            Our Engine is analyzing audio in the background. <strong>Please stay on this page and wait until completion.</strong> Upon completion, you may leave and load this report from <strong>'My Reports'</strong>.
+            Our Engine is analyzing audio in the background.{" "}
+            <strong>Please stay on this page and wait until completion.</strong>{" "}
+            Upon completion, you may leave and load this report from{" "}
+            <strong>'My Reports'</strong>.
           </p>
           <ProgressBar
             animated
