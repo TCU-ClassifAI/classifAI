@@ -10,7 +10,7 @@ export default function DeveloperTeam() {
     {
       name: "John Nguyen",
       role: "Developer",
-      description: `An Honors senior computer science student with a double minor in mathematics and astronomy. Responsible for the frontend written in react.js`,
+      description: `An Honors senior computer science student with a double minor in mathematics and astronomy. Developed features for the landing page and main portal in the frontend written in the React.js framework.`,
       imageUrl: JohnNguyen,
     },
     {
@@ -22,7 +22,7 @@ export default function DeveloperTeam() {
     {
       name: "Jaxon Hill",
       role: "Developer",
-      description: `A senior computer information technology student. Created and managed the MongoDB server and public domain.`,
+      description: `A senior computer information technology student. Created and managed the MongoDB server and handled deployment of our website on Nginx.`,
       imageUrl: JaxonHill,
     },
     {
@@ -34,7 +34,7 @@ export default function DeveloperTeam() {
     {
       name: "Nagato Kadoya",
       role: "Developer",
-      description: `A senior computer science student. Responsible for frontend written in react.js`,
+      description: `A senior computer science student serving as the User Interface/User Experience designer. Responsible for developing frontend features in React.js and styles.`,
       imageUrl: NagatoKadoya,
     },
   ];
