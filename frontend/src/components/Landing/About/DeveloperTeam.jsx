@@ -1,16 +1,16 @@
 import styles from "./about.module.css"; // Import the CSS file for styling
-import generic from "../../../images/genericprofile.jpg";
 import NagatoKadoya from "../../../images/NagatoKadoya.png";
 import TaylorGriffin from "../../../images/TaylorGriffin.png";
 import JohnHenryMejia from "../../../images/JohnHenryMejia.jpg";
 import JohnNguyen from "../../../images/johnheadshot2.jpeg";
+import JaxonHill from "../../../images/JaxonHill.jpg";
 
 export default function DeveloperTeam() {
   const developers = [
     {
       name: "John Nguyen",
       role: "Developer",
-      description: `An Honors senior computer science student with a double minor in mathematics and astronomy. Responsible for the frontend written in react.js`,
+      description: `An Honors senior computer science student with a double minor in mathematics and astronomy. Developed features for the landing page and main portal in the frontend written in the React.js framework.`,
       imageUrl: JohnNguyen,
     },
     {
@@ -22,8 +22,8 @@ export default function DeveloperTeam() {
     {
       name: "Jaxon Hill",
       role: "Developer",
-      description: `A senior computer information technology student. Created and managed the MongoDB server and public domain.`,
-      imageUrl: generic,
+      description: `A senior computer information technology student. Created and managed the MongoDB server and handled deployment of our website on Nginx.`,
+      imageUrl: JaxonHill,
     },
     {
       name: "Taylor Griffin",
@@ -34,7 +34,7 @@ export default function DeveloperTeam() {
     {
       name: "Nagato Kadoya",
       role: "Developer",
-      description: `A senior computer science student. Responsible for frontend written in react.js`,
+      description: `A senior computer science student serving as the User Interface/User Experience designer. Responsible for developing frontend features in React.js and styles.`,
       imageUrl: NagatoKadoya,
     },
   ];
