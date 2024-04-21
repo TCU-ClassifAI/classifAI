@@ -1,9 +1,9 @@
 import styles from "./about.module.css"; // Import the CSS file for styling
-import generic from "../../../images/genericprofile.jpg";
 import NagatoKadoya from "../../../images/NagatoKadoya.png";
 import TaylorGriffin from "../../../images/TaylorGriffin.png";
 import JohnHenryMejia from "../../../images/JohnHenryMejia.jpg";
 import JohnNguyen from "../../../images/johnheadshot2.jpeg";
+import JaxonHill from "../../../images/JaxonHill.jpg";
 
 export default function DeveloperTeam() {
   const developers = [
@@ -23,7 +23,7 @@ export default function DeveloperTeam() {
       name: "Jaxon Hill",
       role: "Developer",
       description: `A senior computer information technology student. Created and managed the MongoDB server and public domain.`,
-      imageUrl: generic,
+      imageUrl: JaxonHill,
     },
     {
       name: "Taylor Griffin",
