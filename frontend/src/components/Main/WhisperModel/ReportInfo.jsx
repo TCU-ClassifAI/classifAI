@@ -62,7 +62,6 @@ export default function ReportInfo({
                                     label="Audio Date and Time"
                                     value={dateTime} // Set value from dateTime state
                                     onChange={(value) => handleDateTimeChange(value)}
-                                    ampm={false}
                                     disabled={disableFields}
                                 />
                             </DemoContainer>
