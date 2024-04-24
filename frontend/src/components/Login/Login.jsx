@@ -8,13 +8,18 @@ import logo from '../../images/frogv2.png';
 import { faCheckCircle, faDatabase, faCogs} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import TextField from '@mui/material/TextField'; // Import TextField from Material-UI
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 export default function Login(){
     let navigate = useNavigate();
     const [badSignIn, setBadSignIn]  = useState(false);
     const [user, setUser] = useState({
         username: '',
-        password: ''
+        password: '',
+        showPassword: false // Add state for controlling password visibility
     });
 
     const handleInputChange = (event, keyName) => {
@@ -22,6 +27,13 @@ export default function Login(){
         setUser((user) => {
             return {...user, [keyName]: event.target.value}
         });
+    };
+
+    const handleClickShowPassword = () => {
+        setUser((user) => ({
+            ...user,
+            showPassword: !user.showPassword
+        }));
     };
 
     async function signIn(event) {
@@ -45,7 +57,7 @@ export default function Login(){
     return (
         <div className='container'>
             <div className='left-side'>
-                <div className='logo-container'>
+            <div className='logo-container'>
                 <img src={logo} alt="Logo" /> 
                 {/*<p with working directory */}
                 </div>
@@ -75,7 +87,6 @@ export default function Login(){
                         <span className="button-text" onClick={(e) => learnMore(e)}>Learn More</span>
                     </button>
                 </div>
-
             </div>
             <div className="right-side">
                 <form id='login-form'>
@@ -100,11 +111,23 @@ export default function Login(){
                         <TextField
                             variant='outlined'
                             label='Password'
-                            type="password"
+                            type={user.showPassword ? 'text' : 'password'} // Control password visibility
                             className="form-control"
                             placeholder="Enter password"
                             value={user.password}
                             onChange={(e) => handleInputChange(e, 'password')}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            aria-label="toggle password visibility"
+                                            onClick={handleClickShowPassword} // Toggle password visibility
+                                        >
+                                            {user.showPassword ? <VisibilityOff /> : <Visibility />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
                         />
                     </div>
                     {badSignIn ? (
