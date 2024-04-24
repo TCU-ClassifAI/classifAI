@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { Auth } from "aws-amplify";
 import styles from "./MyReports.module.css";
-import ReactPaginate from "react-paginate";
 import ErrorModal from "../../Common/ErrorModal";
 import Alert from "@mui/material/Alert";
 import TableContainer from "@mui/material/TableContainer";
@@ -334,7 +333,7 @@ export default function MyReports() {
                   direction={sortBy === "audioDate" ? sortOrder : "asc"}
                   onClick={() => handleSort("audioDate")}
                 >
-                  <b>Audio Date</b>
+                  <b>Audio Date/Time</b>
                 </TableSortLabel>
               </TableCell>
               <TableCell>
