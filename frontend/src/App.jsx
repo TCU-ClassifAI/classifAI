@@ -12,6 +12,7 @@ import { Amplify } from "aws-amplify";
 import NavbarLanding from "./components/Navbar/NavbarLanding";
 import NavbarHome from "./components/Navbar/NavbarHome";
 import Landing from "./components/Landing/Landing";
+import ResetPassword from "./components/Login/ResetPassword";
 
 Amplify.configure(awsconfig);
 
@@ -23,6 +24,7 @@ function App() {
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/resetPassword" element={<ResetPassword/>} />
           <Route path="/confirmSignUp" element={<ConfirmRegister />} />
         </Route>
 

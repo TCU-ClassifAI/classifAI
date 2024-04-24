@@ -1,0 +1,6 @@
+.container {
+    padding-top: 125px;    
+    margin: 0 auto; /* Centers the container horizontally */
+    width: fit-content; /* Makes the container only as wide as its content */
+    
+}
