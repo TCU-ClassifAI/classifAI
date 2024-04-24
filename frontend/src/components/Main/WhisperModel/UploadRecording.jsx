@@ -95,7 +95,7 @@ export default function UploadRecording({
       formData.append("reportName", reportName);
       formData.append("gradeLevel", gradeLevel);
       formData.append("subject", subject);
-      formData.append("audioDate", dateTime.format("MM-DD-YYYY HH:mm:ss"));
+      formData.append("audioDate", dateTime.format("MM-DD-YYYY hh:mm a"));
 
       const response = await axios.post(
         `${
@@ -319,6 +319,10 @@ export default function UploadRecording({
           onChange={handleFileChange}
           disabled={isAnalyzing}
         />
+        <br />
+        <h6>Privacy Disclaimer: A copy of any file uploaded is retained on our database for your ease of access in 'My Reports'. </h6>
+
+<h6>Your data will not be used for training AI nor distributed elsewhere.</h6>
       </div>
     </div>
   );

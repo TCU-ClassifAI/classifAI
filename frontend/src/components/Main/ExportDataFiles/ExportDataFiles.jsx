@@ -2,17 +2,33 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Auth } from "aws-amplify";
 import styles from "./ExportDataFiles.module.css";
-import ReactPaginate from "react-paginate";
 import ErrorModal from "../../Common/ErrorModal";
+import {
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  Button,
+  Pagination,
+  TableSortLabel,
+  Alert
+} from "@mui/material";
 
 export default function ExportDataFiles() {
   const [files, setFiles] = useState([]);
   const [userId, setUserId] = useState(null);
-  const [currentPage, setCurrentPage] = useState(0); // Changed initial page to 0
+  const [currentPage, setCurrentPage] = useState(1); // Changed initial page to 1
   const [itemsPerPage] = useState(10);
   const [oldFileNameEditing, setOldFileNameEditing] = useState("");
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorModalMsg, setErrorModalMsg] = useState("");
+  const [sortBy, setSortBy] = useState("");
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [editSaveSuccess, setEditSaveSuccess] = useState(false);
+  const [alertMsg, setAlertMsg] = useState("");
+
+
 
   useEffect(() => {
     async function retrieveUserInfo() {
@@ -100,8 +116,10 @@ export default function ExportDataFiles() {
         }
       );
 
+      setEditSaveSuccess(true);
+      setAlertMsg("Successful update to file name!");
       setFiles(updatedFiles);
-      console.log("Update Success");
+      
       fetchUserFiles();
     } catch (error) {
       console.error("Error updating file name:", error);
@@ -123,9 +141,11 @@ export default function ExportDataFiles() {
           `${import.meta.env.VITE_BACKEND_SERVER}/files/${fileNameToDelete}/reports/${reportId}/users/${userId}`
         );
 
+        setEditSaveSuccess(true);
+        setAlertMsg("File successfully deleted!");
         const updatedFiles = files.filter((file) => file.key !== key);
         setFiles(updatedFiles);
-        console.log("Delete Success");
+        
       } catch (error) {
         console.error("Error deleting file:", error);
         setErrorModalMsg("Error fetching user files");
@@ -174,16 +194,30 @@ export default function ExportDataFiles() {
     }
   };
 
-  const indexOfLastItem = (currentPage + 1) * itemsPerPage;
+  const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = files.slice(indexOfFirstItem, indexOfLastItem);
 
-  const handlePageClick = ({ selected }) => {
-    setCurrentPage(selected);
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
   };
 
   const handleCloseErrorModal = () => {
     setShowErrorModal(false);
+  };
+
+  const handleSort = (property) => {
+    const isAsc = sortBy === property && sortOrder === "asc";
+    setSortOrder(isAsc ? "desc" : "asc");
+    setSortBy(property);
+    const sortedFiles = [...files].sort((a, b) => {
+      if (isAsc) {
+        return a[property] > b[property] ? 1 : -1;
+      } else {
+        return a[property] < b[property] ? 1 : -1;
+      }
+    });
+    setFiles(sortedFiles);
   };
 
   return (
@@ -193,30 +227,84 @@ export default function ExportDataFiles() {
         showErrorModal={showErrorModal}
         handleCloseErrorModal={handleCloseErrorModal}
       />
+      {editSaveSuccess && (
+        <div>
+          <Alert severity="success">{alertMsg}</Alert>
+        </div>
+      )}
+      <p>You may click on the column headers to sort in descending or ascending order.</p>
+
       <div className={styles.tableContainer}>
-        <h2>Exported Data Files</h2>
-        <table className={styles.prettyTable}>
-          <thead>
-            <tr>
-              <th>Report Name</th>
-              <th>Audio Date</th>
-              <th>Subject</th>
-              <th>Grade</th>
-              <th>File Name</th>
-              <th>File Type</th>
-              <th>Edit</th>
-              <th>Delete</th>
-              <th>Download</th> {/* Added new tab for Download */}
-            </tr>
-          </thead>
-          <tbody>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>
+                <TableSortLabel
+                  active={sortBy === "reportName"}
+                  direction={sortBy === "reportName" ? sortOrder : "asc"}
+                  onClick={() => handleSort("reportName")}
+                >
+                  <b>Report Name</b>
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={sortBy === "audioDate"}
+                  direction={sortBy === "audioDate" ? sortOrder : "asc"}
+                  onClick={() => handleSort("audioDate")}
+                >
+                  <b>Audio Date</b>
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={sortBy === "subject"}
+                  direction={sortBy === "subject" ? sortOrder : "asc"}
+                  onClick={() => handleSort("subject")}
+                >
+                  <b>Subject</b>
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={sortBy === "grade"}
+                  direction={sortBy === "grade" ? sortOrder : "asc"}
+                  onClick={() => handleSort("grade")}
+                >
+                  <b>Grade</b>
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={sortBy === "fileName"}
+                  direction={sortBy === "fileName" ? sortOrder : "asc"}
+                  onClick={() => handleSort("fileName")}
+                >
+                  <b>File Name</b>
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={sortBy === "fileType"}
+                  direction={sortBy === "fileType" ? sortOrder : "asc"}
+                  onClick={() => handleSort("fileType")}
+                >
+                  <b>File Type</b>
+                </TableSortLabel>
+              </TableCell>
+              <TableCell><b>Edit</b></TableCell>
+              <TableCell><b>Delete</b></TableCell>
+              <TableCell><b>Download</b></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
             {currentItems.map((file, index) => (
-              <tr key={file.key}>
-                <td>{file.reportName}</td>
-                <td>{file.audioDate}</td>
-                <td>{file.subject}</td>
-                <td>{file.grade}</td>
-                <td>
+              <TableRow key={file.key}>
+                <TableCell>{file.reportName}</TableCell>
+                <TableCell>{file.audioDate}</TableCell>
+                <TableCell>{file.subject}</TableCell>
+                <TableCell>{file.grade}</TableCell>
+                <TableCell>
                   {file.isEditing ? (
                     <input
                       type="text"
@@ -228,19 +316,21 @@ export default function ExportDataFiles() {
                   ) : (
                     file.fileName
                   )}
-                </td>
-                <td>{file.fileType}</td>
-                <td className={styles.csvButton}>
+                </TableCell>
+                <TableCell>{file.fileType}</TableCell>
+                <TableCell>
                   {file.isEditing ? (
                     <>
-                      <button
-                        className={styles.saveButton}
+                      <Button
+                        variant="contained"
+                        color="success"
                         onClick={() => handleSaveClick(file.key)}
                       >
                         Save
-                      </button>
-                      <button
-                        className={styles.cancelButton}
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="warning"
                         onClick={() => {
                           const updatedFiles = files.map((f) =>
                             f.key === file.key
@@ -255,28 +345,30 @@ export default function ExportDataFiles() {
                         }}
                       >
                         Cancel
-                      </button>
+                      </Button>
                     </>
                   ) : (
-                    <button
-                      className={styles.editButton}
+                    <Button
+                      variant="contained"
                       onClick={() => handleEditClick(file.key)}
                     >
                       Edit
-                    </button>
+                    </Button>
                   )}
-                </td>
-                <td>
-                  <button
-                    className={styles.deleteButton}
+                </TableCell>
+                <TableCell>
+                  <Button
+                    variant="contained"
+                    color="error"
                     onClick={() => handleDeleteClick(file.key)}
                   >
                     Delete
-                  </button>
-                </td>
-                <td>
-                  <button
-                    className={styles.downloadButton}
+                  </Button>
+                </TableCell>
+                <TableCell>
+                  <Button
+                    variant="contained"
+                    color="secondary"
                     onClick={() =>
                       handleDownloadClick(
                         file.reportId,
@@ -286,19 +378,16 @@ export default function ExportDataFiles() {
                     }
                   >
                     Download
-                  </button>
-                </td>
-              </tr>
+                  </Button>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
-        <ReactPaginate
-          previousLabel={"Previous"}
-          nextLabel={"Next"}
-          pageCount={Math.ceil(files.length / itemsPerPage)}
-          onPageChange={handlePageClick}
-          containerClassName={`${styles.pagination}`}
-          activeClassName={`${styles.active}`}
+          </TableBody>
+        </Table>
+        <Pagination
+          count={Math.ceil(files.length / itemsPerPage)}
+          page={currentPage}
+          onChange={handlePageChange}
         />
       </div>
     </>

@@ -3,20 +3,32 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { Auth } from "aws-amplify";
 import styles from "./MyReports.module.css";
-import ReactPaginate from "react-paginate";
 import ErrorModal from "../../Common/ErrorModal";
 import Alert from "@mui/material/Alert";
+import TableContainer from "@mui/material/TableContainer";
+import Table from "@mui/material/Table";
+import TableHead from "@mui/material/TableHead";
+import TableBody from "@mui/material/TableBody";
+import TableRow from "@mui/material/TableRow";
+import TableCell from "@mui/material/TableCell";
+import Paper from "@mui/material/Paper";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import Pagination from "@mui/material/Pagination";
+import TableSortLabel from "@mui/material/TableSortLabel";
 
 export default function MyReports() {
   const [files, setFiles] = useState([]);
   const [userId, setUserId] = useState(null);
-  const [currentPage, setCurrentPage] = useState(0); // Changed initial page to 0
+  const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const [oldFileNameEditing, setOldFileNameEditing] = useState("");
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorModalMsg, setErrorModalMsg] = useState("");
   const [editSaveSuccess, setEditSaveSuccess] = useState(false);
   const [alertMsg, setAlertMsg] = useState("");
+  const [sortBy, setSortBy] = useState("");
+  const [sortOrder, setSortOrder] = useState("asc");
 
   useEffect(() => {
     async function retrieveUserInfo() {
@@ -53,7 +65,7 @@ export default function MyReports() {
         let fileExtension;
         let fileName = report.transferData ? String(report.audioFile) : null;
         let link = "";
-        let audioDate = report.audioDate ? report.audioDate : null
+        let audioDate = report.audioDate ? report.audioDate : null;
 
         if (fileName && fileName.toLowerCase().includes("youtube")) {
           fileExtension = "youtube";
@@ -75,7 +87,7 @@ export default function MyReports() {
           fileType: fileExtension,
           isEditing: false,
           link: link,
-          audioDate: audioDate
+          audioDate: audioDate,
         };
       });
 
@@ -263,16 +275,30 @@ export default function MyReports() {
     }
   };
 
-  const indexOfLastItem = (currentPage + 1) * itemsPerPage;
+  const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = files.slice(indexOfFirstItem, indexOfLastItem);
 
-  const handlePageClick = ({ selected }) => {
-    setCurrentPage(selected);
+  const handlePageChange = (_, page) => {
+    setCurrentPage(page);
   };
 
   const handleCloseErrorModal = () => {
     setShowErrorModal(false);
+  };
+
+  const handleSort = (property) => {
+    const isAsc = sortBy === property && sortOrder === "asc";
+    setSortOrder(isAsc ? "desc" : "asc");
+    setSortBy(property);
+    const sortedFiles = [...files].sort((a, b) => {
+      if (isAsc) {
+        return a[property] > b[property] ? 1 : -1;
+      } else {
+        return a[property] < b[property] ? 1 : -1;
+      }
+    });
+    setFiles(sortedFiles);
   };
 
   return (
@@ -287,29 +313,84 @@ export default function MyReports() {
           <Alert severity="success">{alertMsg}</Alert>
         </div>
       )}
-      <div className={styles.tableContainer}>
-        <h2>My Reports</h2>
-        <table className={styles.prettyTable}>
-          <thead>
-            <tr>
-              <th>Report Name</th>
-              <th>Audio Date</th>
-              <th>Subject</th>
-              <th>Grade</th>
-              <th>Audio File</th>
-              <th>Status</th>
-              <th>Edit</th>
-              <th>Delete</th>
-              <th>Load Report</th>
-              <th>Download Audio/Link</th>
-            </tr>
-          </thead>
-          <tbody>
+      <p>You may click on the column headers to sort in descending or ascending order.</p>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>
+                <TableSortLabel
+                  active={sortBy === "reportName"}
+                  direction={sortBy === "reportName" ? sortOrder : "asc"}
+                  onClick={() => handleSort("reportName")}
+                >
+                  <b>Report Name</b>
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={sortBy === "audioDate"}
+                  direction={sortBy === "audioDate" ? sortOrder : "asc"}
+                  onClick={() => handleSort("audioDate")}
+                >
+                  <b>Audio Date/Time</b>
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={sortBy === "subject"}
+                  direction={sortBy === "subject" ? sortOrder : "asc"}
+                  onClick={() => handleSort("subject")}
+                >
+                  <b>Subject</b>
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={sortBy === "gradeLevel"}
+                  direction={sortBy === "gradeLevel" ? sortOrder : "asc"}
+                  onClick={() => handleSort("gradeLevel")}
+                >
+                  <b>Grade</b>
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+              <TableSortLabel
+                  active={sortBy === "audioFile"}
+                  direction={sortBy === "audioFile" ? sortOrder : "asc"}
+                  onClick={() => handleSort("audioFile")}
+                >
+                  <b>Audio File</b>
+                </TableSortLabel>
+              </TableCell>
+              <TableCell><TableSortLabel
+                active={sortBy === "status"}
+                direction={sortBy === "status" ? sortOrder : "asc"}
+                onClick={() => handleSort("status")}
+              >
+                <b>Status</b>
+              </TableSortLabel></TableCell>
+              
+              <TableCell>
+                <b>Edit</b>
+              </TableCell>
+              <TableCell>
+                <b>Delete</b>
+              </TableCell>
+              <TableCell>
+                <b>Load Report</b>
+              </TableCell>
+              <TableCell>
+                <b>Download Audio/Link</b>
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
             {currentItems.map((file, index) => (
-              <tr key={file.reportId}>
-                <td>
+              <TableRow key={file.reportId}>
+                <TableCell>
                   {file.isEditing ? (
-                    <input
+                    <TextField
                       type="text"
                       value={file.reportName}
                       onChange={(event) =>
@@ -319,11 +400,11 @@ export default function MyReports() {
                   ) : (
                     file.reportName
                   )}
-                </td>
-                <td>{file.audioDate}</td>
-                <td>
+                </TableCell>
+                <TableCell>{file.audioDate}</TableCell>
+                <TableCell>
                   {file.isEditing ? (
-                    <input
+                    <TextField
                       type="text"
                       value={file.subject}
                       onChange={(event) =>
@@ -333,10 +414,10 @@ export default function MyReports() {
                   ) : (
                     file.subject
                   )}
-                </td>
-                <td>
+                </TableCell>
+                <TableCell>
                   {file.isEditing ? (
-                    <input
+                    <TextField
                       type="text"
                       value={file.gradeLevel}
                       onChange={(event) =>
@@ -346,10 +427,10 @@ export default function MyReports() {
                   ) : (
                     file.gradeLevel
                   )}
-                </td>
-                <td>
-                  {file.isEditing && file.fileType !== "youtube" ? ( // Check if fileType is not "youtube"
-                    <input
+                </TableCell>
+                <TableCell>
+                  {file.isEditing && file.fileType !== "youtube" ? (
+                    <TextField
                       type="text"
                       value={file.fileName}
                       onChange={(event) =>
@@ -359,21 +440,23 @@ export default function MyReports() {
                   ) : (
                     file.fileName
                   )}
-                </td>
-                <td>{file.status}</td>
-                <td className={styles.csvButton}>
+                </TableCell>
+                <TableCell>{file.status}</TableCell>
+                <TableCell>
                   {file.isEditing ? (
                     <>
-                      <button
-                        className={styles.saveButton}
+                      <Button
+                        variant="contained"
+                        color="success"
                         onClick={() =>
                           handleSaveClick(file.reportId, file.fileType)
                         }
                       >
                         Save
-                      </button>
-                      <button
-                        className={styles.cancelButton}
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="secondary"
                         onClick={() => {
                           const updatedFiles = files.map((f) =>
                             f.reportId === file.reportId
@@ -388,28 +471,29 @@ export default function MyReports() {
                         }}
                       >
                         Cancel
-                      </button>
+                      </Button>
                     </>
                   ) : (
-                    <button
-                      className={styles.editButton}
+                    <Button
+                      variant="contained"
                       onClick={() => handleEditClick(file.reportId)}
                     >
                       Edit
-                    </button>
+                    </Button>
                   )}
-                </td>
-                <td>
-                  <button
-                    className={styles.deleteButton}
+                </TableCell>
+                <TableCell>
+                  <Button
+                    variant="contained"
+                    color="error"
                     onClick={() => handleDeleteClick(file.reportId)}
                   >
                     Delete
-                  </button>
-                </td>
+                  </Button>
+                </TableCell>
 
-                <td>
-                  <button className={styles.loadButton}>
+                <TableCell>
+                  <Button variant="contained" color="warning">
                     <Link
                       to="../analyze"
                       state={{
@@ -419,48 +503,45 @@ export default function MyReports() {
                     >
                       Load
                     </Link>
-                  </button>
-                </td>
-                <td>
-                  <td>
-                    {file.fileType === "youtube" ? (
-                      <a
-                        href={file.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.downloadButton}
-                      >
+                  </Button>
+                </TableCell>
+                <TableCell>
+                  {file.fileType === "youtube" ? (
+                    <a
+                      href={file.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Button variant="contained" color="secondary">
                         Youtube
-                      </a>
-                    ) : (
-                      <button
-                        className={styles.downloadButton}
-                        onClick={() =>
-                          handleDownloadClick(
-                            file.reportId,
-                            file.fileName,
-                            file.fileType
-                          )
-                        }
-                      >
-                        Download
-                      </button>
-                    )}
-                  </td>
-                </td>
-              </tr>
+                      </Button>
+                    </a>
+                  ) : (
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={() =>
+                        handleDownloadClick(
+                          file.reportId,
+                          file.fileName,
+                          file.fileType
+                        )
+                      }
+                    >
+                      Download
+                    </Button>
+                  )}
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
-        <ReactPaginate
-          previousLabel={"Previous"}
-          nextLabel={"Next"}
-          pageCount={Math.ceil(files.length / itemsPerPage)}
-          onPageChange={handlePageClick}
-          containerClassName={`${styles.pagination}`}
-          activeClassName={`${styles.active}`}
-        />
-      </div>
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Pagination
+        count={Math.ceil(files.length / itemsPerPage)}
+        onChange={handlePageChange}
+        page={currentPage}
+      />
     </>
   );
 }

@@ -33,7 +33,7 @@ export default function SaveChanges({
           reportName: reportName,
           gradeLevel: gradeLevel,
           subject: subject,
-          audioDate: dateTime.format('MM-DD-YYYY HH:mm:ss')
+          audioDate: dateTime.format('MM-DD-YYYY hh:mm a')
         }
       );
     } catch (error) {
