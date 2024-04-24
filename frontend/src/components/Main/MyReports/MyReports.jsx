@@ -16,6 +16,7 @@ import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Pagination from "@mui/material/Pagination";
+import TableSortLabel from "@mui/material/TableSortLabel";
 
 export default function MyReports() {
   const [files, setFiles] = useState([]);
@@ -27,6 +28,8 @@ export default function MyReports() {
   const [errorModalMsg, setErrorModalMsg] = useState("");
   const [editSaveSuccess, setEditSaveSuccess] = useState(false);
   const [alertMsg, setAlertMsg] = useState("");
+  const [sortBy, setSortBy] = useState("");
+  const [sortOrder, setSortOrder] = useState("asc");
 
   useEffect(() => {
     async function retrieveUserInfo() {
@@ -285,6 +288,20 @@ export default function MyReports() {
     setShowErrorModal(false);
   };
 
+  const handleSort = (property) => {
+    const isAsc = sortBy === property && sortOrder === "asc";
+    setSortOrder(isAsc ? "desc" : "asc");
+    setSortBy(property);
+    const sortedFiles = [...files].sort((a, b) => {
+      if (isAsc) {
+        return a[property] > b[property] ? 1 : -1;
+      } else {
+        return a[property] < b[property] ? 1 : -1;
+      }
+    });
+    setFiles(sortedFiles);
+  };
+
   return (
     <>
       <ErrorModal
@@ -297,20 +314,76 @@ export default function MyReports() {
           <Alert severity="success">{alertMsg}</Alert>
         </div>
       )}
+      <p>You may click on the column headers to sort in descending or ascending order.</p>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
-            <TableCell><b>Report Name</b></TableCell>
-    <TableCell><b>Audio Date</b></TableCell>
-    <TableCell><b>Subject</b></TableCell>
-    <TableCell><b>Grade</b></TableCell>
-    <TableCell><b>Audio File</b></TableCell>
-    <TableCell><b>Status</b></TableCell>
-    <TableCell><b>Edit</b></TableCell>
-    <TableCell><b>Delete</b></TableCell>
-    <TableCell><b>Load Report</b></TableCell>
-    <TableCell><b>Download Audio/Link</b></TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={sortBy === "reportName"}
+                  direction={sortBy === "reportName" ? sortOrder : "asc"}
+                  onClick={() => handleSort("reportName")}
+                >
+                  <b>Report Name</b>
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={sortBy === "audioDate"}
+                  direction={sortBy === "audioDate" ? sortOrder : "asc"}
+                  onClick={() => handleSort("audioDate")}
+                >
+                  <b>Audio Date</b>
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={sortBy === "subject"}
+                  direction={sortBy === "subject" ? sortOrder : "asc"}
+                  onClick={() => handleSort("subject")}
+                >
+                  <b>Subject</b>
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={sortBy === "gradeLevel"}
+                  direction={sortBy === "gradeLevel" ? sortOrder : "asc"}
+                  onClick={() => handleSort("gradeLevel")}
+                >
+                  <b>Grade</b>
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+              <TableSortLabel
+                  active={sortBy === "audioFile"}
+                  direction={sortBy === "audioFile" ? sortOrder : "asc"}
+                  onClick={() => handleSort("audioFile")}
+                >
+                  <b>Audio File</b>
+                </TableSortLabel>
+              </TableCell>
+              <TableCell><TableSortLabel
+                active={sortBy === "status"}
+                direction={sortBy === "status" ? sortOrder : "asc"}
+                onClick={() => handleSort("status")}
+              >
+                <b>Status</b>
+              </TableSortLabel></TableCell>
+              
+              <TableCell>
+                <b>Edit</b>
+              </TableCell>
+              <TableCell>
+                <b>Delete</b>
+              </TableCell>
+              <TableCell>
+                <b>Load Report</b>
+              </TableCell>
+              <TableCell>
+                <b>Download Audio/Link</b>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
