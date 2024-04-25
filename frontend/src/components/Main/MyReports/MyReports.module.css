@@ -150,3 +150,19 @@
   color: white;
   text-decoration: none;
 }
+
+/* Mobile-friendly table styles */
+@media only screen and (max-width: 600px) {
+  .MuiTableCell-head {
+    font-size: 12px; /* Reduce font size for table headers */
+  }
+  .MuiTableCell-body {
+    font-size: 14px; /* Reduce font size for table content */
+  }
+  .MuiTableContainer-root {
+    overflow-x: auto; /* Enable horizontal scrolling on small screens */
+  }
+  .MuiTable-root {
+    min-width: 650px; /* Set minimum width for the table */
+  }
+}

@@ -228,6 +228,7 @@ export default function ExportDataFiles() {
                 <TextField
                     value={params.row.fileName}
                     onChange={(event) => handleFileNameChange(event, params.row.id)}
+                    onKeyDown={(e) => e.stopPropagation()}
                 />
             ) : (
               <Tooltip title={params.value}>
@@ -300,13 +301,14 @@ export default function ExportDataFiles() {
           <Alert severity="success">{alertMsg}</Alert>
         </div>
       )}
-      <p>You may click on the column headers to sort, filter, search, or manage column.</p>
+      <p>You may click on the column headers to sort, filter, search, or manage columns.</p>
       <div style={{ height: 527}}>
         <DataGrid
           rows={files}
           columns={columns}
           autoWidth
           autoPageSize={true}
+          disableRowSelectionOnClick
         />
       </div>
     </>
