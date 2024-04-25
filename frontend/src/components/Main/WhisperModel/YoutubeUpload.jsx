@@ -7,11 +7,11 @@ export default function YoutubeUpload({ setYoutubeUrl, isAnalyzing }) {
 
   return (
     <div>
-      <h4>Please paste a Youtube Link to be transcribed and analyzed</h4>
+      <h4>Please paste a YouTube Link to be transcribed and analyzed</h4>
 
       <TextField
         variant="outlined"
-        label="Youtube Link"
+        label="YouTube Link"
         fullWidth
         onBlur={handleOnBlur}
         disabled={isAnalyzing}

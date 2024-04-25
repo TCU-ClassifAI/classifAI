@@ -304,7 +304,7 @@ export default function UploadRecording({
   const renderUploadSection = () => (
     <div>
       <label className="form-label" htmlFor="customFile">
-        <h4>Please upload an audio or video recording for transcription</h4>
+        <h4>Please upload an audio or video recording to be transcribed and analyzed</h4>
         <p>
           Accepted AUDIO file types: .mp3, .m4a, .aac, .ogg, .flac, .avr, cdda,
           .aiff, .au, .amr, .mp2, .ac3
@@ -346,7 +346,7 @@ export default function UploadRecording({
       <div className={styles.switchContainer}>
         <Form.Check
           className={styles.switchLabel}
-          label="Use Youtube Link"
+          label="Use YouTube Link"
           type="switch"
           checked={youtubeMode}
           onChange={handleSwitchChange}
