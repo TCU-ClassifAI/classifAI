@@ -19,7 +19,7 @@ export default function ExportDataFiles() {
   const [files, setFiles] = useState([]);
   const [userId, setUserId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1); // Changed initial page to 1
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(7);
   const [oldFileNameEditing, setOldFileNameEditing] = useState("");
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorModalMsg, setErrorModalMsg] = useState("");
