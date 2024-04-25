@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Auth } from "aws-amplify";
-import styles from "./ExportDataFiles.module.css";
 import ErrorModal from "../../Common/ErrorModal";
 import { DataGrid } from "@mui/x-data-grid";
-import { Button, Alert, TextField } from "@mui/material";
+import { Button, Alert, TextField, Tooltip } from "@mui/material";
 
 export default function ExportDataFiles() {
   const [files, setFiles] = useState([]);
@@ -175,15 +174,55 @@ export default function ExportDataFiles() {
 
 
   const columns = [
-    { field: "reportName", headerName: "Report Name", sortable: true , minWidth: 175},
-    { field: "audioDate", headerName: "Audio Date", sortable: true, minWidth: 175 },
-    { field: "subject", headerName: "Subject", sortable: true, minWidth: 175 },
-    { field: "grade", headerName: "Grade", sortable: true, minWidth: 100 },
+    { 
+      field: "reportName", 
+      headerName: "Report Name", 
+      sortable: true , 
+      width: 175, 
+      renderCell: (params) => (
+        <Tooltip title={params.value}>
+          <span>{params.value}</span>
+        </Tooltip>
+      )
+    },
+    { 
+      field: "audioDate", 
+      headerName: "Audio Date", 
+      sortable: true, 
+      width: 175,
+      renderCell: (params) => (
+        <Tooltip title={params.value}>
+          <span>{params.value}</span>
+        </Tooltip>
+      )
+    },
+    { 
+      field: "subject", 
+      headerName: "Subject", 
+      sortable: true, 
+      width: 175,
+      renderCell: (params) => (
+        <Tooltip title={params.value}>
+          <span>{params.value}</span>
+        </Tooltip>
+      )
+    },
+    { 
+      field: "grade", 
+      headerName: "Grade", 
+      sortable: true, 
+      width: 100,
+      renderCell: (params) => (
+        <Tooltip title={params.value}>
+          <span>{params.value}</span>
+        </Tooltip>
+      )
+    },
     {
         field: "fileName",
         headerName: "File Name",
         sortable: true,
-        minWidth: 200,
+        width: 200,
         renderCell: (params) => (
             params.row.isEditing ? (
                 <TextField
@@ -191,7 +230,9 @@ export default function ExportDataFiles() {
                     onChange={(event) => handleFileNameChange(event, params.row.id)}
                 />
             ) : (
-                <span>{params.row.fileName}</span>
+              <Tooltip title={params.value}>
+              <span>{params.value}</span>
+            </Tooltip>
             )
         ),
     },
@@ -199,7 +240,7 @@ export default function ExportDataFiles() {
     {
         field: "edit",
         headerName: "Edit",
-        minWidth: 100,
+        width: 100,
         renderCell: (params) => (
             <Button
                 variant="contained"
@@ -213,7 +254,7 @@ export default function ExportDataFiles() {
     {
         field: "delete",
         headerName: "Delete",
-        minWidth: 100,
+        width: 100,
         renderCell: (params) => (
             <Button
                 variant="contained"
@@ -227,7 +268,7 @@ export default function ExportDataFiles() {
     {
         field: "download",
         headerName: "Download",
-        minWidth: 130,
+        width: 130,
         renderCell: (params) => (
             <Button
                 variant="contained"
