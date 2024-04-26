@@ -302,6 +302,7 @@ export default function ExportDataFiles() {
         </div>
       )}
       <p>You may click on the column headers to sort, filter, search, or manage columns.</p>
+      <p>Hidden text can be viewed by hovering your mouse over them or by resizing the column.</p>
       <div style={{ height: 527}}>
         <DataGrid
           rows={files}
