@@ -1,34 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import axios from "axios";
+import { Link } from "react-router-dom";
 import { Auth } from "aws-amplify";
 import styles from "./MyReports.module.css";
 import ErrorModal from "../../Common/ErrorModal";
 import Alert from "@mui/material/Alert";
-import TableContainer from "@mui/material/TableContainer";
-import Table from "@mui/material/Table";
-import TableHead from "@mui/material/TableHead";
-import TableBody from "@mui/material/TableBody";
-import TableRow from "@mui/material/TableRow";
-import TableCell from "@mui/material/TableCell";
-import Paper from "@mui/material/Paper";
+import { DataGrid } from "@mui/x-data-grid";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import Pagination from "@mui/material/Pagination";
-import TableSortLabel from "@mui/material/TableSortLabel";
+import { Tooltip } from "@mui/material";
 
 export default function MyReports() {
   const [files, setFiles] = useState([]);
   const [userId, setUserId] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(7);
   const [oldFileNameEditing, setOldFileNameEditing] = useState("");
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorModalMsg, setErrorModalMsg] = useState("");
   const [editSaveSuccess, setEditSaveSuccess] = useState(false);
   const [alertMsg, setAlertMsg] = useState("");
-  const [sortBy, setSortBy] = useState("");
-  const [sortOrder, setSortOrder] = useState("asc");
 
   useEffect(() => {
     async function retrieveUserInfo() {
@@ -75,6 +65,7 @@ export default function MyReports() {
           fileName = fileName.split(".").shift();
         }
         return {
+          id: report.reportId,
           userId: report.userId,
           reportId: report.reportId,
           reportName: report.reportName,
@@ -99,34 +90,6 @@ export default function MyReports() {
       );
       setShowErrorModal(true);
     }
-  };
-
-  const handleFileNameChange = (event, key) => {
-    const updatedFiles = files.map((file) =>
-      file.reportId === key ? { ...file, fileName: event.target.value } : file
-    );
-    setFiles(updatedFiles);
-  };
-
-  const handleGradeChange = (event, key) => {
-    const updatedFiles = files.map((file) =>
-      file.reportId === key ? { ...file, gradeLevel: event.target.value } : file
-    );
-    setFiles(updatedFiles);
-  };
-
-  const handleSubjectChange = (event, key) => {
-    const updatedFiles = files.map((file) =>
-      file.reportId === key ? { ...file, subject: event.target.value } : file
-    );
-    setFiles(updatedFiles);
-  };
-
-  const handleReportNameChange = (event, key) => {
-    const updatedFiles = files.map((file) =>
-      file.reportId === key ? { ...file, reportName: event.target.value } : file
-    );
-    setFiles(updatedFiles);
   };
 
   const handleEditClick = (key) => {
@@ -160,7 +123,6 @@ export default function MyReports() {
             fileName: newFileName,
           }
         );
-
         setFiles(updatedFiles);
         setEditSaveSuccess(true);
         setAlertMsg("Successful update to file name!");
@@ -190,7 +152,6 @@ export default function MyReports() {
           audioFile: audioFileUpdate,
         }
       );
-
       setFiles(updatedFiles);
       setEditSaveSuccess(true);
       setAlertMsg(
@@ -209,6 +170,30 @@ export default function MyReports() {
       );
       setShowErrorModal(true);
     }
+  };
+
+  const handleGradeChange = (event, key) => {
+    if (event.key === "Tab" || event.key === " ") {
+      event.stopPropagation();
+    }
+    const updatedFiles = files.map((file) =>
+      file.reportId === key ? { ...file, gradeLevel: event.target.value } : file
+    );
+    setFiles(updatedFiles);
+  };
+
+  const handleSubjectChange = (event, key) => {
+    const updatedFiles = files.map((file) =>
+      file.reportId === key ? { ...file, subject: event.target.value } : file
+    );
+    setFiles(updatedFiles);
+  };
+
+  const handleReportNameChange = (event, key) => {
+    const updatedFiles = files.map((file) =>
+      file.reportId === key ? { ...file, reportName: event.target.value } : file
+    );
+    setFiles(updatedFiles);
   };
 
   const handleDeleteClick = async (key) => {
@@ -275,30 +260,8 @@ export default function MyReports() {
     }
   };
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = files.slice(indexOfFirstItem, indexOfLastItem);
-
-  const handlePageChange = (_, page) => {
-    setCurrentPage(page);
-  };
-
   const handleCloseErrorModal = () => {
     setShowErrorModal(false);
-  };
-
-  const handleSort = (property) => {
-    const isAsc = sortBy === property && sortOrder === "asc";
-    setSortOrder(isAsc ? "desc" : "asc");
-    setSortBy(property);
-    const sortedFiles = [...files].sort((a, b) => {
-      if (isAsc) {
-        return a[property] > b[property] ? 1 : -1;
-      } else {
-        return a[property] < b[property] ? 1 : -1;
-      }
-    });
-    setFiles(sortedFiles);
   };
 
   return (
@@ -313,143 +276,120 @@ export default function MyReports() {
           <Alert severity="success">{alertMsg}</Alert>
         </div>
       )}
-      <p>You may click on the column headers to sort in descending or ascending order.</p>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>
-                <TableSortLabel
-                  active={sortBy === "reportName"}
-                  direction={sortBy === "reportName" ? sortOrder : "asc"}
-                  onClick={() => handleSort("reportName")}
-                >
-                  <b>Report Name</b>
-                </TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel
-                  active={sortBy === "audioDate"}
-                  direction={sortBy === "audioDate" ? sortOrder : "asc"}
-                  onClick={() => handleSort("audioDate")}
-                >
-                  <b>Audio Date/Time</b>
-                </TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel
-                  active={sortBy === "subject"}
-                  direction={sortBy === "subject" ? sortOrder : "asc"}
-                  onClick={() => handleSort("subject")}
-                >
-                  <b>Subject</b>
-                </TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel
-                  active={sortBy === "gradeLevel"}
-                  direction={sortBy === "gradeLevel" ? sortOrder : "asc"}
-                  onClick={() => handleSort("gradeLevel")}
-                >
-                  <b>Grade</b>
-                </TableSortLabel>
-              </TableCell>
-              <TableCell>
-              <TableSortLabel
-                  active={sortBy === "audioFile"}
-                  direction={sortBy === "audioFile" ? sortOrder : "asc"}
-                  onClick={() => handleSort("audioFile")}
-                >
-                  <b>Audio File</b>
-                </TableSortLabel>
-              </TableCell>
-              <TableCell><TableSortLabel
-                active={sortBy === "status"}
-                direction={sortBy === "status" ? sortOrder : "asc"}
-                onClick={() => handleSort("status")}
-              >
-                <b>Status</b>
-              </TableSortLabel></TableCell>
-              
-              <TableCell>
-                <b>Edit</b>
-              </TableCell>
-              <TableCell>
-                <b>Delete</b>
-              </TableCell>
-              <TableCell>
-                <b>Load Report</b>
-              </TableCell>
-              <TableCell>
-                <b>Download Audio/Link</b>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {currentItems.map((file, index) => (
-              <TableRow key={file.reportId}>
-                <TableCell>
-                  {file.isEditing ? (
-                    <TextField
-                      type="text"
-                      value={file.reportName}
-                      onChange={(event) =>
-                        handleReportNameChange(event, file.reportId)
-                      }
-                    />
-                  ) : (
-                    file.reportName
-                  )}
-                </TableCell>
-                <TableCell>{file.audioDate}</TableCell>
-                <TableCell>
-                  {file.isEditing ? (
-                    <TextField
-                      type="text"
-                      value={file.subject}
-                      onChange={(event) =>
-                        handleSubjectChange(event, file.reportId)
-                      }
-                    />
-                  ) : (
-                    file.subject
-                  )}
-                </TableCell>
-                <TableCell>
-                  {file.isEditing ? (
-                    <TextField
-                      type="text"
-                      value={file.gradeLevel}
-                      onChange={(event) =>
-                        handleGradeChange(event, file.reportId)
-                      }
-                    />
-                  ) : (
-                    file.gradeLevel
-                  )}
-                </TableCell>
-                <TableCell>
-                  {file.isEditing && file.fileType !== "youtube" ? (
-                    <TextField
-                      type="text"
-                      value={file.fileName}
-                      onChange={(event) =>
-                        handleFileNameChange(event, file.reportId)
-                      }
-                    />
-                  ) : (
-                    file.fileName
-                  )}
-                </TableCell>
-                <TableCell>{file.status}</TableCell>
-                <TableCell>
-                  {file.isEditing ? (
+      <p>
+        You may click on the column headers to sort, filter, search, or manage
+        columns.
+      </p>
+      <div style={{ height: 527, width: "100%" }}>
+        <DataGrid
+          rows={files}
+          columns={[
+            {
+              field: "reportName",
+              headerName: "Report Name",
+              sortable: true,
+              width: 200,
+              renderCell: (params) =>
+                params.row.isEditing ? (
+                  <TextField
+                    value={params.row.reportName}
+                    onChange={(event) =>
+                      handleReportNameChange(event, params.row.id)
+                    }
+                    onKeyDown={(e) => e.stopPropagation()}
+                  />
+                ) : (
+                  <Tooltip title={params.value}>
+                    <span>{params.value}</span>
+                  </Tooltip>
+                ),
+            },
+            {
+              field: "audioDate",
+              headerName: "Audio Date/Time",
+              width: 175,
+              renderCell: (params) => (
+                <Tooltip title={params.value}>
+                  <span>{params.value}</span>
+                </Tooltip>
+              ),
+            },
+            {
+              field: "subject",
+              headerName: "Subject",
+              sortable: true,
+              width: 150,
+              renderCell: (params) =>
+                params.row.isEditing ? (
+                  <TextField
+                    value={params.row.subject}
+                    onChange={(event) =>
+                      handleSubjectChange(event, params.row.id)
+                    }
+                    onKeyDown={(e) => e.stopPropagation()}
+                  />
+                ) : (
+                  <Tooltip title={params.value}>
+                    <span>{params.value}</span>
+                  </Tooltip>
+                ),
+            },
+            {
+              field: "gradeLevel",
+              headerName: "Grade",
+              sortable: true,
+              width: 125,
+              renderCell: (params) =>
+                params.row.isEditing ? (
+                  <TextField
+                    value={params.row.gradeLevel}
+                    onChange={(event) =>
+                      handleGradeChange(event, params.row.id)
+                    }
+                    onKeyDown={(e) => e.stopPropagation()}
+                  />
+                ) : (
+                  <Tooltip title={params.value}>
+                    <span>{params.value}</span>
+                  </Tooltip>
+                ),
+            },
+            {
+              field: "fileName",
+              headerName: "Audio File",
+              width: 200,
+              renderCell: (params) => (
+                <Tooltip title={params.value}>
+                  <span>{params.value}</span>
+                </Tooltip>
+              ),
+            },
+            {
+              field: "status",
+              headerName: "Status",
+              width: 150,
+              renderCell: (params) => (
+                <Tooltip title={params.value}>
+                  <span>{params.value}</span>
+                </Tooltip>
+              ),
+            },
+            {
+              field: "actions",
+              headerName: "Actions",
+              width: 500,
+              renderCell: (params) => (
+                <>
+                  {params.row.isEditing ? (
                     <>
                       <Button
                         variant="contained"
                         color="success"
                         onClick={() =>
-                          handleSaveClick(file.reportId, file.fileType)
+                          handleSaveClick(
+                            params.row.reportId,
+                            params.row.fileType
+                          )
                         }
                       >
                         Save
@@ -459,7 +399,7 @@ export default function MyReports() {
                         color="secondary"
                         onClick={() => {
                           const updatedFiles = files.map((f) =>
-                            f.reportId === file.reportId
+                            f.reportId === params.row.reportId
                               ? {
                                   ...f,
                                   isEditing: false,
@@ -476,44 +416,37 @@ export default function MyReports() {
                   ) : (
                     <Button
                       variant="contained"
-                      onClick={() => handleEditClick(file.reportId)}
+                      onClick={() => handleEditClick(params.row.reportId)}
                     >
                       Edit
                     </Button>
                   )}
-                </TableCell>
-                <TableCell>
                   <Button
                     variant="contained"
                     color="error"
-                    onClick={() => handleDeleteClick(file.reportId)}
+                    onClick={() => handleDeleteClick(params.row.reportId)}
                   >
                     Delete
                   </Button>
-                </TableCell>
-
-                <TableCell>
                   <Button variant="contained" color="warning">
                     <Link
                       to="../analyze"
                       state={{
-                        reportId: file.reportId,
+                        reportId: params.row.reportId,
                       }}
                       className={styles.loadLink}
                     >
                       Load
                     </Link>
                   </Button>
-                </TableCell>
-                <TableCell>
-                  {file.fileType === "youtube" ? (
+                  {params.row.fileType === "youtube" ? (
                     <a
-                      href={file.link}
+                      href={params.row.link}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
                       <Button variant="contained" color="secondary">
-                        Youtube
+                        Youtube Link
                       </Button>
                     </a>
                   ) : (
@@ -522,26 +455,25 @@ export default function MyReports() {
                       color="secondary"
                       onClick={() =>
                         handleDownloadClick(
-                          file.reportId,
-                          file.fileName,
-                          file.fileType
+                          params.row.reportId,
+                          params.row.fileName,
+                          params.row.fileType
                         )
                       }
                     >
-                      Download
+                      Download Audio
                     </Button>
                   )}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <Pagination
-        count={Math.ceil(files.length / itemsPerPage)}
-        onChange={handlePageChange}
-        page={currentPage}
-      />
+                </>
+              ),
+            },
+          ]}
+          pagination
+          pageSize={itemsPerPage}
+          autoPageSize={true}
+          disableRowSelectionOnClick
+        />
+      </div>
     </>
   );
 }
