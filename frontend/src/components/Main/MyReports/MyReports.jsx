@@ -280,6 +280,7 @@ export default function MyReports() {
         You may click on the column headers to sort, filter, search, or manage
         columns.
       </p>
+      <p>Hidden text can be viewed by hovering your mouse over them or by resizing the column.</p>
       <div style={{ height: 527, width: "100%" }}>
         <DataGrid
           rows={files}
