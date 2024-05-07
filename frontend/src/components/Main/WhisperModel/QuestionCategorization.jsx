@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { convertMsToTime } from "../../../utils/convertMsToTime";
 import axios from "axios";
 
@@ -7,16 +7,7 @@ export default function QuestionCategorization({ reportId, userId, categorizedQu
   const [error, setError] = useState(null);
   const [categorizationDone, setCategorizationDone] = useState(false);
 
-  useEffect(() => {
-    if (!categorizedQuestions) {
-      categorizeQuestions();
-    }
-    else {
-      setCategorizationDone(true);
-    }
-  }, [categorizedQuestions]);
-
-  const categorizeQuestions = async () => {
+  const categorizeQuestions = useCallback(async () => {
     setIsLoading(true);
     try {
       const response = await axios.get(
@@ -34,7 +25,16 @@ export default function QuestionCategorization({ reportId, userId, categorizedQu
       setIsLoading(false);
       setError(error);
     }
-  };
+  },[reportId, setCategorizationDone, setCategorizedQuestions, userId]);
+
+  useEffect(() => {
+    if (!categorizedQuestions) {
+      categorizeQuestions();
+    }
+    else {
+      setCategorizationDone(true);
+    }
+  }, [categorizedQuestions, categorizeQuestions]);
 
   const handleLevelChange = (index, event) => {
     const newCategorizedQuestions = [...categorizedQuestions];
@@ -44,9 +44,10 @@ export default function QuestionCategorization({ reportId, userId, categorizedQu
     setChangeAlert(true);
   };
 
-  const handleRecategorize = async () => {
-    await categorizeQuestions();
-  };
+  // bring back if we decide to let users recategorize the questions
+  // const handleRecategorize = async () => {
+  //   await categorizeQuestions();
+  // };
 
   return (
     <>
