@@ -1,26 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Chart from "react-apexcharts";
 import { convertMsToTime } from "../../../utils/convertMsToTime";
 
 export default function CollapsedTimeline({ categorizedQuestions }) {
   const [timeLine, setTimeLine] = useState([]);
 
-  const labelColors = {
-    0: "#0000FF",
-    1: "#D42AC8",
-    2: "#009400",
-    3: "#FF7300",
-  };
-
-  useEffect(() => {
-    if (categorizedQuestions) {
-      setTimeLine(setTimeLineData());
-    }
-  }, [categorizedQuestions]);
-
-  function setTimeLineData() {
+  const setTimeLineData = useCallback(() => {
     let timeData = [];
     let questionList = categorizedQuestions;
+
+    const labelColors = {
+      0: "#0000FF",
+      1: "#D42AC8",
+      2: "#009400",
+      3: "#FF7300",
+    };
   
     const minTime = Math.min(...categorizedQuestions.map((q) => q.start_time / 1000));
     const maxTime = Math.max(...categorizedQuestions.map((q) => q.start_time / 1000));
@@ -76,8 +70,13 @@ export default function CollapsedTimeline({ categorizedQuestions }) {
     }
     console.log("timeData:", timeData);
     return timeData;
-  }
-  
+  },[categorizedQuestions])
+ 
+  useEffect(() => {
+    if (categorizedQuestions) {
+      setTimeLine(setTimeLineData());
+    }
+  }, [categorizedQuestions, setTimeLineData]);
 
   function getTimeLineProps() {
     return {
