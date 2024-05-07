@@ -1,5 +1,4 @@
 export default function ReportName({
-  badReportName,
   setReportName,
   userReportToLoad,
 }) {
@@ -15,11 +14,6 @@ export default function ReportName({
           onBlur={handleInputChange}
           id="name-report"
         ></input>
-      ) : null}
-      {badReportName ? (
-        <div className="alert alert-danger">
-          Please name your report before saving!
-        </div>
       ) : null}
     </>
   );

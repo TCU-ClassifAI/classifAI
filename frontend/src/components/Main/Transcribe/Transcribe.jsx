@@ -38,7 +38,6 @@ export default function Transcribe() {
   const [questioningTime, setQuestioningTime] = useState();
   const [reportName, setReportName] = useState("");
 
-  const [badReportName, setBadReportName] = useState(false);
   const [teacher, setTeacher] = useState();
   const [show, setShow] = useState(false);
   const [uploadRecordingVisible, setUploadRecordingVisible] = useState(true);
@@ -580,7 +579,6 @@ export default function Transcribe() {
           </Tabs>
 
           <ReportName
-            badReportName={badReportName}
             setReportName={setReportName}
             userReportToLoad={userReportToLoad}
           />
