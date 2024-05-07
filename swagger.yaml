@@ -1,0 +1,611 @@
+  openapi: 3.0.0
+  info:
+    title: ClassifAI API
+    description: |-
+      ClassifAI API 
+    contact:
+      name: ClassifAI Team
+      url: https://tcu-classifai.github.io/classifAI/
+    version: 1.0.0
+  servers:
+    # Update when it is deployed to Production
+    - url: localhost:5000
+      description: Development server
+  tags:
+    - name: reports
+      description: What you can do relating to reports management as a logged in user. 
+    
+    - name: files
+      description: What you can do relating to export data files management as a logged in user.
+  
+    - name: user
+      description: All user operations are handled by AWS Cognito
+      
+    - name: sentences
+      description: legacy code operations to support assembly AI model get and save reports
+      
+  paths:
+  
+  # Reports CRUD
+    /reports:  
+      get:
+        tags:
+          - reports
+        summary: Get all reports from all users (ADMIN)
+        description: gets all reports from all registered users
+        operationId: getAllReports
+        responses:
+          '200':
+            description: successful operation
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Report'
+          '400':
+            description: Invalid status value
+          '404':
+            description: No reports not found
+  
+  
+    
+    /reports/users/{userId}:
+      get:
+        tags:
+          - reports
+        summary: Get all reports created by this user
+        description: Get all reports by owned by this user
+        operationId: getuserreports
+        parameters:
+          - name: userId
+            in: path
+            description: ID of superfrog to return
+            required: true
+            schema:
+              type: integer
+              format: int64
+        responses:
+          '200':
+            description: successful operation
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ApiResponseFindAllReportsByUser'
+          '400':
+            description: Invalid status value
+          '404':
+            description: report not found
+      
+    /reports/{reportId}:  
+      get:
+        tags:
+          - reports
+        summary: Get a report by reportId
+        description: get a report by reportId
+        operationId: getReportById
+        parameters:
+          - name: reportId
+            in: path
+            description: id of report
+            required: true
+            schema:
+              type: string
+        responses:
+          '200':
+            description: successful operation
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Report'
+          '400':
+            description: Invalid status value
+          '404':
+            description: report not found
+            
+    /reports/{reportId}/users/{userId}:  
+      post:
+        tags:
+          - reports
+        summary: Add a new report created by this user
+        description: Add a new report created by specified user
+        operationId: addReport
+        parameters:
+          - name: reportId
+            in: path
+            description: reportId is the reportName
+            required: true
+            schema:
+              type: string
+          - name: userId
+            in: path
+            description: userId owner of report
+            required: true
+            schema:
+              type: string
+        requestBody:
+          description: Report object that needs to be added
+          required: true
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Report'
+                example:
+                  usesrId: "johnnguyen"
+                  reportId: "senior design"
+                  file: "senior_design_lecture.mp4"
+                  gradeLevel: "12"
+                  subject: "computer science"
+                  fileName: "senior_design_lecture"
+        responses:
+          200:
+            description: Report created 
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponseAddReport'
+          400:
+            description: Bad request
+            content:
+                application/json:
+                    schema:
+                      $ref: '#/components/schemas/ApiResponseBadRequest'
+ 
+      put:
+        tags:
+          - reports
+        summary: modify an existing report owned by user
+        description: modify existing report created by the user
+        operationId: modifyExistingReport
+        parameters:
+          - name: reportId
+            in: path
+            description: id of report
+            required: true
+            schema:
+              type: string
+          - name: userId
+            in: path
+            description: id of report
+            required: true
+            schema:
+              type: string
+        requestBody:
+          description: Report object that will be modified
+          required: true
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Report'
+                example:
+                  file: "os_lecture.mp4"
+                  fileName: "os_lecture"
+        responses:
+          '200':
+            description: successful operation
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Report'
+          '400':
+            description: Invalid status value
+          '404':
+            description: report not found
+      delete:
+        tags:
+          - reports
+        summary: Deletes a report that the user created
+        description: Deletes a report that the user created
+        operationId: deleteReport
+        parameters:
+          - name: reportId
+            in: path
+            description: id of report
+            required: true
+            schema:
+              type: string
+          - name: userId
+            in: path
+            description: id of report
+            required: true
+            schema:
+              type: string
+        responses:
+          '400':
+            description: Invalid ID supplied
+          '404':
+            description: Request not found
+            
+            
+    /files:  
+      get:
+        tags:
+          - files
+        summary: Get all export data files from all users (ADMIN)
+        description: gets all export data files from all registered users
+        operationId: getAllFiles
+        responses:
+          '200':
+            description: successful operation
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Report'
+          '400':
+            description: Invalid status value
+          '404':
+            description: No reports not found
+            
+    /files/users/{userId}:  
+      get:
+        tags:
+          - files
+        summary: Get all export data files created by user
+        description: gets all export data files created by user
+        operationId: getFilesByUser
+        parameters:
+          - name: userId
+            in: path
+            description: id of user
+            required: true
+            schema:
+              type: string
+        responses:
+          '200':
+            description: successful operation
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Report'
+          '400':
+            description: Invalid status value
+          '404':
+            description: No reports not found
+     
+    /files/reports/{reportId}/users/{userId}:  
+      post:
+        tags:
+          - files
+        summary: Adds a new file tied to report
+        description: Adds a new file with associated reportId and userId
+        operationId: uploadFile
+        parameters:
+          - name: reportId
+            in: path
+            description: reportId is the reportName
+            required: true
+            schema:
+              type: string
+          - name: userId
+            in: path
+            description: userId owner of report
+            required: true
+            schema:
+              type: string
+        requestBody:
+          description: Export Data file object to be added
+          required: true
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/File'
+                example:
+                  reportId: "seniorDesignReport"
+                  userId: "johnnguyen"
+                  file: "transcript.csv"
+        responses:
+          200:
+            description: File created 
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ApiResponseAddReport'
+          400:
+            description: Bad request
+            content:
+                application/json:
+                    schema:
+                      $ref: '#/components/schemas/ApiResponseBadRequest'
+    /files/{fileName}/reports/{reportId}/users/{userId}:  
+      put:
+        tags:
+          - files
+        summary: modify an existing export data file
+        description: modify an existing export data file owned by user
+        operationId: modifyExistingFile
+        parameters:
+          - name: reportId
+            in: path
+            description: id of report
+            required: true
+            schema:
+              type: string
+          - name: userId
+            in: path
+            description: id of user
+            required: true
+            schema:
+              type: string
+          - name: fileName
+            in: path
+            description: name of File
+            required: true
+            schema:
+              type: string
+        responses:
+          '200':
+            description: successful operation
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Report'
+          '400':
+            description: Invalid status value
+          '404':
+            description: report not found
+      delete:
+        tags:
+          - files
+        summary: Deletes an export data file
+        description: Deletes an export data file associated with report created by user
+        operationId: deleteFile
+        parameters:
+          - name: reportId
+            in: path
+            description: id of report
+            required: true
+            schema:
+              type: string
+          - name: userId
+            in: path
+            description: id of report
+            required: true
+            schema:
+              type: string
+          - name: fileName
+            in: path
+            description: name of File
+            required: true
+            schema:
+              type: string
+        responses:
+          '400':
+            description: Invalid ID supplied
+          '404':
+            description: Request not found
+            
+  components:
+    schemas:
+      Report:
+        type: object
+        properties:
+          userId:
+            type: string
+            example: "johnnguyen"
+          reportId:
+            type: string
+            example: "myReport"
+          file:
+            type: string
+            example: "all.csv"
+          gradeLevel:
+            type: string
+            example: "12"
+          subject:
+            type: string
+            example: "music"
+          fileName:
+            type: string
+            example: "transcript"
+        required: 
+          - userId
+          - reportId
+          - file
+  
+      File:
+        type: object
+        properties:
+          userId:
+            type: string
+            example: "johnnguyen"
+          reportId:
+            type: string
+            example: "myReport"
+          file:
+            type: string
+            example: "all.csv"
+          fileName:
+            type: string
+            example: "transcript"
+        required: 
+          - userId
+          - reportId
+          - file
+        
+      ReportList:
+        type: array
+        items:
+          $ref: '#/components/schemas/Report'
+        example:
+          - usesrId: "johnnguyen"
+            reportId: "senior design"
+            file: "senior_design_lecture.mp4"
+            gradeLevel: "12"
+            subject: "computer science"
+            fileName: "senior_design_lecture"
+          - usesrId: "johnnguyen"
+            reportId: "operating_systems"
+            file: "OS_lecture.mp4"
+            gradeLevel: "12"
+            subject: "computer science"
+            fileName: "senior_design_lecture"
+          - usesrId: "johnnguyen"
+            reportId: "DeepLearning"
+            file: "senior_design_lecture.mp4"
+            gradeLevel: "12"
+            subject: "computer science"
+            fileName: "deep_learning_lecture"
+      ApiResponseFindAllReportsByUser:
+        title: API response for findAll Reports By user
+        type: object
+        properties:
+          flag:
+            type: boolean
+            description: Flag to indicate if the request was successful
+          code: 
+            type: integer
+            description: HTTP status code
+            example: 200
+          message:
+            type: string
+            description: Message to indicate if the request was successful
+            example: "Find All Success"
+          data:
+            $ref: '#/components/schemas/ReportList'
+      ApiResponseAddReport:
+        title: API response for addReport
+        type: object
+        properties:
+          flag:
+            type: boolean
+            description: Flag to indicate if the request was successful
+          code: 
+            type: integer
+            description: HTTP status code
+            example: 200
+          message:
+            type: string
+            description: Message to indicate if the request was successful
+            example: "Add Success"
+          data:
+            allOf:
+              - $ref: '#/components/schemas/Report'
+            example:
+              usesrId: "johnnguyen"
+              reportId: "DeepLearning"
+              file: "senior_design_lecture.mp4"
+              gradeLevel: "12"
+              subject: "computer science"
+              fileName: "deep_learning_lecture"
+      ApiResponseFindReportById: 
+        title: API response for findReportById
+        type: object
+        properties:
+          flag:
+            type: boolean
+            description: Flag to indicate if the request was successful
+          code: 
+            type: integer
+            description: HTTP status code
+            example: 200
+          message:
+            type: string
+            description: Message to indicate if the request was successful
+            example: "Find By Id Success"
+          data:
+            allOf:
+              - $ref: '#/components/schemas/Report'
+            example:
+              usesrId: "johnnguyen"
+              reportId: "DeepLearning"
+              file: "senior_design_lecture.mp4"
+              gradeLevel: "12"
+              subject: "computer science"
+              fileName: "deep_learning_lecture"
+      ApiResponseUpdateReport:
+        title: API response for update report
+        type: object
+        properties:
+          flag:
+            type: boolean
+            description: Flag to indicate if the request was successful
+          code: 
+            type: integer
+            description: HTTP status code
+            example: 200
+          message:
+            type: string
+            description: Message to indicate if the request was successful
+            example: "Update Success"
+          data:
+            allOf:
+              - $ref: '#/components/schemas/Report'
+            example:
+              usesrId: "johnnguyen"
+              reportId: "DeepLearning"
+              file: "changed_lecture.mp4"
+              gradeLevel: "12"
+              subject: "computer science"
+              fileName: "changed_lecture"
+      ApiResponseBadRequest:
+        title: API response for bad request error
+        description: The schema for bad request error
+        type: object
+        properties:
+          flag:
+            title: flag
+            description: Success or not
+            type: boolean
+            example: false
+            readOnly: true
+          code:
+            title: Http status code
+            description: Http status code
+            type: integer
+            example: 400
+            readOnly: true
+          message:
+            title: Message
+            description: The long error message
+            type: string
+            example: Provided arguments are invalid, see data for details.
+            readOnly: true
+          data:
+            $ref: '#/components/schemas/ReportFileBadRequest'
+      ReportFileBadRequest:
+        title: Superfrog bad request
+        description: Messages describing a bad request error
+        type: object
+        properties:
+          reportId:
+            title: reportId
+            description: reportId is required
+            type: string
+            example: reportId is required
+          userId:
+            title: userId
+            description: userId is required
+            type: string
+            example: userId is required
+          file:
+            title: file
+            description: file is required
+            type: string
+            example: file is required
+        
+      
+    securitySchemes:
+      api_key:
+        type: apiKey
+        name: api_key
+        in: header
+      api_key_query:
+        type: apiKey
+        name: api_key
+        in: query
+        
