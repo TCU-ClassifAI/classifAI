@@ -131,11 +131,9 @@ export default function UploadRecording({
           level: question.level !== null ? question.level : 0,
         }));
       setCategorizedQuestions(categorizedQuestions);
-      console.log(categorizedQuestions);
     }
     if (response.data.reports[0].transferData.summary) {
       let summary = response.data.reports[0].transferData.summary;
-      console.log(summary);
       setSummary(summary);
     }
   }
@@ -195,7 +193,6 @@ export default function UploadRecording({
       ) {
         setIsAnalyzing(false); // Stop analysis once completed
         const transcription = response.data.reports[0].transferData.result;
-        console.log(transcription);
         setTranscription(transcription);
         checkIfCategorizedAndSummarized(response);
         setProgress(100);

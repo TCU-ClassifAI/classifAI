@@ -68,7 +68,6 @@ export default function CollapsedTimeline({ categorizedQuestions }) {
         timeData.push(entry);
       }
     }
-    console.log("timeData:", timeData);
     return timeData;
   },[categorizedQuestions])
  

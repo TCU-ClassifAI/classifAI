@@ -59,13 +59,11 @@ export default function Analyze() {
         console.error("Error fetching user data:", error);
       }
     }
-    // console.log(import.meta.env.VITE_BACKEND_SERVER);
     retrieveUserInfo();
   }, []);
 
   useEffect(() => {
     // Calculate speaking time for each speaker
-    console.log(analysisStatus);
     const speakingTime = {};
     transcription.forEach((sentence) => {
       const speaker = sentence.speaker;

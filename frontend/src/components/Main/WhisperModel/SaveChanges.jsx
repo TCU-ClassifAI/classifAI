@@ -23,7 +23,6 @@ export default function SaveChanges({
   };
 
   const saveMetaInfo = async () => {
-    console.log(dateTime);
     try {
       await axios.put(
         `${
@@ -47,7 +46,6 @@ export default function SaveChanges({
     try {
       const formData = new FormData(); // Create a FormData object
       formData.append("result", JSON.stringify(transcription)); // Append the transcription data
-      console.log(formData);
       const response = await axios.put(
         `${
           import.meta.env.VITE_BACKEND_SERVER

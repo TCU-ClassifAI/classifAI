@@ -43,7 +43,6 @@ export default function MyReports() {
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_SERVER}/reports/users/${userId}`
       );
-      console.log(response);
       const reports = response.data;
       const filtered_reports = reports.map((report) => {
         let fileExtension;
