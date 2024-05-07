@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Auth } from "aws-amplify";
 import ErrorModal from "../../Common/ErrorModal";
@@ -30,7 +30,13 @@ export default function ExportDataFiles() {
     retrieveUserInfo();
   }, []);
 
-  const fetchUserFiles = useCallback(async () => {
+  useEffect(() => {
+    if (userId) {
+      fetchUserFiles();
+    }
+  }, [userId]);
+
+  const fetchUserFiles = async () => {
     try {
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_SERVER}/files/users/${userId}?fileType=csv&fileType=pdf`
@@ -61,13 +67,7 @@ export default function ExportDataFiles() {
       setErrorModalMsg("Error fetching user files from database! Try again later.");
       setShowErrorModal(true);
     }
-  },[userId]);
-  
-  useEffect(() => {
-    fetchUserFiles();
-  }, [fetchUserFiles]);
-
-  
+  };
 
   const handleFileNameChange = (event, id) => {
     const updatedFiles = files.map((file) =>

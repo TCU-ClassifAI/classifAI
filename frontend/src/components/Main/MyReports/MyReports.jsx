@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { Auth } from "aws-amplify";
@@ -38,11 +38,18 @@ export default function MyReports() {
     retrieveUserInfo();
   }, []);
 
-  const fetchUserFiles = useCallback(async () => {
+  useEffect(() => {
+    if (userId) {
+      fetchUserFiles();
+    }
+  }, [userId]);
+
+  const fetchUserFiles = async () => {
     try {
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_SERVER}/reports/users/${userId}`
       );
+      console.log(response);
       const reports = response.data;
       const filtered_reports = reports.map((report) => {
         let fileExtension;
@@ -83,11 +90,7 @@ export default function MyReports() {
       );
       setShowErrorModal(true);
     }
-  }, [userId]);
-
-  useEffect(() => {
-    fetchUserFiles();
-  }, [fetchUserFiles]);
+  };
 
   const handleEditClick = (key) => {
     const updatedFiles = files.map((file) =>
@@ -277,10 +280,7 @@ export default function MyReports() {
         You may click on the column headers to sort, filter, search, or manage
         columns.
       </p>
-      <p>
-        Hidden text can be viewed by hovering your mouse over them or by
-        resizing the column.
-      </p>
+      <p>Hidden text can be viewed by hovering your mouse over them or by resizing the column.</p>
       <div style={{ height: 527, width: "100%" }}>
         <DataGrid
           rows={files}
