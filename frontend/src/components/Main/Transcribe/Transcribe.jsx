@@ -38,8 +38,6 @@ export default function Transcribe() {
   const [questioningTime, setQuestioningTime] = useState();
   const [reportName, setReportName] = useState("");
 
-  const [successfullUpload, setSuccessfullUpload] = useState(false);
-  const [badReportName, setBadReportName] = useState(false);
   const [teacher, setTeacher] = useState();
   const [show, setShow] = useState(false);
   const [uploadRecordingVisible, setUploadRecordingVisible] = useState(true);
@@ -581,7 +579,6 @@ export default function Transcribe() {
           </Tabs>
 
           <ReportName
-            badReportName={badReportName}
             setReportName={setReportName}
             userReportToLoad={userReportToLoad}
           />
@@ -593,7 +590,6 @@ export default function Transcribe() {
             userId={userId}
           />
           <div>
-            {successfullUpload ? <h6>File Save Success!!!</h6> : null}
             <PdfOptions
               sentences={sentences}
               transcript={transcript}

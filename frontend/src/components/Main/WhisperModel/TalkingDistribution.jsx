@@ -20,15 +20,16 @@ export default function TalkingDistribution({ transcription, teacher }) {
     return totalTime;
   }
 
-  function totalSpeakers() {
-    let speakerList = [];
-    for (let i = 0; i < transcription.length; i++) {
-      if (!speakerList.includes(transcription[i].speaker)) {
-        speakerList.push(transcription[i].speaker);
-      }
-    }
-    return speakerList;
-  }
+  // consider bringing back this if needed
+  // function totalSpeakers() {
+  //   let speakerList = [];
+  //   for (let i = 0; i < transcription.length; i++) {
+  //     if (!speakerList.includes(transcription[i].speaker)) {
+  //       speakerList.push(transcription[i].speaker);
+  //     }
+  //   }
+  //   return speakerList;
+  // }
 
   function getNonSpeakingTime() {
     return (

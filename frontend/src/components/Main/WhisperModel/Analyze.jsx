@@ -11,8 +11,7 @@ import QuestionDistribution from "./QuestionDistribution";
 import CollapsedTimeline from "./CollapsedTimeline";
 import TeacherQuestionTimeline from "./TeacherQuestionTimeline";
 import Summarization from "./Summarization";
-import styles from "./Analyze.module.css";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Auth } from "aws-amplify";
 import { Tab, Tabs, Modal, Button } from "react-bootstrap";
@@ -36,7 +35,6 @@ export default function Analyze() {
   const [speakers, setSpeakers] = useState();
   const [categorizedQuestions, setCategorizedQuestions] = useState([]);
   const [summary, setSummary] = useState("");
-  const wordCloudRef = useRef(null);
   const location = useLocation();
 
   useEffect(() => {
@@ -61,13 +59,11 @@ export default function Analyze() {
         console.error("Error fetching user data:", error);
       }
     }
-    // console.log(import.meta.env.VITE_BACKEND_SERVER);
     retrieveUserInfo();
   }, []);
 
   useEffect(() => {
     // Calculate speaking time for each speaker
-    console.log(analysisStatus);
     const speakingTime = {};
     transcription.forEach((sentence) => {
       const speaker = sentence.speaker;

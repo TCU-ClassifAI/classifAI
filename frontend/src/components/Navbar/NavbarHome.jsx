@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function NavbarHome() {
     let navigate = useNavigate();
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    // const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isNavCollapsed, setIsNavCollapsed] = useState(true);
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
@@ -23,9 +23,9 @@ export default function NavbarHome() {
     async function checkUser() {
         try {
             await Auth.currentAuthenticatedUser();
-            setIsAuthenticated(true);
+            // setIsAuthenticated(true);
         } catch (error) {
-            setIsAuthenticated(false);
+            // setIsAuthenticated(false);
         }
     }
 

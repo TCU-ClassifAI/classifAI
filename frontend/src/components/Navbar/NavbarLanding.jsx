@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function NavbarLanding() {
   let navigate = useNavigate();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isNavCollapsed, setIsNavCollapsed] = useState(true);
 
   useEffect(() => {
@@ -18,9 +18,9 @@ export default function NavbarLanding() {
   async function checkUser() {
     try {
       await Auth.currentAuthenticatedUser();
-      setIsAuthenticated(true);
+      // setIsAuthenticated(true);
     } catch (error) {
-      setIsAuthenticated(false);
+      // setIsAuthenticated(false);
     }
   }
 

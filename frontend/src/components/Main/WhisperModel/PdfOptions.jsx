@@ -45,7 +45,6 @@ const PdfOptions = ({
     const imgHeight = canvas.height;
     const maxImgHeightPerPage = pageHeight - 20; // Adjust for margins or padding
     const maxImgWidthPerPage = pageWidth - 20; // Adjust for margins or padding
-    let yPos = 0;
     let scale;
 
     if (imgWidth > imgHeight) {
@@ -158,7 +157,6 @@ const PdfOptions = ({
   const componentToCapture = () => {
     const componentsPerPage = 4; // Number of components per page
     const components = [];
-    let currentPage = 1;
     let currentComponentIndex = 0;
 
     // Push components to each page
@@ -194,7 +192,6 @@ const PdfOptions = ({
         currentComponentIndex++;
       }
       components.push(pageComponents);
-      currentPage++;
     }
 
     return components.map((pageComponents, index) => (
