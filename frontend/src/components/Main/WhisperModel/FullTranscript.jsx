@@ -5,13 +5,14 @@ import styles from "./FullTranscript.module.css";
 
 export default function FullTranscript({
   transcription,
+  categorizedQuestions,
+  setCategorizedQuestions,
   setTranscription,
   speakers,
   setSpeakers,
   teacher,
   setChangeAlert
 }) {
-  const [isRelabelingSpeaker, setIsRelabelingSpeaker] = useState(false);
   const [editingSpeaker, setEditingSpeaker] = useState(null);
   const [editingText, setEditingText] = useState(null);
   const [newSpeakerName, setNewSpeakerName] = useState("");
@@ -43,7 +44,7 @@ export default function FullTranscript({
       new Set(transcription.map((sentence) => sentence.speaker))
     );
     setSpeakers(uniqueSpeakers);
-  }, [transcription]);
+  }, [transcription, setSpeakers]);
 
   const handleRelabelSpeaker = useCallback(
     (sentence, newSpeaker, editAll) => {
@@ -58,17 +59,23 @@ export default function FullTranscript({
         return prevSentence;
       });
       setTranscription(newTranscription);
+      const newCategorizedQuestions = categorizedQuestions.map((question) => {
+        if (question.start_time === sentence.start_time && question.speaker === sentence.speaker) {
+          return { ...question, speaker: newSpeaker };
+        }
+        return question;
+      });
+      setCategorizedQuestions(newCategorizedQuestions);
       setChangeAlert(true);
     },
-    [transcription, setTranscription, editingSpeaker, setChangeAlert]
+    [transcription, setTranscription, editingSpeaker, setChangeAlert, categorizedQuestions, setCategorizedQuestions]
   );
 
   const handleItemClick = useCallback(
     (sentence, speaker) => {
       handleRelabelSpeaker(sentence, speaker, false);
-      setIsRelabelingSpeaker(false);
     },
-    [handleRelabelSpeaker, setIsRelabelingSpeaker]
+    [handleRelabelSpeaker]
   );
 
   const handleEditAllOccurences = useCallback(
@@ -79,12 +86,20 @@ export default function FullTranscript({
         }
         return prevSentence;
       });
+
+      const newCategorizedQuestions = categorizedQuestions.map((question) => {
+        if (question.speaker === sentence.speaker) {
+          return { ...question, speaker: newSpeaker };
+        }
+        return question;
+      });
+
       setTranscription(newTranscription);
-      setIsRelabelingSpeaker(false);
+      setCategorizedQuestions(newCategorizedQuestions);
       setChangeAlert(true);
       setEditingSpeaker(null); // Reset editingSpeaker after editing all occurrences
     },
-    [transcription, setTranscription, setIsRelabelingSpeaker, setChangeAlert]
+    [transcription, setTranscription, setChangeAlert, setCategorizedQuestions, categorizedQuestions]
   );
 
   const handleBlur = useCallback(() => {
@@ -100,11 +115,20 @@ export default function FullTranscript({
         }
         return prevSentence;
       });
+
+      const newCategorizedQuestions = categorizedQuestions.map((question) => {
+        if (question.start_time === sentence.start_time) {
+          return { ...question, question: event.target.value };
+        }
+        return question;
+      });
+
       setTranscription(newTranscription);
+      setCategorizedQuestions(newCategorizedQuestions);
       setNewSpeakerName("");
       setChangeAlert(true);
     },
-    [transcription, setTranscription, setChangeAlert]
+    [transcription, setTranscription, setChangeAlert, setCategorizedQuestions, categorizedQuestions]
   );
 
   const handleChangeName = useCallback(
@@ -115,12 +139,18 @@ export default function FullTranscript({
         }
         return prevSentence;
       });
+      const newCategorizedQuestions = categorizedQuestions.map((question) => {
+        if (question.start_time === sentence.start_time && question.speaker === sentence.speaker) {
+          return { ...question, speaker: newSpeakerName };
+        }
+        return question;
+      });
+      setCategorizedQuestions(newCategorizedQuestions);
       setTranscription(newTranscription);
-      setIsRelabelingSpeaker(false);
       setNewSpeakerName("");
       setChangeAlert(true);
     },
-    [transcription, setTranscription, newSpeakerName, setIsRelabelingSpeaker, setChangeAlert]
+    [transcription, setTranscription, newSpeakerName, setChangeAlert, categorizedQuestions, setCategorizedQuestions]
   );
 
   const handleInputChange = (e) => {

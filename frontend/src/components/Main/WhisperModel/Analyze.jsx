@@ -176,6 +176,8 @@ export default function Analyze() {
               <FullTranscript
                 transcription={transcription}
                 setTranscription={setTranscription}
+                categorizedQuestions={categorizedQuestions}
+                setCategorizedQuestions={setCategorizedQuestions}
                 speakers={speakers}
                 setSpeakers={setSpeakers}
                 teacher={teacher}
@@ -290,6 +292,8 @@ export default function Analyze() {
               <FullTranscript
                 transcription={transcription}
                 setTranscription={setTranscription}
+                categorizedQuestions={categorizedQuestions}
+                setCategorizedQuestions={setCategorizedQuestions}
                 speakers={speakers}
                 setSpeakers={setSpeakers}
                 teacher={teacher}
