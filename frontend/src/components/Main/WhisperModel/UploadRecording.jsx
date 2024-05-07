@@ -29,7 +29,6 @@ export default function UploadRecording({
   const [isNeither, setIsNeither] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [selectedFile, setSelectedFile] = useState("");
-  const [fileContent, setFileContent] = useState();
   const [progress, setProgress] = useState(0);
   const [showGenericModal, setShowGenericModal] = useState(false);
   const [genericModalMsg, setGenericModalMsg] = useState("");
@@ -244,9 +243,9 @@ export default function UploadRecording({
     setSelectedFile(event.target.files[0]);
     const reader = new FileReader();
     reader.readAsArrayBuffer(file);
-    reader.onloadend = (event) => {
-      setFileContent(event.target.result);
-    };
+    // reader.onloadend = (event) => {
+    //   setFileContent(event.target.result);
+    // };
 
     const type = file.type;
     if (type.includes("audio")) {
